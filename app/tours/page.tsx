@@ -1,9 +1,13 @@
+import type { Metadata } from "next";
 import TopNav from "@/components/layout/TopNav";
 import Footer from "@/components/layout/Footer";
 import SideNav from "@/components/layout/SideNav";
 import { DotGrid } from "@/components/ui/DotGrid";
 import { SpatialHUD } from "@/components/ui/SpatialHUD";
 import { StatusIndicator } from "@/components/ui/StatusIndicator";
+import ScrollToTop from "@/components/ui/ScrollToTop";
+import ScrollReveal from "@/components/ui/ScrollReveal";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import TourEventRow from "@/components/cards/TourEventRow";
 import { tourEvents } from "@/lib/data";
 
@@ -13,6 +17,17 @@ const sideNavItems = [
   { icon: "map", label: "CARTOGRAPHY", href: "#" },
   { icon: "card_membership", label: "MEMBERSHIP", href: "#" },
 ];
+
+export const metadata: Metadata = {
+  title: "Global Circuit — NOVAVOX",
+  description: "NOVAVOX world tour. Spatial audio experiences across six continents.",
+  openGraph: {
+    title: "Global Circuit — NOVAVOX",
+    description: "NOVAVOX world tour. Spatial audio experiences across six continents.",
+    siteName: "NOVAVOX",
+    type: "website",
+  },
+};
 
 export default function ToursPage() {
   return (
@@ -95,23 +110,31 @@ export default function ToursPage() {
           <SpatialHUD position="top-right" />
         </section>
 
+        {/* Breadcrumbs */}
+        <div className="px-6 sm:px-12 pt-8">
+          <Breadcrumbs items={[{ label: "Tours" }]} />
+        </div>
+
         {/* Schedule Section */}
-        <section id="schedule" className="px-12 py-16 max-w-[1400px]">
+        <section id="schedule" className="px-6 sm:px-12 py-16 max-w-[1400px]">
           <h2 className="font-headline text-3xl tracking-wide text-[#E2E2E2] mb-12">
             SCHEDULE.2024
           </h2>
-          <div>
-            {tourEvents.map((event) => (
-              <TourEventRow key={event.city} event={event} />
-            ))}
-          </div>
+          <ScrollReveal>
+            <div>
+              {tourEvents.map((event) => (
+                <TourEventRow key={event.city} event={event} />
+              ))}
+            </div>
+          </ScrollReveal>
         </section>
 
         {/* Editorial Section */}
-        <section className="px-12 py-24">
-          <div className="grid grid-cols-12 gap-12">
+        <section className="px-6 sm:px-12 py-24">
+          <ScrollReveal>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
             {/* Left — Image */}
-            <div className="col-span-5 group">
+            <div className="md:col-span-5 group">
               <div className="relative aspect-[4/5] bg-[#1F1F1F] overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700">
                 <img
                   src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=800&q=80"
@@ -123,7 +146,7 @@ export default function ToursPage() {
             </div>
 
             {/* Right — Philosophy */}
-            <div className="col-span-7 flex flex-col justify-center">
+            <div className="md:col-span-7 flex flex-col justify-center">
               <blockquote className="font-headline text-4xl font-light italic text-[#E2E2E2] leading-snug mb-12">
                 &ldquo;Architecture is Frozen Music.<br />
                 NovaVox is the thaw.&rdquo;
@@ -148,9 +171,11 @@ export default function ToursPage() {
               </div>
             </div>
           </div>
+          </ScrollReveal>
         </section>
 
         <Footer />
+        <ScrollToTop />
       </main>
     </div>
   );

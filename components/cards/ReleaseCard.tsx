@@ -3,11 +3,11 @@ import { Release } from "@/lib/data";
 
 export default function ReleaseCard({ release }: { release: Release }) {
   return (
-    <Link href="/releases" className="group block">
+    <Link href="/releases" className="group block hover-lift">
       <div className="relative overflow-hidden aspect-square bg-[#1F1F1F]">
         <img
           src={release.image}
-          alt={release.title}
+          alt={`${release.title} by ${release.artist}`}
           loading="lazy"
           className="w-full h-full object-cover grayscale brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700"
         />

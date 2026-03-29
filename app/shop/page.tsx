@@ -7,6 +7,9 @@ import MobileNav from "@/components/layout/MobileNav";
 import { DotGrid } from "@/components/ui/DotGrid";
 import { FilterTabs } from "@/components/ui/FilterTabs";
 import ProductCard from "@/components/cards/ProductCard";
+import ScrollToTop from "@/components/ui/ScrollToTop";
+import ScrollReveal from "@/components/ui/ScrollReveal";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import { products } from "@/lib/data";
 
 const SERIES_FILTERS = ["ALL", "NVX-001", "NVX-002", "NVX-003", "NVX-004", "NVX-005"];
@@ -34,18 +37,21 @@ export default function ShopPage() {
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#131313]/40 via-[#131313]/70 to-[#131313]" />
-        <div className="relative z-10 max-w-[1920px] mx-auto px-12">
+        <div className="relative z-10 max-w-[1920px] mx-auto px-6 sm:px-12">
           <p className="text-[10px] tracking-[0.5em] text-[#474747] uppercase mb-4">
             TECHNICAL AUDIO SYSTEMS
           </p>
-          <h1 className="font-headline text-8xl font-bold tracking-tighter text-white">
+          <h1 className="font-headline text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tighter text-white">
             SONIC OBJECTS
           </h1>
+          <div className="mt-6">
+            <Breadcrumbs items={[{ label: "Shop" }]} />
+          </div>
         </div>
       </section>
 
       {/* Filter */}
-      <section className="px-12 py-8 max-w-[1920px] mx-auto">
+      <section className="px-6 sm:px-12 py-8 max-w-[1920px] mx-auto">
         <FilterTabs
           filters={SERIES_FILTERS}
           active={activeSeries}
@@ -54,17 +60,20 @@ export default function ShopPage() {
       </section>
 
       {/* Product Grid */}
-      <section className="relative px-12 pb-24 max-w-[1920px] mx-auto">
+      <section className="relative px-6 sm:px-12 pb-24 max-w-[1920px] mx-auto">
         <DotGrid />
-        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.sku} product={product} />
-          ))}
-        </div>
+        <ScrollReveal>
+          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.sku} product={product} />
+            ))}
+          </div>
+        </ScrollReveal>
       </section>
 
       {/* Technical Spec Section */}
-      <section className="bg-[#0E0E0E] px-12 py-24">
+      <section className="bg-[#0E0E0E] px-6 sm:px-12 py-24">
+        <ScrollReveal>
         <div className="max-w-[1920px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
           <div>
             <p className="text-[10px] tracking-[0.5em] text-[#474747] uppercase mb-6">
@@ -111,10 +120,11 @@ export default function ShopPage() {
             />
           </div>
         </div>
+        </ScrollReveal>
       </section>
 
       {/* Newsletter */}
-      <section className="text-center py-24 bg-[#131313] px-12">
+      <section className="text-center py-24 bg-[#131313] px-6 sm:px-12">
         <p className="text-[10px] tracking-[0.5em] text-[#474747] uppercase mb-6">
           DISPATCH
         </p>
@@ -132,7 +142,7 @@ export default function ShopPage() {
           />
           <button
             type="button"
-            className="text-white hover:opacity-70 transition-opacity pl-4"
+            className="text-white hover:opacity-70 transition-opacity pl-4 min-h-[44px] min-w-[44px] flex items-center justify-center"
             aria-label="Subscribe"
           >
             <span className="material-symbols-outlined text-[18px]">
@@ -144,6 +154,7 @@ export default function ShopPage() {
 
       <Footer />
       <MobileNav />
+      <ScrollToTop />
     </div>
   );
 }

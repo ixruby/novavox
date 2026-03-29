@@ -1,9 +1,13 @@
+import type { Metadata } from "next";
 import TopNav from "@/components/layout/TopNav";
 import Footer from "@/components/layout/Footer";
 import SideNav from "@/components/layout/SideNav";
 import { DotGrid } from "@/components/ui/DotGrid";
 import { SpatialHUD } from "@/components/ui/SpatialHUD";
 import { StatusIndicator } from "@/components/ui/StatusIndicator";
+import ScrollToTop from "@/components/ui/ScrollToTop";
+import ScrollReveal from "@/components/ui/ScrollReveal";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const sideNavItems = [
   { icon: "overview", label: "OVERVIEW", href: "#", active: true },
@@ -44,6 +48,17 @@ const specs = [
   { label: "MASTER", value: "St. Agnes, Berlin" },
 ];
 
+export const metadata: Metadata = {
+  title: "Spatial Player — NOVAVOX",
+  description: "The NOVAVOX spatial audio player. Immersive listening in 360 degrees.",
+  openGraph: {
+    title: "Spatial Player — NOVAVOX",
+    description: "The NOVAVOX spatial audio player. Immersive listening in 360 degrees.",
+    siteName: "NOVAVOX",
+    type: "website",
+  },
+};
+
 export default function PlayerPage() {
   return (
     <div className="min-h-screen bg-[#131313] text-white">
@@ -79,7 +94,7 @@ export default function PlayerPage() {
           </div>
 
           {/* Content */}
-          <div className="relative z-10 p-16 pb-20 w-full">
+          <div className="relative z-10 p-6 sm:p-16 pb-20 w-full">
             {/* Status badges */}
             <div className="flex gap-4">
               <span className="text-[9px] tracking-[0.15em] uppercase border border-white/10 px-3 py-1 text-[#919191]">
@@ -105,11 +120,15 @@ export default function PlayerPage() {
             </p>
 
             {/* CTAs */}
+            <div className="mt-4">
+              <Breadcrumbs items={[{ label: "Player" }]} />
+            </div>
+
             <div className="flex gap-4 mt-8">
-              <button className="bg-white text-[#1A1C1C] px-8 py-3 text-[10px] tracking-[0.2em] uppercase hover:bg-[#D4D4D4] transition">
+              <button className="bg-white text-[#1A1C1C] px-8 py-3 min-h-[44px] text-[10px] tracking-[0.2em] uppercase hover:bg-[#D4D4D4] transition">
                 INITIATE SEQUENCE
               </button>
-              <button className="border border-white/20 text-white px-8 py-3 text-[10px] tracking-[0.2em] uppercase hover:bg-white/5 transition">
+              <button className="border border-white/20 text-white px-8 py-3 min-h-[44px] text-[10px] tracking-[0.2em] uppercase hover:bg-white/5 transition">
                 DOWNLOAD DATA
               </button>
             </div>
@@ -117,7 +136,8 @@ export default function PlayerPage() {
         </section>
 
         {/* ——— Track Manifest ——— */}
-        <section className="px-12 py-16 max-w-[1400px]">
+        <section className="px-6 sm:px-12 py-16 max-w-[1400px]">
+          <ScrollReveal>
           <p className="text-[10px] tracking-[0.5em] text-[#474747] uppercase mb-8">
             TRACK MANIFEST
           </p>
@@ -145,14 +165,16 @@ export default function PlayerPage() {
               </div>
             ))}
           </div>
+          </ScrollReveal>
         </section>
 
         {/* ——— System Components ——— */}
-        <section className="px-12 py-24">
+        <section className="px-6 sm:px-12 py-24">
           <p className="text-[10px] tracking-[0.5em] text-[#474747] uppercase mb-8">
             SYSTEM COMPONENTS
           </p>
 
+          <ScrollReveal>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {structures.map((structure) => (
               <div
@@ -181,10 +203,11 @@ export default function PlayerPage() {
               </div>
             ))}
           </div>
+          </ScrollReveal>
         </section>
 
         {/* ——— Technical Specifications ——— */}
-        <section className="px-12 py-16 bg-[#0E0E0E]">
+        <section className="px-6 sm:px-12 py-16 bg-[#0E0E0E]">
           <p className="text-[10px] tracking-[0.5em] text-[#474747] uppercase mb-8">
             TECHNICAL SPECIFICATIONS
           </p>
@@ -202,6 +225,7 @@ export default function PlayerPage() {
         </section>
 
         <Footer />
+        <ScrollToTop />
       </main>
     </div>
   );

@@ -2,6 +2,8 @@
 
 import TopNav from "@/components/layout/TopNav";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import ScrollToTop from "@/components/ui/ScrollToTop";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const steps = [
   { number: 1, label: "CART" },
@@ -27,7 +29,10 @@ export default function CheckoutPage() {
       <TopNav />
 
       <main className="pt-24 min-h-screen">
-        <div className="grid grid-cols-[260px_1fr_400px] min-h-[calc(100vh-96px)]">
+        <div className="px-6 sm:px-12 py-4">
+          <Breadcrumbs items={[{ label: "Shop", href: "/shop" }, { label: "Checkout" }]} />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr_400px] min-h-[calc(100vh-96px)]">
           {/* LEFT SIDEBAR — Checkout Stepper */}
           <aside className="bg-[#0E0E0E] p-8">
             <h2 className="text-[10px] tracking-[0.2em] uppercase text-[#919191] mb-8">
@@ -81,7 +86,7 @@ export default function CheckoutPage() {
                 <input
                   type="text"
                   placeholder="0000 0000 0000 0000"
-                  className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 outline-none transition-colors placeholder-[#474747]"
+                  className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors placeholder-[#474747]"
                 />
               </div>
 
@@ -94,7 +99,7 @@ export default function CheckoutPage() {
                   <input
                     type="text"
                     placeholder="MM / YY"
-                    className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 outline-none transition-colors placeholder-[#474747]"
+                    className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors placeholder-[#474747]"
                   />
                 </div>
                 <div className="w-32">
@@ -104,7 +109,7 @@ export default function CheckoutPage() {
                   <input
                     type="text"
                     placeholder="000"
-                    className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 outline-none transition-colors placeholder-[#474747]"
+                    className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors placeholder-[#474747]"
                   />
                 </div>
               </div>
@@ -117,7 +122,7 @@ export default function CheckoutPage() {
                 <input
                   type="text"
                   placeholder="Full name on card"
-                  className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 outline-none transition-colors placeholder-[#474747]"
+                  className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors placeholder-[#474747]"
                 />
               </div>
 
@@ -129,7 +134,7 @@ export default function CheckoutPage() {
                 <input
                   type="text"
                   placeholder="Street address"
-                  className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 outline-none transition-colors placeholder-[#474747]"
+                  className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors placeholder-[#474747]"
                 />
               </div>
 
@@ -142,7 +147,7 @@ export default function CheckoutPage() {
                   <input
                     type="text"
                     placeholder="City"
-                    className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 outline-none transition-colors placeholder-[#474747]"
+                    className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors placeholder-[#474747]"
                   />
                 </div>
                 <div className="w-40">
@@ -152,7 +157,7 @@ export default function CheckoutPage() {
                   <input
                     type="text"
                     placeholder="00000"
-                    className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 outline-none transition-colors placeholder-[#474747]"
+                    className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors placeholder-[#474747]"
                   />
                 </div>
               </div>
@@ -162,7 +167,7 @@ export default function CheckoutPage() {
                 <label className="block text-[10px] tracking-[0.15em] uppercase text-[#919191] mb-2">
                   Country
                 </label>
-                <select className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 outline-none transition-colors appearance-none">
+                <select className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors appearance-none">
                   <option value="" disabled>
                     Select country
                   </option>
@@ -178,7 +183,7 @@ export default function CheckoutPage() {
               {/* Submit */}
               <button
                 type="submit"
-                className="bg-white text-[#1A1C1C] w-full py-4 mt-8 text-[10px] tracking-[0.2em] uppercase font-medium hover:opacity-90 transition-opacity"
+                className="bg-white text-[#1A1C1C] w-full py-4 min-h-[44px] mt-8 text-[10px] tracking-[0.2em] uppercase font-medium hover:opacity-90 transition-opacity"
               >
                 CONFIRM PROTOCOL
               </button>
@@ -271,6 +276,7 @@ export default function CheckoutPage() {
           </aside>
         </div>
       </main>
+      <ScrollToTop />
     </div>
   );
 }

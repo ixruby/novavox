@@ -26,7 +26,7 @@ export default function SubmissionForm() {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 outline-none transition-colors"
+          className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors"
           required
         />
       </div>
@@ -38,7 +38,7 @@ export default function SubmissionForm() {
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 outline-none transition-colors appearance-none"
+          className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors appearance-none"
           required
         >
           <option value="" disabled>
@@ -64,7 +64,7 @@ export default function SubmissionForm() {
 
       <button
         type="submit"
-        className="bg-white text-[#1A1C1C] text-[10px] tracking-[0.2em] uppercase px-8 py-4 hover:opacity-90 transition-opacity font-medium"
+        className="bg-white text-[#1A1C1C] text-[10px] tracking-[0.2em] uppercase px-8 py-4 min-h-[44px] hover:opacity-90 transition-opacity font-medium"
       >
         Transmit Data
       </button>

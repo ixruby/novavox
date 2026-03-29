@@ -3,7 +3,7 @@ import { Artist } from "@/lib/data";
 
 export default function ArtistCard({ artist }: { artist: Artist }) {
   return (
-    <Link href={`/artists/${artist.slug}`} className="group block">
+    <Link href={`/artists/${artist.slug}`} className="group block hover-lift">
       <div className="relative overflow-hidden aspect-[3/4] bg-[#1F1F1F]">
         <img
           src={artist.image}

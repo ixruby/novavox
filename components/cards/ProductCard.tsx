@@ -7,7 +7,7 @@ export default function ProductCard({ product }: { product: Product }) {
   }).format(product.price);
 
   return (
-    <div className="group">
+    <div className="group hover-lift">
       <div className="relative overflow-hidden aspect-square bg-[#1F1F1F]">
         <img
           src={product.image}
@@ -33,7 +33,7 @@ export default function ProductCard({ product }: { product: Product }) {
         <p className="text-[10px] text-[#919191] tracking-[0.15em] uppercase mt-1">
           {product.series} / {product.material}
         </p>
-        <button className="mt-3 w-full text-[10px] tracking-[0.2em] uppercase border border-white/10 py-3 hover:bg-white hover:text-[#1A1C1C] transition-all text-[#E2E2E2]">
+        <button className="mt-3 w-full text-[10px] tracking-[0.2em] uppercase border border-white/10 py-3 min-h-[44px] hover:bg-white hover:text-[#1A1C1C] transition-all text-[#E2E2E2]">
           Add to Archive
         </button>
       </div>

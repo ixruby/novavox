@@ -18,6 +18,18 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "NOVAVOX — Sonic Gallery",
   description: "Architectural Rigor. Built in Berlin. A record label redefining the spatial audio experience.",
+  metadataBase: new URL("https://novavox.vercel.app"),
+  openGraph: {
+    title: "NOVAVOX — Sonic Gallery",
+    description: "Architectural Rigor. Built in Berlin. A record label redefining the spatial audio experience.",
+    siteName: "NOVAVOX",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "NOVAVOX — Sonic Gallery",
+    description: "Architectural Rigor. Built in Berlin.",
+  },
 };
 
 export default function RootLayout({
@@ -34,8 +46,11 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen antialiased">
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:bg-white focus:text-[#1A1C1C] focus:px-4 focus:py-2 focus:text-sm focus:tracking-widest focus:uppercase">
+          Skip to content
+        </a>
         <NoiseOverlay />
-        {children}
+        <main id="main-content">{children}</main>
       </body>
     </html>
   );

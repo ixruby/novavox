@@ -14,7 +14,7 @@ export default function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 block md:hidden bg-[#131313]/80 backdrop-blur-[40px] border-t border-white/5">
+    <nav aria-label="Mobile navigation" className="fixed bottom-0 left-0 right-0 z-50 block md:hidden bg-[#131313]/80 backdrop-blur-[40px] border-t border-white/5">
       <div className="flex justify-around items-center py-3">
         {mobileNavItems.map((item) => {
           const isActive =
@@ -26,10 +26,11 @@ export default function MobileNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center transition-colors duration-300 ${
+              className={`min-w-[44px] min-h-[44px] flex flex-col items-center justify-center transition-colors duration-300 ${
                 isActive ? "text-white" : "text-[#919191]"
               }`}
               aria-label={item.label}
+              {...(isActive ? { "aria-current": "page" as const } : {})}
             >
               <span className="material-symbols-outlined text-[22px]">
                 {item.icon}

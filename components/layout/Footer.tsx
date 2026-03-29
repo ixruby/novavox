@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-[#0E0E0E] border-t border-white/5 px-12 py-16">
+    <footer role="contentinfo" className="w-full bg-[#0E0E0E] border-t border-white/5 px-12 py-16">
       {/* Top Section */}
       <div className="flex flex-col md:flex-row justify-between items-start gap-12">
         {/* Left - Brand */}
@@ -48,6 +48,7 @@ export default function Footer() {
               href="https://instagram.com/novavox"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="NOVAVOX on Instagram"
               className="text-[10px] text-[#919191] hover:text-white tracking-[0.15em] uppercase transition-colors duration-300"
             >
               Instagram

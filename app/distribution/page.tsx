@@ -1,9 +1,13 @@
+import type { Metadata } from "next";
 import TopNav from "@/components/layout/TopNav";
 import Footer from "@/components/layout/Footer";
 import SideNav from "@/components/layout/SideNav";
 import { DotGrid } from "@/components/ui/DotGrid";
 import { SpatialHUD } from "@/components/ui/SpatialHUD";
 import { StatusIndicator } from "@/components/ui/StatusIndicator";
+import ScrollToTop from "@/components/ui/ScrollToTop";
+import ScrollReveal from "@/components/ui/ScrollReveal";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import SubmissionForm from "@/components/forms/SubmissionForm";
 
 const sideNavItems = [
@@ -13,6 +17,17 @@ const sideNavItems = [
   { icon: "inventory_2", label: "ARCHIVE", href: "#" },
 ];
 
+export const metadata: Metadata = {
+  title: "Distribution — NOVAVOX",
+  description: "Submit your spatial audio work. NOVAVOX operates a sovereign distribution network.",
+  openGraph: {
+    title: "Distribution — NOVAVOX",
+    description: "Submit your spatial audio work. NOVAVOX operates a sovereign distribution network.",
+    siteName: "NOVAVOX",
+    type: "website",
+  },
+};
+
 export default function DistributionPage() {
   return (
     <div className="min-h-screen bg-[#131313] text-[#E2E2E2]">
@@ -21,10 +36,11 @@ export default function DistributionPage() {
 
       <main className="ml-20">
         {/* Hero */}
-        <section className="pt-32 pb-16 px-12">
-          <div className="grid grid-cols-12 gap-12">
+        <section className="pt-32 pb-16 px-6 sm:px-12">
+          <Breadcrumbs items={[{ label: "Distribution" }]} />
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mt-8">
             {/* Text */}
-            <div className="col-span-7 flex flex-col justify-center">
+            <div className="md:col-span-7 flex flex-col justify-center">
               <span className="text-[10px] tracking-[0.3em] text-[#919191] uppercase mb-6">
                 DISTRIBUTION NETWORK
               </span>
@@ -42,7 +58,7 @@ export default function DistributionPage() {
             </div>
 
             {/* Image */}
-            <div className="col-span-5">
+            <div className="md:col-span-5">
               <div className="relative aspect-[4/5] bg-[#1F1F1F] overflow-hidden">
                 <img
                   src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&q=80"
@@ -69,10 +85,11 @@ export default function DistributionPage() {
         </section>
 
         {/* Bento Grid */}
-        <section className="px-12 py-16">
-          <div className="grid grid-cols-4 gap-6">
+        <section className="px-6 sm:px-12 py-16">
+          <ScrollReveal>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Large Card — Network Map */}
-            <div className="col-span-3 relative bg-[#1F1F1F] h-[500px] overflow-hidden">
+            <div className="lg:col-span-3 relative bg-[#1F1F1F] h-[500px] overflow-hidden">
               <DotGrid />
 
               {/* Radial depth gradient */}
@@ -112,7 +129,7 @@ export default function DistributionPage() {
               </div>
 
               <div className="absolute bottom-8 right-8">
-                <button className="border border-white/20 text-[10px] tracking-[0.2em] px-6 py-3 text-[#E2E2E2] uppercase hover:bg-white hover:text-[#1A1C1C] transition-all">
+                <button className="border border-white/20 text-[10px] tracking-[0.2em] px-6 py-3 min-h-[44px] text-[#E2E2E2] uppercase hover:bg-white hover:text-[#1A1C1C] transition-all">
                   VIEW HUB MAP
                 </button>
               </div>
@@ -121,7 +138,7 @@ export default function DistributionPage() {
             </div>
 
             {/* Stats Sidebar */}
-            <div className="col-span-1 bg-[#1B1B1B] p-8 flex flex-col justify-between">
+            <div className="lg:col-span-1 bg-[#1B1B1B] p-8 flex flex-col justify-between">
               <div>
                 <h3 className="text-[10px] tracking-[0.2em] uppercase text-[#919191] mb-6">
                   TIER 1 PARTNERS
@@ -155,11 +172,13 @@ export default function DistributionPage() {
               </div>
             </div>
           </div>
+          </ScrollReveal>
         </section>
 
         {/* Submission Section */}
-        <section className="px-12 py-24">
-          <div className="grid grid-cols-2 gap-16">
+        <section className="px-6 sm:px-12 py-24">
+          <ScrollReveal>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             {/* Left — Info Panel */}
             <div className="flex flex-col justify-center">
               <span className="text-[10px] tracking-[0.3em] text-[#919191] uppercase mb-6">
@@ -211,10 +230,11 @@ export default function DistributionPage() {
               <SubmissionForm />
             </div>
           </div>
+          </ScrollReveal>
         </section>
 
         {/* Technical Guide Carousel */}
-        <section className="px-12 py-16">
+        <section className="px-6 sm:px-12 py-16">
           <span className="text-[10px] tracking-[0.3em] text-[#919191] uppercase block mb-8">
             TECHNICAL GUIDE
           </span>
@@ -255,6 +275,7 @@ export default function DistributionPage() {
         </section>
 
         <Footer />
+        <ScrollToTop />
       </main>
     </div>
   );

@@ -10,7 +10,7 @@ export default function JournalCard({
 }) {
   if (featured) {
     return (
-      <Link href={`/journal/${entry.slug}`} className="group block">
+      <Link href={`/journal/${entry.slug}`} className="group block hover-lift">
         <div className="grid grid-cols-12 gap-8">
           <div className="col-span-7 flex flex-col justify-center">
             <span className="text-[10px] tracking-[0.2em] text-[#919191] uppercase">
@@ -50,7 +50,7 @@ export default function JournalCard({
   }
 
   return (
-    <Link href={`/journal/${entry.slug}`} className="group block">
+    <Link href={`/journal/${entry.slug}`} className="group block hover-lift">
       <div className="relative overflow-hidden aspect-[16/9] bg-[#1F1F1F]">
         <img
           src={entry.image}

@@ -52,3 +52,63 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #919191;
 }
+
+:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 2px;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 2px;
+}
+
+/* Micro-interactions */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Hover lift effect for cards */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Image reveal on hover */
+.img-reveal {
+  transition: filter 0.5s ease, transform 0.5s ease;
+}
+
+.img-reveal:hover {
+  filter: grayscale(0) brightness(0.7);
+  transform: scale(1.02);
+}
