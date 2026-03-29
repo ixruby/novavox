@@ -4,11 +4,12 @@ import { Release } from "@/lib/data";
 export default function ReleaseCard({ release }: { release: Release }) {
   return (
     <Link href="/releases" className="group block">
-      <div className="relative overflow-hidden aspect-square">
+      <div className="relative overflow-hidden aspect-square bg-[#1F1F1F]">
         <img
           src={release.image}
           alt={release.title}
-          className="grayscale brightness-50 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700 object-cover w-full h-full"
+          loading="lazy"
+          className="w-full h-full object-cover grayscale brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700"
         />
         <span className="absolute top-4 left-4 text-[9px] tracking-[0.3em] text-white/60 uppercase">
           {release.catalogNumber}

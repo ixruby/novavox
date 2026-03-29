@@ -113,13 +113,11 @@ export default function ToursPage() {
             {/* Left — Image */}
             <div className="col-span-5 group">
               <div className="relative aspect-[4/5] bg-[#1F1F1F] overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700">
-                <div
-                  className="absolute inset-0 opacity-30"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(135deg, #2A2A2A 25%, transparent 25%, transparent 50%, #2A2A2A 50%, #2A2A2A 75%, transparent 75%)",
-                    backgroundSize: "20px 20px",
-                  }}
+                <img
+                  src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=800&q=80"
+                  alt="Brutalist architecture"
+                  loading="lazy"
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
             </div>

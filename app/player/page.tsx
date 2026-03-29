@@ -23,20 +23,17 @@ const structures = [
   {
     label: "STRUCTURE 01",
     title: "Brutalist Framework",
-    pattern:
-      "repeating-linear-gradient(45deg, #2A2A2A 0px, #2A2A2A 1px, transparent 1px, transparent 12px)",
+    image: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=600&q=80",
   },
   {
     label: "STRUCTURE 02",
     title: "Organic Synthesis",
-    pattern:
-      "radial-gradient(circle at 30% 40%, #2A2A2A 0%, transparent 50%), radial-gradient(circle at 70% 60%, #353535 0%, transparent 40%)",
+    image: "https://images.unsplash.com/photo-1500534623283-312aade485b7?w=600&q=80",
   },
   {
     label: "STRUCTURE 03",
     title: "Vector Core",
-    pattern:
-      "repeating-linear-gradient(0deg, #2A2A2A 0px, #2A2A2A 1px, transparent 1px, transparent 8px), repeating-linear-gradient(90deg, #2A2A2A 0px, #2A2A2A 1px, transparent 1px, transparent 8px)",
+    image: "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=600&q=80",
   },
 ];
 
@@ -58,12 +55,14 @@ export default function PlayerPage() {
 
         {/* ——— Hero ——— */}
         <section className="relative min-h-[80vh] bg-[#131313] overflow-hidden flex items-end">
-          {/* Background pattern */}
+          {/* Background image */}
           <div
             className="absolute inset-0 bg-[#1F1F1F] grayscale brightness-[0.3]"
             style={{
               backgroundImage:
-                "repeating-linear-gradient(135deg, transparent 0px, transparent 40px, #2A2A2A 40px, #2A2A2A 41px), repeating-linear-gradient(45deg, transparent 0px, transparent 40px, #1B1B1B 40px, #1B1B1B 41px)",
+                "url('https://images.unsplash.com/photo-1470790376778-a9fbc86d70e2?w=1920&q=80')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
             }}
           />
 
@@ -162,9 +161,11 @@ export default function PlayerPage() {
               >
                 {/* Image area */}
                 <div className="aspect-[4/5] bg-[#1F1F1F] relative">
-                  <div
-                    className="absolute inset-0 opacity-40 group-hover:opacity-100 transition-opacity duration-700"
-                    style={{ backgroundImage: structure.pattern }}
+                  <img
+                    src={structure.image}
+                    alt={structure.title}
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover grayscale brightness-[0.3] group-hover:brightness-[0.5] transition-all duration-700"
                   />
 
                   {/* Overlay */}

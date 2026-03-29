@@ -3,6 +3,7 @@
 import { useState } from "react";
 import TopNav from "@/components/layout/TopNav";
 import Footer from "@/components/layout/Footer";
+import MobileNav from "@/components/layout/MobileNav";
 import { DotGrid } from "@/components/ui/DotGrid";
 import { SpatialHUD } from "@/components/ui/SpatialHUD";
 import { FilterTabs } from "@/components/ui/FilterTabs";
@@ -59,6 +60,7 @@ export default function ReleasesPage() {
       </main>
 
       <Footer />
+      <MobileNav />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import TopNav from "@/components/layout/TopNav";
 import Footer from "@/components/layout/Footer";
+import MobileNav from "@/components/layout/MobileNav";
 import { DotGrid } from "@/components/ui/DotGrid";
 import { SpatialHUD } from "@/components/ui/SpatialHUD";
 import { StatusIndicator } from "@/components/ui/StatusIndicator";
@@ -45,6 +46,7 @@ export default function ArtistsPage() {
       </main>
 
       <Footer />
+      <MobileNav />
     </div>
   );
 }

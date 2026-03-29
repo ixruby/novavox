@@ -12,7 +12,8 @@ export default function ProductCard({ product }: { product: Product }) {
         <img
           src={product.image}
           alt={product.name}
-          className="grayscale brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700 object-cover w-full h-full"
+          loading="lazy"
+          className="w-full h-full object-cover grayscale brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700"
         />
         {product.badge && (
           <span className="absolute top-4 left-4 text-[8px] tracking-[0.2em] bg-white text-[#1A1C1C] px-2 py-1 uppercase">

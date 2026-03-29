@@ -35,11 +35,12 @@ export default function JournalCard({
             </span>
           </div>
           <div className="col-span-5">
-            <div className="relative overflow-hidden aspect-[4/5]">
+            <div className="relative overflow-hidden aspect-[4/5] bg-[#1F1F1F]">
               <img
                 src={entry.image}
                 alt={entry.title}
-                className="grayscale brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700 object-cover w-full h-full"
+                loading="lazy"
+                className="w-full h-full object-cover grayscale brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700"
               />
             </div>
           </div>
@@ -50,11 +51,12 @@ export default function JournalCard({
 
   return (
     <Link href={`/journal/${entry.slug}`} className="group block">
-      <div className="relative overflow-hidden aspect-[16/9]">
+      <div className="relative overflow-hidden aspect-[16/9] bg-[#1F1F1F]">
         <img
           src={entry.image}
           alt={entry.title}
-          className="grayscale brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700 object-cover w-full h-full"
+          loading="lazy"
+          className="w-full h-full object-cover grayscale brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700"
         />
       </div>
       <div className="pt-4">

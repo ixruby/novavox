@@ -4,11 +4,12 @@ import { Artist } from "@/lib/data";
 export default function ArtistCard({ artist }: { artist: Artist }) {
   return (
     <Link href={`/artists/${artist.slug}`} className="group block">
-      <div className="relative overflow-hidden aspect-[3/4]">
+      <div className="relative overflow-hidden aspect-[3/4] bg-[#1F1F1F]">
         <img
           src={artist.image}
           alt={artist.name}
-          className="grayscale brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700 object-cover w-full h-full"
+          loading="lazy"
+          className="w-full h-full object-cover grayscale brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700"
         />
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#131313] to-transparent p-6">
           <h3 className="font-headline text-xl font-semibold tracking-wide text-white">

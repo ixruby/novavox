@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter } from "next/font/google";
+import NoiseOverlay from "@/components/layout/NoiseOverlay";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -33,6 +34,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen antialiased">
+        <NoiseOverlay />
         {children}
       </body>
     </html>

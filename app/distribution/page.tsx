@@ -44,6 +44,12 @@ export default function DistributionPage() {
             {/* Image */}
             <div className="col-span-5">
               <div className="relative aspect-[4/5] bg-[#1F1F1F] overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&q=80"
+                  alt="Studio mixing console"
+                  loading="lazy"
+                  className="absolute inset-0 w-full h-full object-cover grayscale brightness-[0.4]"
+                />
                 <div
                   className="absolute inset-0 opacity-20"
                   style={{
@@ -69,13 +75,22 @@ export default function DistributionPage() {
             <div className="col-span-3 relative bg-[#1F1F1F] h-[500px] overflow-hidden">
               <DotGrid />
 
-              {/* Grid lines simulating network map */}
+              {/* Radial depth gradient */}
               <div
-                className="absolute inset-0 opacity-15"
+                className="absolute inset-0"
                 style={{
                   backgroundImage:
-                    "linear-gradient(to right, #474747 1px, transparent 1px), linear-gradient(to bottom, #474747 1px, transparent 1px)",
-                  backgroundSize: "100px 60px",
+                    "radial-gradient(ellipse at center, rgba(71,71,71,0.15) 0%, transparent 70%)",
+                }}
+              />
+
+              {/* Grid lines simulating network map */}
+              <div
+                className="absolute inset-0 opacity-40"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(to right, #474747 1px, transparent 1px), linear-gradient(to bottom, #474747 1px, transparent 1px), linear-gradient(to right, #333333 1px, transparent 1px), linear-gradient(to bottom, #333333 1px, transparent 1px)",
+                  backgroundSize: "100px 60px, 100px 60px, 50px 30px, 50px 30px",
                 }}
               />
 
@@ -209,16 +224,21 @@ export default function DistributionPage() {
             style={{ scrollbarWidth: "none" }}
           >
             {[
-              { chapter: "01", title: "SPATIAL MAPPING" },
-              { chapter: "02", title: "FREQUENCY DYNAMICS" },
-              { chapter: "03", title: "CORE ARCHITECTURE" },
+              { chapter: "01", title: "SPATIAL MAPPING", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80" },
+              { chapter: "02", title: "FREQUENCY DYNAMICS", image: "https://images.unsplash.com/photo-1504898770365-14faca6a7320?w=600&q=80" },
+              { chapter: "03", title: "CORE ARCHITECTURE", image: "https://images.unsplash.com/photo-1470790376778-a9fbc86d70e2?w=600&q=80" },
             ].map((guide) => (
               <div
                 key={guide.chapter}
-                className="w-[400px] flex-shrink-0 relative aspect-[3/4] bg-[#1F1F1F] overflow-hidden group hover:bg-[#2A2A2A] transition-colors"
+                className="w-[400px] flex-shrink-0 relative aspect-[3/4] bg-[#1F1F1F] overflow-hidden group"
               >
-                <DotGrid />
-                <div className="absolute inset-0 flex flex-col justify-end p-8">
+                <img
+                  src={guide.image}
+                  alt={guide.title}
+                  loading="lazy"
+                  className="absolute inset-0 w-full h-full object-cover grayscale brightness-[0.3] group-hover:brightness-[0.5] transition-all duration-700"
+                />
+                <div className="absolute inset-0 flex flex-col justify-end p-8 z-10">
                   <span className="font-headline text-8xl font-bold text-white/5 absolute top-8 right-8">
                     {guide.chapter}
                   </span>

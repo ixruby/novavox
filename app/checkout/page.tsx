@@ -13,8 +13,8 @@ const steps = [
 const activeStep = 3;
 
 const orderItems = [
-  { name: "KINETIC MONOLITH", sku: "NVX-001", price: 48.0 },
-  { name: "VOID RESONANCE", sku: "NVX-002", price: 112.0 },
+  { name: "KINETIC MONOLITH", sku: "NVX-001", price: 48.0, image: "https://images.unsplash.com/photo-1539375665275-f9de415ef9ac?w=200&q=80" },
+  { name: "VOID RESONANCE", sku: "NVX-002", price: 112.0, image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=200&q=80" },
 ];
 
 const subtotal = orderItems.reduce((sum, item) => sum + item.price, 0);
@@ -195,7 +195,14 @@ export default function CheckoutPage() {
             <div className="space-y-6">
               {orderItems.map((item) => (
                 <div key={item.sku} className="flex gap-4">
-                  <div className="w-16 h-16 bg-[#1F1F1F] flex-shrink-0" />
+                  <div className="w-16 h-16 bg-[#1F1F1F] flex-shrink-0 overflow-hidden">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover grayscale"
+                    />
+                  </div>
                   <div className="flex-1">
                     <h3 className="text-sm text-[#E2E2E2] font-medium">
                       {item.name}

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import TopNav from "@/components/layout/TopNav";
 import Footer from "@/components/layout/Footer";
+import MobileNav from "@/components/layout/MobileNav";
 import { DotGrid } from "@/components/ui/DotGrid";
 import { FilterTabs } from "@/components/ui/FilterTabs";
 import ProductCard from "@/components/cards/ProductCard";
@@ -27,7 +28,7 @@ export default function ShopPage() {
         <div
           className="absolute inset-0 grayscale brightness-[0.2]"
           style={{
-            backgroundImage: `url('/images/shop-hero.jpg')`,
+            backgroundImage: `url('https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1920&q=80')`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
@@ -101,10 +102,11 @@ export default function ShopPage() {
             </div>
           </div>
 
-          <div className="relative aspect-square bg-[#1B1B1B] overflow-hidden">
+          <div className="relative aspect-square bg-[#1F1F1F] overflow-hidden">
             <img
-              src="/images/spec-detail.jpg"
+              src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&q=80"
               alt="Archival pressing detail"
+              loading="lazy"
               className="grayscale brightness-50 object-cover w-full h-full"
             />
           </div>
@@ -141,6 +143,7 @@ export default function ShopPage() {
       </section>
 
       <Footer />
+      <MobileNav />
     </div>
   );
 }

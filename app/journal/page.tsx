@@ -1,5 +1,6 @@
 import TopNav from "@/components/layout/TopNav";
 import Footer from "@/components/layout/Footer";
+import MobileNav from "@/components/layout/MobileNav";
 import { DotGrid } from "@/components/ui/DotGrid";
 import { SpatialHUD } from "@/components/ui/SpatialHUD";
 import JournalCard from "@/components/cards/JournalCard";
@@ -43,7 +44,17 @@ export default function JournalPage() {
                         : "col-span-1"
                   }`}
                 >
-                  {isFirst && <DotGrid />}
+                  {isFirst && (
+                    <>
+                      <img
+                        src={entry.image}
+                        alt={entry.title}
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-full object-cover grayscale brightness-[0.2]"
+                      />
+                      <DotGrid />
+                    </>
+                  )}
 
                   <div className="relative z-10 h-full flex flex-col justify-between">
                     <div>
@@ -105,20 +116,35 @@ export default function JournalPage() {
 
             {/* Right — Interviews */}
             <div className="col-span-8">
-              {interviewEntries.map((entry) => (
+              {interviewEntries.map((entry) => {
+                const portraitMap: Record<string, string> = {
+                  "Sarah Kovac": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
+                  "Marcus Vane": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80",
+                };
+                const portraitUrl = portraitMap[entry.author];
+                return (
                 <div
                   key={entry.slug}
                   className="flex items-center gap-6 border-b border-white/5 py-8 group cursor-pointer hover:bg-[#1B1B1B]/50 transition-colors -mx-4 px-4"
                 >
-                  {/* Portrait Placeholder */}
-                  <div className="w-16 h-16 bg-[#1F1F1F] grayscale flex-shrink-0 overflow-hidden">
-                    <div
-                      className="w-full h-full opacity-30"
-                      style={{
-                        backgroundImage:
-                          "radial-gradient(circle at center, #474747 0%, transparent 70%)",
-                      }}
-                    />
+                  {/* Portrait */}
+                  <div className="w-16 h-16 bg-[#1F1F1F] grayscale group-hover:brightness-125 transition-all duration-500 flex-shrink-0 overflow-hidden">
+                    {portraitUrl ? (
+                      <img
+                        src={portraitUrl}
+                        alt={entry.author}
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div
+                        className="w-full h-full opacity-30"
+                        style={{
+                          backgroundImage:
+                            "radial-gradient(circle at center, #474747 0%, transparent 70%)",
+                        }}
+                      />
+                    )}
                   </div>
 
                   {/* Info */}
@@ -143,7 +169,8 @@ export default function JournalPage() {
                     </button>
                   </div>
                 </div>
-              ))}
+              );
+              })}
             </div>
           </div>
         </section>
@@ -154,6 +181,7 @@ export default function JournalPage() {
         </section>
 
         <Footer />
+        <MobileNav />
       </main>
     </div>
   );
