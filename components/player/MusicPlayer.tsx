@@ -17,19 +17,19 @@ export default function MusicPlayer() {
         {/* Controls */}
         <div className="flex-1 flex flex-col items-center">
           <div className="flex items-center gap-6">
-            <button className="text-[#919191] hover:text-white transition-colors">
+            <button aria-label="Shuffle" className="text-[#919191] hover:text-white transition-colors">
               <span className="material-symbols-outlined text-lg">shuffle</span>
             </button>
-            <button className="text-[#919191] hover:text-white transition-colors">
+            <button aria-label="Previous track" className="text-[#919191] hover:text-white transition-colors">
               <span className="material-symbols-outlined text-lg">skip_previous</span>
             </button>
-            <button className="text-white hover:opacity-80 transition-opacity">
+            <button aria-label="Play" className="text-white hover:opacity-80 transition-opacity">
               <span className="material-symbols-outlined text-2xl">play_arrow</span>
             </button>
-            <button className="text-[#919191] hover:text-white transition-colors">
+            <button aria-label="Next track" className="text-[#919191] hover:text-white transition-colors">
               <span className="material-symbols-outlined text-lg">skip_next</span>
             </button>
-            <button className="text-[#919191] hover:text-white transition-colors">
+            <button aria-label="Repeat" className="text-[#919191] hover:text-white transition-colors">
               <span className="material-symbols-outlined text-lg">repeat</span>
             </button>
           </div>
@@ -40,7 +40,7 @@ export default function MusicPlayer() {
 
         {/* Volume & Time */}
         <div className="w-48 flex items-center justify-end gap-3">
-          <button className="text-[#919191] hover:text-white transition-colors">
+          <button aria-label="Volume" className="text-[#919191] hover:text-white transition-colors">
             <span className="material-symbols-outlined text-lg">volume_up</span>
           </button>
           <div className="h-[2px] w-24 bg-white/10">
