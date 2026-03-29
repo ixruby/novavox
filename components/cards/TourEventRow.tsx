@@ -1,0 +1,45 @@
+import { TourEvent } from "@/lib/data";
+
+export default function TourEventRow({ event }: { event: TourEvent }) {
+  return (
+    <div className="flex items-center py-6 border-b border-white/5 hover:bg-[#1B1B1B] transition-colors group">
+      <div className="w-24">
+        <span className="font-headline text-2xl font-light tracking-wide text-[#E2E2E2]">
+          {event.date}
+        </span>
+      </div>
+      <div className="w-48">
+        <span className="font-headline text-lg font-medium text-[#E2E2E2] block">
+          {event.city}
+        </span>
+        <span className="text-[10px] text-[#919191] tracking-[0.2em] uppercase">
+          {event.country}
+        </span>
+      </div>
+      <div className="flex-1">
+        <span className="text-sm text-[#919191]">{event.venue}</span>
+      </div>
+      <div className="flex gap-2">
+        {event.features.map((feature) => (
+          <span
+            key={feature}
+            className="text-[8px] tracking-[0.15em] bg-[#1F1F1F] px-3 py-1 text-[#919191] uppercase"
+          >
+            {feature}
+          </span>
+        ))}
+      </div>
+      <div className="w-32 text-right">
+        {event.status === "RESERVE" ? (
+          <button className="border border-white/20 text-[10px] tracking-[0.2em] px-4 py-2 hover:bg-white hover:text-[#1A1C1C] transition-all text-[#E2E2E2] uppercase">
+            Reserve
+          </button>
+        ) : (
+          <span className="text-[10px] text-[#474747] tracking-[0.2em] uppercase">
+            Sold Out
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
