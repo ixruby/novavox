@@ -65,7 +65,7 @@ export default function PlayerPage() {
       <TopNav />
       <SideNav items={sideNavItems} />
 
-      <main className="relative ml-20">
+      <main className="relative ml-0 md:ml-20">
         <DotGrid />
 
         {/* ——— Hero ——— */}

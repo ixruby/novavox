@@ -32,16 +32,16 @@ export function SpatialHUD({
       <div
         className={`flex flex-col gap-0.5 leading-relaxed ${alignStyles[position]}`}
       >
-        <span className="text-[8px] tracking-[0.15em] uppercase text-[#474747] font-body">
+        <span className="text-[10px] sm:text-[8px] tracking-[0.15em] uppercase text-[#474747] font-body">
           LOC: {coordinates}
         </span>
-        <span className="text-[8px] tracking-[0.15em] uppercase text-[#474747] font-body">
+        <span className="text-[10px] sm:text-[8px] tracking-[0.15em] uppercase text-[#474747] font-body">
           SYS_STATUS: {status}
         </span>
-        <span className="text-[8px] tracking-[0.15em] uppercase text-[#474747] font-body">
+        <span className="text-[10px] sm:text-[8px] tracking-[0.15em] uppercase text-[#474747] font-body">
           TRANS_VECTOR: READY
         </span>
-        <span className="text-[8px] tracking-[0.15em] uppercase text-[#474747] font-body">
+        <span className="text-[10px] sm:text-[8px] tracking-[0.15em] uppercase text-[#474747] font-body">
           ENC_STATUS: AES-256-GCM
         </span>
       </div>

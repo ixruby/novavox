@@ -26,7 +26,7 @@ export default function EmailCapture({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your coordinates"
-          className="bg-transparent text-sm text-white placeholder-[#474747] flex-1 py-3 outline-none"
+          className="bg-transparent text-sm text-white placeholder-[#474747] flex-1 py-3 outline-none min-h-[44px]"
           required
         />
         <button type="submit" className="text-white hover:opacity-70 transition-opacity pl-4">

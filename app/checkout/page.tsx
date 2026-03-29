@@ -29,23 +29,23 @@ export default function CheckoutPage() {
       <TopNav />
 
       <main className="pt-24 min-h-screen">
-        <div className="px-6 sm:px-12 py-4">
+        <div className="px-4 sm:px-8 md:px-12 py-4">
           <Breadcrumbs items={[{ label: "Shop", href: "/shop" }, { label: "Checkout" }]} />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr_400px] min-h-[calc(100vh-96px)]">
-          {/* LEFT SIDEBAR — Checkout Stepper */}
-          <aside className="bg-[#0E0E0E] p-8">
-            <h2 className="text-[10px] tracking-[0.2em] uppercase text-[#919191] mb-8">
+          {/* LEFT SIDEBAR — Checkout Stepper (horizontal on mobile, vertical sidebar on lg) */}
+          <aside className="bg-[#0E0E0E] p-4 sm:p-6 lg:p-8">
+            <h2 className="text-[10px] tracking-[0.2em] uppercase text-[#919191] mb-4 lg:mb-8">
               PAYMENT PROTOCOL
             </h2>
 
-            <div className="flex flex-col">
+            <div className="flex flex-row lg:flex-col overflow-x-auto gap-2 lg:gap-0">
               {steps.map((step) => {
                 const isActive = step.number === activeStep;
                 return (
                   <div
                     key={step.number}
-                    className={`flex items-center gap-3 py-4 border-b border-white/5 ${
+                    className={`flex items-center gap-3 py-3 lg:py-4 px-3 lg:px-0 border-b-0 lg:border-b border-white/5 flex-shrink-0 ${
                       isActive ? "text-white" : "text-[#474747]"
                     }`}
                   >
@@ -72,7 +72,7 @@ export default function CheckoutPage() {
           </aside>
 
           {/* CENTER — Payment Form */}
-          <section className="p-12">
+          <section className="p-4 sm:p-8 md:p-12">
             <h2 className="font-headline text-2xl tracking-wide text-[#E2E2E2] mb-8">
               PAYMENT DETAILS
             </h2>
@@ -91,7 +91,7 @@ export default function CheckoutPage() {
               </div>
 
               {/* Expiry + CVV */}
-              <div className="flex gap-6">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                 <div className="flex-1">
                   <label className="block text-[10px] tracking-[0.15em] uppercase text-[#919191] mb-2">
                     Expiry Date
@@ -102,7 +102,7 @@ export default function CheckoutPage() {
                     className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors placeholder-[#474747]"
                   />
                 </div>
-                <div className="w-32">
+                <div className="w-full sm:w-32">
                   <label className="block text-[10px] tracking-[0.15em] uppercase text-[#919191] mb-2">
                     CVV
                   </label>
@@ -139,7 +139,7 @@ export default function CheckoutPage() {
               </div>
 
               {/* City + ZIP */}
-              <div className="flex gap-6">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                 <div className="flex-1">
                   <label className="block text-[10px] tracking-[0.15em] uppercase text-[#919191] mb-2">
                     City
@@ -150,7 +150,7 @@ export default function CheckoutPage() {
                     className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors placeholder-[#474747]"
                   />
                 </div>
-                <div className="w-40">
+                <div className="w-full sm:w-40">
                   <label className="block text-[10px] tracking-[0.15em] uppercase text-[#919191] mb-2">
                     ZIP
                   </label>
@@ -191,7 +191,7 @@ export default function CheckoutPage() {
           </section>
 
           {/* RIGHT SIDEBAR — Order Summary */}
-          <aside className="bg-[#1B1B1B] p-8">
+          <aside className="bg-[#1B1B1B] p-4 sm:p-6 lg:p-8">
             <h2 className="text-[10px] tracking-[0.2em] uppercase text-[#919191] mb-8">
               ORDER SUMMARY
             </h2>

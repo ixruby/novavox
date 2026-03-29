@@ -12,7 +12,7 @@ export function StatusIndicator({ label, active = false }: StatusIndicatorProps)
         }`}
         style={{ borderRadius: "9999px" }}
       />
-      <span className="text-[9px] tracking-[0.2em] uppercase text-[#919191]">
+      <span className="text-[11px] sm:text-[9px] tracking-[0.2em] uppercase text-[#919191]">
         {label}
       </span>
     </div>

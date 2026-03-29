@@ -3,7 +3,7 @@ import { navLinks } from "@/lib/data";
 
 export default function LandingPage() {
   return (
-    <div className="relative w-[300vw] h-[300vh] overflow-hidden">
+    <div className="relative w-full min-h-screen md:w-[300vw] md:h-[300vh] overflow-x-hidden">
       {/* Noise overlay */}
       <div
         className="fixed inset-0 z-[100] pointer-events-none opacity-[0.03]"
@@ -14,7 +14,7 @@ export default function LandingPage() {
       />
 
       {/* Fixed Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-16 px-12 bg-[#131313]/60 backdrop-blur-[40px] border-b border-white/5">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-16 px-4 sm:px-8 md:px-12 bg-[#131313]/60 backdrop-blur-[40px] border-b border-white/5">
         <Link href="/" className="font-headline font-bold text-sm tracking-[0.3em] text-white uppercase">
           NOVAVOX
         </Link>
@@ -41,16 +41,11 @@ export default function LandingPage() {
 
       {/* 3x3 Spatial Canvas Grid */}
       <div
-        className="grid transition-transform duration-[800ms]"
-        style={{
-          gridTemplateColumns: "repeat(3, 100vw)",
-          gridTemplateRows: "repeat(3, 100vh)",
-          transform: "translate(-33.333%, -33.333%)",
-        }}
+        className="flex flex-col md:grid md:transition-transform md:duration-[800ms] md:[grid-template-columns:repeat(3,100vw)] md:[grid-template-rows:repeat(3,100vh)] md:[transform:translate(-33.333%,-33.333%)]"
       >
         {/* Portal 1 — Top Left: Manifesto */}
-        <section className="relative flex items-center justify-center bg-[#0E0E0E] overflow-hidden">
-          <div className="text-center max-w-2xl px-12">
+        <section className="relative flex items-center justify-center bg-[#0E0E0E] overflow-hidden min-h-screen md:min-h-0">
+          <div className="text-center max-w-2xl px-4 sm:px-8 md:px-12">
             <p className="text-[10px] tracking-[0.5em] text-[#474747] uppercase mb-8">MANIFESTO / 001</p>
             <h2 className="font-headline text-5xl font-light tracking-tight leading-tight text-white/80">
               Sound is <em className="font-normal italic">architecture</em><br />in motion.
@@ -60,7 +55,7 @@ export default function LandingPage() {
         </section>
 
         {/* Portal 2 — Top Center: Featured Artist */}
-        <section className="relative flex items-end bg-[#131313] overflow-hidden">
+        <section className="relative flex items-end bg-[#131313] overflow-hidden min-h-screen md:min-h-0">
           <div
             className="absolute inset-0 grayscale brightness-[0.3]"
             style={{
@@ -70,15 +65,15 @@ export default function LandingPage() {
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-[#131313]/50 to-transparent" />
-          <div className="relative z-10 p-16 pb-24">
+          <div className="relative z-10 p-6 sm:p-10 md:p-16 pb-24">
             <p className="text-[10px] tracking-[0.3em] text-[#919191] uppercase mb-4">FEATURED ARTIST</p>
-            <h2 className="font-headline text-7xl font-bold tracking-tighter text-white">AURA VANCE</h2>
+            <h2 className="font-headline text-4xl sm:text-5xl md:text-7xl font-bold tracking-tighter text-white">AURA VANCE</h2>
             <p className="text-[10px] tracking-[0.2em] text-[#474747] uppercase mt-4">SPATIAL AMBIENT — BERLIN, DE</p>
           </div>
         </section>
 
         {/* Portal 3 — Top Right: Coordinates */}
-        <section className="relative flex items-center justify-center bg-[#0E0E0E]">
+        <section className="relative flex items-center justify-center bg-[#0E0E0E] min-h-screen md:min-h-0">
           <div className="text-right">
             <p className="text-[8px] tracking-[0.3em] text-[#474747] uppercase mb-2">LATITUDE</p>
             <p className="font-headline text-6xl font-light tracking-tight text-white/40">52.5200°N</p>
@@ -89,7 +84,7 @@ export default function LandingPage() {
         </section>
 
         {/* Portal 4 — Middle Left: Latest Release */}
-        <section className="relative flex items-center bg-[#131313] overflow-hidden">
+        <section className="relative flex items-center bg-[#131313] overflow-hidden min-h-screen md:min-h-0">
           <div
             className="absolute inset-0 grayscale brightness-[0.25]"
             style={{
@@ -99,7 +94,7 @@ export default function LandingPage() {
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#131313] to-transparent" />
-          <div className="relative z-10 p-16">
+          <div className="relative z-10 p-6 sm:p-10 md:p-16">
             <p className="text-[10px] tracking-[0.3em] text-[#919191] uppercase mb-4">LATEST RELEASE / NVX001</p>
             <h2 className="font-headline text-5xl font-bold tracking-tight text-white mb-4">CONCRETE<br />RESONANCE</h2>
             <p className="text-sm text-[#919191] max-w-sm leading-relaxed mb-8">
@@ -115,7 +110,7 @@ export default function LandingPage() {
         </section>
 
         {/* Portal 5 — Center (Main Hero) */}
-        <section className="relative flex flex-col items-center justify-center bg-[#131313] overflow-hidden">
+        <section className="relative flex flex-col items-center justify-center bg-[#131313] overflow-hidden min-h-screen md:min-h-0">
           <div
             className="absolute inset-0 pointer-events-none opacity-40"
             style={{
@@ -128,7 +123,7 @@ export default function LandingPage() {
               <span className="w-1.5 h-1.5 bg-white animate-pulse" style={{ borderRadius: "9999px" }} />
               <span className="text-[9px] tracking-[0.3em] text-[#919191] uppercase">LIVE ARCHIVE ACTIVE</span>
             </div>
-            <h1 className="font-headline text-[10rem] md:text-[12rem] font-bold tracking-tighter leading-none text-white">
+            <h1 className="font-headline text-[4rem] sm:text-[7rem] md:text-[10rem] lg:text-[12rem] font-bold tracking-tighter leading-none text-white">
               NOVA<br />VOX
             </h1>
             <p className="text-[11px] tracking-[0.5em] text-[#919191] uppercase mt-8">
@@ -160,7 +155,7 @@ export default function LandingPage() {
         </section>
 
         {/* Portal 6 — Middle Right: Tour */}
-        <section className="relative flex items-center justify-center bg-[#0E0E0E]">
+        <section className="relative flex items-center justify-center bg-[#0E0E0E] min-h-screen md:min-h-0">
           <div className="text-center max-w-lg">
             <p className="text-[10px] tracking-[0.5em] text-[#474747] uppercase mb-6">GLOBAL CIRCUIT 2024</p>
             <h2 className="font-headline text-4xl font-light tracking-tight text-white mb-8">
@@ -184,7 +179,7 @@ export default function LandingPage() {
         </section>
 
         {/* Portal 7 — Bottom Left: Journal */}
-        <section className="relative flex items-center bg-[#131313] overflow-hidden">
+        <section className="relative flex items-center bg-[#131313] overflow-hidden min-h-screen md:min-h-0">
           <div
             className="absolute inset-0 grayscale brightness-[0.2]"
             style={{
@@ -194,7 +189,7 @@ export default function LandingPage() {
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#131313] via-[#131313]/70 to-transparent" />
-          <div className="relative z-10 p-16">
+          <div className="relative z-10 p-6 sm:p-10 md:p-16">
             <p className="text-[10px] tracking-[0.3em] text-[#919191] uppercase mb-4">SONIC JOURNAL / ISSUE 042</p>
             <h2 className="font-headline text-4xl font-light tracking-tight text-white mb-4">
               The Architecture<br />of <em className="italic font-normal">Decay</em>
@@ -212,7 +207,7 @@ export default function LandingPage() {
         </section>
 
         {/* Portal 8 — Bottom Center: Shop */}
-        <section className="relative flex items-center justify-center bg-[#0E0E0E]">
+        <section className="relative flex items-center justify-center bg-[#0E0E0E] min-h-screen md:min-h-0">
           <div className="text-center">
             <p className="text-[10px] tracking-[0.5em] text-[#474747] uppercase mb-6">TECHNICAL OBJECTS</p>
             <h2 className="font-headline text-5xl font-light tracking-tight text-white mb-4">SONIC<br />OBJECTS</h2>
@@ -227,7 +222,7 @@ export default function LandingPage() {
         </section>
 
         {/* Portal 9 — Bottom Right: Distribution */}
-        <section className="relative flex items-center justify-center bg-[#131313]">
+        <section className="relative flex items-center justify-center bg-[#131313] min-h-screen md:min-h-0">
           <div className="text-center max-w-md">
             <p className="text-[10px] tracking-[0.5em] text-[#474747] uppercase mb-6">SUBMISSIONS</p>
             <h2 className="font-headline text-3xl font-light tracking-tight text-white mb-4">
@@ -247,7 +242,7 @@ export default function LandingPage() {
       </div>
 
       {/* Navigation hint */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2">
+      <div className="hidden md:flex fixed bottom-8 left-1/2 -translate-x-1/2 z-50 items-center gap-2">
         <span className="text-[9px] tracking-[0.3em] text-[#474747] uppercase animate-pulse">
           DRAG TO EXPLORE THE ARCHIVE
         </span>

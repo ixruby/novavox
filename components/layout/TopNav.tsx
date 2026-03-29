@@ -14,7 +14,7 @@ export default function TopNav() {
         <Link
           href="/"
           aria-label="Home"
-          className="font-headline font-bold tracking-[0.3em] text-sm text-white"
+          className="font-headline font-bold tracking-[0.3em] text-sm text-white whitespace-nowrap"
         >
           NOVAVOX
         </Link>

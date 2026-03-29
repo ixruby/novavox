@@ -59,11 +59,11 @@ export default async function ArtistDetailPage({
         <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-[#131313]/60 to-transparent" />
 
         {/* Content */}
-        <div className="relative z-10 p-16 w-full">
+        <div className="relative z-10 p-4 sm:p-8 md:p-16 w-full">
           <span className="inline-block text-[9px] tracking-[0.3em] uppercase border border-white/20 px-3 py-1 text-[#919191] mb-6">
             {artist.status}
           </span>
-          <h1 className="font-headline text-8xl font-bold tracking-tighter text-white">
+          <h1 className="font-headline text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-white">
             {artist.name}
           </h1>
           <p className="text-[10px] tracking-[0.3em] text-[#919191] uppercase mt-4">
@@ -72,7 +72,7 @@ export default async function ArtistDetailPage({
           <p className="text-[8px] tracking-[0.2em] text-[#474747] uppercase mt-2">
             {artist.coordinates}
           </p>
-          <div className="flex items-center gap-12 mt-8">
+          <div className="flex items-center flex-wrap gap-6 sm:gap-8 md:gap-12 mt-8">
             <div>
               <p className="font-headline text-2xl font-bold text-white">
                 {artist.releases}
@@ -101,7 +101,7 @@ export default async function ArtistDetailPage({
       </section>
 
       {/* Breadcrumbs + Info */}
-      <div className="max-w-[1920px] mx-auto px-12 pt-12">
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-8 md:px-12 pt-8 sm:pt-12">
         <Breadcrumbs
           items={[
             { label: "Artists", href: "/artists" },
@@ -112,7 +112,7 @@ export default async function ArtistDetailPage({
 
       {/* Biography */}
       <ScrollReveal>
-        <section className="max-w-3xl mx-auto px-12 py-24">
+        <section className="max-w-3xl mx-auto px-4 sm:px-8 md:px-12 py-12 sm:py-16 md:py-24">
           <div className="border-t border-white/5 pt-12">
             <p className="text-[10px] tracking-[0.5em] text-[#474747] uppercase mb-6">
               BIOGRAPHY
@@ -127,12 +127,12 @@ export default async function ArtistDetailPage({
       {/* Social Links */}
       {(artist.socialLinks?.instagram || artist.socialLinks?.soundcloud || artist.socialLinks?.bandcamp) && (
         <ScrollReveal delay={100}>
-          <section className="max-w-3xl mx-auto px-12 pb-16">
+          <section className="max-w-3xl mx-auto px-4 sm:px-8 md:px-12 pb-8 sm:pb-12 md:pb-16">
             <div className="border-t border-white/5 pt-8">
               <p className="text-[10px] tracking-[0.5em] text-[#474747] uppercase mb-6">
                 CONNECT
               </p>
-              <div className="flex items-center gap-6">
+              <div className="flex items-center flex-wrap gap-4 sm:gap-6">
                 {artist.socialLinks?.instagram && (
                   <a
                     href={artist.socialLinks.instagram}
@@ -180,13 +180,13 @@ export default async function ArtistDetailPage({
 
       {/* Discography */}
       <ScrollReveal delay={150}>
-        <section className="px-12 py-16 max-w-[1920px] mx-auto">
+        <section className="px-4 sm:px-8 md:px-12 py-8 sm:py-12 md:py-16 max-w-[1920px] mx-auto">
           <div className="border-t border-white/5 pt-12">
             <p className="text-[10px] tracking-[0.5em] text-[#474747] uppercase mb-8">
               DISCOGRAPHY
             </p>
             {artistReleases.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
                 {artistReleases.map((release) => (
                   <div key={release.catalogNumber} className="hover-lift">
                     <ReleaseCard release={release} />

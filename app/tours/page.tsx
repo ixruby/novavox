@@ -35,11 +35,11 @@ export default function ToursPage() {
       <TopNav />
       <SideNav items={sideNavItems} />
 
-      <main className="ml-20">
+      <main className="ml-0 md:ml-20">
         {/* Hero Map Section */}
         <section
           id="map"
-          className="relative aspect-[21/9] min-h-[500px] bg-[#0E0E0E] overflow-hidden"
+          className="relative aspect-[21/9] min-h-[300px] sm:min-h-[400px] lg:min-h-[500px] bg-[#0E0E0E] overflow-hidden"
         >
           <DotGrid />
 

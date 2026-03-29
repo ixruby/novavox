@@ -18,7 +18,7 @@ export default function SideNav({ items }: SideNavProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="group/nav fixed left-0 top-16 bottom-0 z-40 w-20 hover:w-64 transition-all duration-500 bg-[#0E0E0E] border-r border-white/5 overflow-hidden">
+    <aside className="hidden md:block group/nav fixed left-0 top-16 bottom-0 z-40 w-20 hover:w-64 transition-all duration-500 bg-[#0E0E0E] border-r border-white/5 overflow-hidden">
       <nav className="flex flex-col pt-4">
         {items.map((item) => {
           const isActive =

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer role="contentinfo" className="w-full bg-[#0E0E0E] border-t border-white/5 px-12 py-16">
+    <footer role="contentinfo" className="w-full bg-[#0E0E0E] border-t border-white/5 px-4 sm:px-8 md:px-12 py-8 md:py-16">
       {/* Top Section */}
       <div className="flex flex-col md:flex-row justify-between items-start gap-12">
         {/* Left - Brand */}
@@ -16,7 +16,7 @@ export default function Footer() {
         </div>
 
         {/* Right - Link Columns */}
-        <div className="flex gap-16">
+        <div className="flex gap-8 md:gap-16">
           <div className="flex flex-col gap-3">
             <Link
               href="/privacy"
@@ -59,7 +59,7 @@ export default function Footer() {
 
       {/* Bottom Section */}
       <div className="border-t border-white/5 mt-12 pt-8">
-        <p className="text-[9px] text-[#474747] tracking-[0.2em]">
+        <p className="text-[11px] sm:text-[9px] text-[#474747] tracking-[0.2em]">
           &copy; 2024 NOVAVOX. ALL RIGHTS RESERVED.
         </p>
       </div>

@@ -25,7 +25,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`text-[10px] tracking-[0.2em] uppercase font-body px-8 py-3 font-medium ${variantStyles[variant]} ${className}`}
+      className={`text-[11px] sm:text-[10px] tracking-[0.2em] uppercase font-body px-8 py-3 font-medium min-h-[44px] ${variantStyles[variant]} ${className}`}
       {...props}
     >
       {children}

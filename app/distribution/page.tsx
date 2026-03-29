@@ -34,7 +34,7 @@ export default function DistributionPage() {
       <TopNav />
       <SideNav items={sideNavItems} />
 
-      <main className="ml-20">
+      <main className="ml-0 md:ml-20">
         {/* Hero */}
         <section className="pt-32 pb-16 px-6 sm:px-12">
           <Breadcrumbs items={[{ label: "Distribution" }]} />
@@ -89,7 +89,7 @@ export default function DistributionPage() {
           <ScrollReveal>
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Large Card — Network Map */}
-            <div className="lg:col-span-3 relative bg-[#1F1F1F] h-[500px] overflow-hidden">
+            <div className="lg:col-span-3 relative bg-[#1F1F1F] h-[300px] sm:h-[400px] lg:h-[500px] overflow-hidden">
               <DotGrid />
 
               {/* Radial depth gradient */}
@@ -250,7 +250,7 @@ export default function DistributionPage() {
             ].map((guide) => (
               <div
                 key={guide.chapter}
-                className="w-[400px] flex-shrink-0 relative aspect-[3/4] bg-[#1F1F1F] overflow-hidden group"
+                className="w-[85vw] sm:w-[400px] flex-shrink-0 relative aspect-[3/4] bg-[#1F1F1F] overflow-hidden group"
               >
                 <img
                   src={guide.image}

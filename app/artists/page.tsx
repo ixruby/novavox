@@ -52,7 +52,7 @@ export default function ArtistsPage() {
         {/* Artist Grid */}
         <section className="max-w-[1920px] mx-auto px-6 sm:px-12 pb-24">
           <ScrollReveal>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
               {artists.map((artist) => (
                 <ArtistCard key={artist.slug} artist={artist} />
               ))}

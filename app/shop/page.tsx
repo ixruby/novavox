@@ -63,7 +63,7 @@ export default function ShopPage() {
       <section className="relative px-6 sm:px-12 pb-24 max-w-[1920px] mx-auto">
         <DotGrid />
         <ScrollReveal>
-          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
+          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-12">
             {filteredProducts.map((product) => (
               <ProductCard key={product.sku} product={product} />
             ))}
@@ -72,9 +72,9 @@ export default function ShopPage() {
       </section>
 
       {/* Technical Spec Section */}
-      <section className="bg-[#0E0E0E] px-6 sm:px-12 py-24">
+      <section className="bg-[#0E0E0E] px-4 sm:px-8 md:px-12 py-12 sm:py-16 md:py-24">
         <ScrollReveal>
-        <div className="max-w-[1920px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+        <div className="max-w-[1920px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 md:gap-16 items-center">
           <div>
             <p className="text-[10px] tracking-[0.5em] text-[#474747] uppercase mb-6">
               ENGINEERING

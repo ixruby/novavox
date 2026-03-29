@@ -38,18 +38,18 @@ export default function JournalPage() {
 
       <main>
         {/* Breadcrumbs */}
-        <div className="max-w-[1920px] mx-auto px-12 pt-32 pb-4">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-8 md:px-12 pt-32 pb-4">
           <Breadcrumbs items={[{ label: "Journal" }]} />
         </div>
 
         {/* Featured Article */}
         <ScrollReveal>
-          <section className="pb-16 px-12 max-w-[1920px] mx-auto">
+          <section className="pb-16 px-4 sm:px-8 md:px-12 max-w-[1920px] mx-auto">
             <JournalCard entry={featuredEntry} featured />
 
             {/* Author bio + read time + sharing under featured */}
-            <div className="mt-8 grid grid-cols-12 gap-8">
-              <div className="col-span-7">
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 md:gap-8">
+              <div className="col-span-full md:col-span-7">
                 <div className="border-t border-white/5 pt-6">
                   <div className="flex items-center gap-6">
                     <span className="text-[9px] tracking-[0.2em] text-[#474747] uppercase">
@@ -80,12 +80,12 @@ export default function JournalPage() {
 
         {/* Archival Notes Bento */}
         <ScrollReveal delay={100}>
-          <section className="px-12 py-16 max-w-[1920px] mx-auto">
+          <section className="px-4 sm:px-8 md:px-12 py-16 max-w-[1920px] mx-auto">
             <span className="text-[10px] tracking-[0.3em] text-[#919191] uppercase block mb-8">
               ARCHIVAL NOTES
             </span>
 
-            <div className="grid grid-cols-4 gap-6 auto-rows-[200px]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 auto-rows-[160px] sm:auto-rows-[200px]">
               {noteEntries.map((entry, index) => {
                 const isFirst = index === 0;
                 const isSecond = index === 1;
@@ -95,9 +95,9 @@ export default function JournalPage() {
                     key={entry.slug}
                     className={`bg-[#1F1F1F] p-6 relative overflow-hidden hover:bg-[#2A2A2A] transition-colors group cursor-pointer ${
                       isFirst
-                        ? "col-span-2 row-span-2"
+                        ? "col-span-1 sm:col-span-2 row-span-1 sm:row-span-2"
                         : isSecond
-                          ? "col-span-2 row-span-1"
+                          ? "col-span-1 sm:col-span-2 row-span-1"
                           : "col-span-1"
                     }`}
                   >
@@ -159,10 +159,10 @@ export default function JournalPage() {
 
         {/* Technical Studies / Interviews */}
         <ScrollReveal delay={150}>
-          <section className="px-12 py-24 max-w-[1920px] mx-auto">
-            <div className="grid grid-cols-12 gap-12">
+          <section className="px-4 sm:px-8 md:px-12 py-24 max-w-[1920px] mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 md:gap-8">
               {/* Left — Label & Decorative */}
-              <div className="col-span-4">
+              <div className="col-span-full md:col-span-4">
                 <span className="text-[10px] tracking-[0.3em] text-[#919191] uppercase block mb-8">
                   TECHNICAL STUDIES
                 </span>
@@ -189,7 +189,7 @@ export default function JournalPage() {
               </div>
 
               {/* Right — Interviews */}
-              <div className="col-span-8">
+              <div className="col-span-full md:col-span-8">
                 {interviewEntries.map((entry) => {
                   const portraitMap: Record<string, string> = {
                     "Sarah Kovac": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
@@ -260,12 +260,12 @@ export default function JournalPage() {
 
         {/* Related Articles */}
         <ScrollReveal delay={200}>
-          <section className="px-12 py-16 max-w-[1920px] mx-auto">
+          <section className="px-4 sm:px-8 md:px-12 py-16 max-w-[1920px] mx-auto">
             <div className="border-t border-white/5 pt-12">
               <p className="text-[10px] tracking-[0.5em] text-[#474747] uppercase mb-8">
                 RELATED READING
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
                 {relatedEntries.map((entry) => (
                   <div key={entry.slug} className="group cursor-pointer hover-lift">
                     <div className="relative overflow-hidden aspect-[16/9] bg-[#1F1F1F]">
