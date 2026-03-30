@@ -24,17 +24,17 @@ export function MobileMenu() {
     <>
       <button
         onClick={() => setOpen(!open)}
-        className="text-[#919191] hover:text-white transition-colors z-[60] relative"
+        className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-full border border-white/20 flex items-center justify-center text-white shadow-2xl hover:bg-white/20 transition-all z-[60] relative cursor-pointer"
         aria-label={open ? "Close menu" : "Open menu"}
       >
-        <span className="material-symbols-outlined text-[20px]">
+        <span className="material-symbols-outlined text-[24px]">
           {open ? "close" : "menu"}
         </span>
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[55] bg-[#0e0e0e]/95 backdrop-blur-xl flex flex-col items-center justify-center">
-          <nav className="flex flex-col items-center gap-8">
+        <div className="fixed inset-0 z-[55] bg-[#0e0e0e]/95 backdrop-blur-xl flex flex-col items-center justify-center h-[100dvh]">
+          <nav className="flex flex-col items-center justify-center gap-10 w-full h-full pb-20">
             {menuLinks.map((link) => (
               <a
                 key={link.href}

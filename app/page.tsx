@@ -1,14 +1,48 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState, useMemo, useEffect } from "react";
 import { DeepStringsBackground } from "@/components/ui/deep-strings";
 import { WavyBackground } from "@/components/ui/wavy-background";
 import { SparklesCore } from "@/components/ui/sparkles";
 import { LampContainer } from "@/components/ui/lamp";
 import { MobileMenu } from "@/components/MobileMenu";
-import { motion } from "motion/react";
+import { motion, useMotionValue, useMotionTemplate } from "motion/react";
 import { artists, portfolioWorks, type PortfolioWork } from "@/lib/data";
+
+/* ─── Global Cursor Glow ─── */
+function GlobalCursorGlow() {
+  const mouseX = useMotionValue(-1000);
+  const mouseY = useMotionValue(-1000);
+
+  useEffect(() => {
+    const handleMove = (e: MouseEvent | TouchEvent) => {
+      if ('touches' in e && e.touches.length > 0) {
+        mouseX.set(e.touches[0].clientX);
+        mouseY.set(e.touches[0].clientY);
+      } else if ('clientX' in e) {
+        mouseX.set(e.clientX);
+        mouseY.set(e.clientY);
+      }
+    };
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('touchmove', handleMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('touchmove', handleMove);
+    };
+  }, [mouseX, mouseY]);
+
+  return (
+    <motion.div 
+      className="fixed inset-0 pointer-events-none z-[9999]"
+      style={{
+        background: useMotionTemplate`radial-gradient(600px circle at ${mouseX}px ${mouseY}px, rgba(56, 189, 248, 0.07), transparent 40%)`
+      }}
+    />
+  );
+}
 
 /* ─── Animation helper ─── */
 const fadeUp = {
@@ -144,18 +178,20 @@ export default function LandingPage() {
         }}
       />
 
+      <GlobalCursorGlow />
+
       {/* ═══ FIXED NAV ═══ */}
-      <nav className="fixed top-0 w-full z-50 bg-[#0e0e0e]/60 backdrop-blur-xl border-b border-white/5">
-        <div className="flex justify-between items-center px-6 md:px-12 lg:px-24 py-4 md:py-5">
+      <nav className="fixed top-0 w-full z-50 bg-transparent md:bg-[#0e0e0e]/60 md:backdrop-blur-xl md:border-b md:border-white/5 pointer-events-none">
+        <div className="flex justify-between items-center px-6 md:px-12 lg:px-24 py-4 md:py-5 pointer-events-auto">
           {/* Logo icon + NOVAVOX wordmark */}
-          <a href="#home" className="flex items-center">
+          <a href="#home" className="flex items-center" onClick={(e) => handleDesktopNav(e, "home")}>
             <span className="text-lg md:text-xl font-black tracking-[0.3em] text-white font-headline uppercase drop-shadow-md">
               NOVAVOX
             </span>
           </a>
 
           {/* Desktop links */}
-          <div className="hidden md:flex gap-8 items-center">
+          <div className="hidden md:flex gap-10 items-center">
             {[
               { label: "HOME", target: "home" },
               { label: "SERVICES", target: "services" },
@@ -166,17 +202,19 @@ export default function LandingPage() {
                 key={link.label}
                 href={`#${link.target}`}
                 onClick={(e) => handleDesktopNav(e, link.target)}
-                className="nav-link text-[#919191] text-[10px] tracking-[0.2em] font-headline uppercase hover:text-white transition-colors"
+                className="nav-link text-[#919191] text-[10px] tracking-[0.25em] font-headline uppercase hover:text-white transition-colors"
               >
                 {link.label}
               </a>
             ))}
           </div>
-
-          {/* Hamburger */}
-          <MobileMenu />
         </div>
       </nav>
+
+      {/* ═══ MOBILE FLOATING HAMBURGER ═══ */}
+      <div className="md:hidden fixed bottom-6 right-6 z-[100] pointer-events-auto">
+        <MobileMenu />
+      </div>
 
       {/* ═══ SPATIAL NAVIGATION WRAPPER ═══ */}
       <motion.div
@@ -466,8 +504,9 @@ export default function LandingPage() {
                     </span>
                     <div className="space-y-0">
                       {featuredArtists.map((a) => (
-                        <div
+                        <Link
                           key={a.slug}
+                          href={`/artist/${a.slug}`}
                           className="group relative flex justify-between items-center py-[18px] border-b border-white/5 hover:pl-4 hover:pr-4 hover:bg-white/[0.03] transition-all duration-500 cursor-crosshair overflow-hidden"
                         >
                           {/* Deep Hover Image Reveal */}
@@ -493,7 +532,7 @@ export default function LandingPage() {
                           >
                             {a.status}
                           </span>
-                        </div>
+                        </Link>
                       ))}
                     </div>
                   </Reveal>
@@ -704,7 +743,7 @@ function SpotlightCard({ children, delay = 0, className = "" }: { children: Reac
 /* ─── Portfolio work card ─── */
 function WorkCard({ work }: { work: PortfolioWork }) {
   return (
-    <div className="bg-black/50 group hover:bg-white/5 transition-colors duration-500 overflow-hidden">
+    <Link href={`/work/${work.id}`} className="block bg-black/50 group hover:bg-white/5 transition-colors duration-500 overflow-hidden cursor-pointer relative h-full">
       <div className="relative aspect-[4/3] overflow-hidden">
         <Image
           src={work.image}
@@ -723,13 +762,13 @@ function WorkCard({ work }: { work: PortfolioWork }) {
         <h3 className="font-headline text-sm font-bold uppercase tracking-tight text-white mb-1">
           {work.title}
         </h3>
-        <p className="text-[10px] text-white/30 leading-relaxed line-clamp-2">
+        <p className="text-[10px] text-white/30 leading-relaxed line-clamp-2 group-hover:text-white/50 transition-colors">
           {work.description}
         </p>
         <span className="font-mono text-[8px] text-white/15 mt-3 block">
           {work.year}
         </span>
       </div>
-    </div>
+    </Link>
   );
 }
