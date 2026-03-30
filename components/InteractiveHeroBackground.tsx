@@ -8,16 +8,16 @@ import { Volume2, VolumeX } from "lucide-react";
 
 // Parametric mode creates flowing wave-like curves instead of rigid grid lines
 const HERO_PARAMS: ControlParameters = {
-  lineSpacing: 50,
-  repelDistance: 200,
-  repelStrength: 0.7,
-  springStrength: 0.03,
-  damping: 0.92,
-  lineOpacity: 0.1,
-  lineThickness: 0.5,
-  orientation: "parametric",
+  lineSpacing: 22,
+  repelDistance: 180,
+  repelStrength: 0.8,
+  springStrength: 0.04,
+  damping: 0.88,
+  lineOpacity: 0.14,
+  lineThickness: 0.6,
+  orientation: "grid",
   volume: 0.08,
-  noteDecay: 2.2,
+  noteDecay: 2.0,
   scaleType: "pentatonic",
 };
 
