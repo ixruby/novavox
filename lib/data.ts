@@ -262,3 +262,33 @@ export const navLinks = [
   { href: "#about", label: "ABOUT" },
   { href: "#contact", label: "CONTACT" },
 ];
+
+// Portfolio works — consolidated across all mediums
+export type PortfolioWork = {
+  id: string;
+  title: string;
+  category: "MUSIC" | "ADS" | "FILMS";
+  image: string;
+  description: string;
+  year: number;
+};
+
+export const portfolioWorks: PortfolioWork[] = [
+  // Music — derived from releases
+  { id: "m-001", title: "CONCRETE RESONANCE", category: "MUSIC", image: "https://images.unsplash.com/photo-1470790376778-a9fbc86d70e2?w=800&q=80", description: "Spatial ambient album — immersive soundscapes by Aura Vance. Mastered at NOVAVOX.", year: 2024 },
+  { id: "m-002", title: "INDUSTRIAL CATHEDRAL", category: "MUSIC", image: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=800&q=80", description: "Industrial techno LP by Kael Drift. Raw frequencies shaped through architectural acoustics.", year: 2024 },
+  { id: "m-003", title: "ABANDON PROTOCOL", category: "MUSIC", image: "https://images.unsplash.com/photo-1509114397022-ed747cca3f92?w=800&q=80", description: "Digital minimalism album by Nova Echo. London collective exploring abandoned industrial spaces.", year: 2024 },
+  { id: "m-004", title: "GENERATIVE BASS", category: "MUSIC", image: "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=800&q=80", description: "Algorithmic bass EP by Cipher Wave. Generative systems creating unpredictable low-frequency architectures.", year: 2024 },
+  { id: "m-005", title: "SATELLITE HYMNS", category: "MUSIC", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80", description: "Orbital ambient album by Orbital Silence. Satellite telemetry data translated into contemplative soundscapes.", year: 2023 },
+  { id: "m-006", title: "ELECTROMAGNETIC RUINS", category: "MUSIC", image: "https://images.unsplash.com/photo-1531971589569-0d9370cbe1e5?w=800&q=80", description: "Ferro noise spatial release by Ferro Static. EM field recordings at Roman Forum.", year: 2024 },
+  // Ads
+  { id: "a-001", title: "ZENITH LUXURY CAMPAIGN", category: "ADS", image: "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=800&q=80", description: "High-fashion brand campaign — cinematic visuals for digital and television placement.", year: 2024 },
+  { id: "a-002", title: "KINETIC SPORTSWEAR LAUNCH", category: "ADS", image: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80", description: "Dynamic sportswear commercial — from storyboard to final DI for multi-platform rollout.", year: 2024 },
+  { id: "a-003", title: "SOLARIS TECH REVEAL", category: "ADS", image: "https://images.unsplash.com/photo-1504270997636-07ddfbd48945?w=800&q=80", description: "Product launch film for a technology brand — spatial audio design and motion graphics.", year: 2023 },
+  { id: "a-004", title: "IVORY FRAGRANCE FILM", category: "ADS", image: "https://images.unsplash.com/photo-1533928298208-27ff66555d8d?w=800&q=80", description: "Luxury fragrance campaign — cinematic storytelling with evocative visuals and sound design.", year: 2024 },
+  // Films
+  { id: "f-001", title: "THE SILENT FREQUENCY", category: "FILMS", image: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=800&q=80", description: "Short film — an audio engineer discovers frequencies that alter human perception. Official selection.", year: 2024 },
+  { id: "f-002", title: "CARBON TRACE", category: "FILMS", image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&q=80", description: "Documentary — following the environmental sound signatures of industrial cities across India.", year: 2023 },
+  { id: "f-003", title: "MERIDIAN LINE", category: "FILMS", image: "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=800&q=80", description: "Feature film — a musician's journey through loss and rediscovery. Full production and post.", year: 2024 },
+  { id: "f-004", title: "VOID CHAMBER", category: "FILMS", image: "https://images.unsplash.com/photo-1524712245354-2c4e5e7121c0?w=800&q=80", description: "Branded content series — exploring brutalist architecture through sound and cinema.", year: 2023 },
+];

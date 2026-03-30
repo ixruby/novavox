@@ -8,10 +8,17 @@ const menuLinks = [
   { href: "#portfolio", label: "PORTFOLIO" },
   { href: "#about", label: "ABOUT" },
   { href: "#contact", label: "CONTACT" },
-];
+] as const;
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
+
+  const handleNav = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    const target = href.replace("#", "");
+    window.dispatchEvent(new CustomEvent("nav-spatial", { detail: target }));
+    setOpen(false);
+  };
 
   return (
     <>
@@ -32,7 +39,7 @@ export function MobileMenu() {
               <a
                 key={link.href}
                 href={link.href}
-                onClick={() => setOpen(false)}
+                onClick={(e) => handleNav(e, link.href)}
                 className="text-2xl sm:text-3xl font-headline font-bold tracking-[0.15em] text-white/70 hover:text-white transition-colors uppercase"
               >
                 {link.label}
