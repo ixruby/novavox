@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, DM_Mono } from "next/font/google";
+import { Space_Grotesk, DM_Mono, Geist } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-headline",
@@ -38,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${dmMono.variable} dark`}>
+    <html lang="en" className={cn("dark", spaceGrotesk.variable, dmMono.variable, "font-sans", geist.variable)}>
       <head>
         <link
           rel="stylesheet"
