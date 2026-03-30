@@ -26,7 +26,7 @@ export function MobileMenu() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[55] bg-[#0a0a0a]/95 backdrop-blur-xl flex items-center justify-center">
+        <div className="fixed inset-0 z-[55] bg-[#0e0e0e]/95 backdrop-blur-xl flex flex-col items-center justify-center">
           <nav className="flex flex-col items-center gap-8">
             {menuLinks.map((link) => (
               <a
@@ -39,6 +39,14 @@ export function MobileMenu() {
               </a>
             ))}
           </nav>
+          <div className="absolute bottom-10 flex flex-col items-center gap-2">
+            <a href="tel:+916282725324" className="text-[10px] tracking-[0.15em] text-[#474747] hover:text-white transition-colors">
+              +91 62827 25324
+            </a>
+            <a href="mailto:kaushik2002.22@gmail.com" className="text-[10px] tracking-[0.15em] text-[#474747] hover:text-white transition-colors">
+              kaushik2002.22@gmail.com
+            </a>
+          </div>
         </div>
       )}
     </>
