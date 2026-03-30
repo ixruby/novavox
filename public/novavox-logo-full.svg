@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 700" fill="white">
+  <!-- Full Novavox Logo: NV Mark + Tagline + Wordmark -->
+
+  <!-- Tagline (left of NV mark) -->
+  <g transform="translate(155, 195)">
+    <text text-anchor="end" font-family="'Inter', 'Helvetica Neue', sans-serif" font-size="15" font-weight="500" letter-spacing="3" fill="white">
+      <tspan x="0" dy="0">WHERE IDEAS</tspan>
+      <tspan x="0" dy="26">BECOME</tspan>
+      <tspan x="0" dy="26">CINEMATIC</tspan>
+      <tspan x="0" dy="26">REALITIES</tspan>
+    </text>
+  </g>
+
+  <!-- NV Monogram -->
+  <g transform="translate(340, 60)">
+    <!-- N: Left vertical -->
+    <rect x="-65" y="20" width="32" height="180"/>
+    <!-- N: Right vertical -->
+    <rect x="33" y="20" width="32" height="180"/>
+    <!-- N: Top curve -->
+    <path d="M-65,20 Q-65,0 -40,0 L40,0 Q65,0 65,20 L65,45 L33,45 L33,28 Q33,18 23,18 L-23,18 Q-33,18 -33,28 L-33,45 L-65,45 Z"/>
+
+    <!-- V -->
+    <path d="
+      M-65,210
+      L-65,235
+      L-14,400
+      Q0,440 0,440
+      Q0,440 14,400
+      L65,235
+      L65,210
+      L33,210
+      L33,225
+      L5,370
+      Q0,388 0,388
+      Q0,388 -5,370
+      L-33,225
+      L-33,210
+      Z
+    "/>
+  </g>
+
+  <!-- NOVAVOX wordmark -->
+  <text x="300" y="580" text-anchor="middle" font-family="'Inter', 'Helvetica Neue', sans-serif" font-size="32" font-weight="300" letter-spacing="20" fill="white">NOVAVOX</text>
+</svg>
