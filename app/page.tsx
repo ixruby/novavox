@@ -47,11 +47,11 @@ export default function LandingPage() {
               {/* NV Logo */}
               <div className="mb-6 md:mb-8">
                 <Image
-                  src="/novavox-logo-cropped.png"
+                  src="/novavox-logo.jpg"
                   alt="Novavox — Where Ideas Become Cinematic Realities"
-                  width={628}
-                  height={579}
-                  className="mx-auto w-[240px] sm:w-[320px] md:w-[400px] lg:w-[460px] object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.15)]"
+                  width={500}
+                  height={281}
+                  className="mx-auto w-[280px] sm:w-[380px] md:w-[460px] lg:w-[500px] object-contain"
                   priority
                 />
               </div>
