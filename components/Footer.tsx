@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Github, Twitter, Instagram, Mail, Check } from 'lucide-react';
+import { Globe, MessageCircle, Camera, Mail, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export function Footer() {
@@ -31,13 +31,13 @@ export function Footer() {
           </p>
           <div className="flex gap-4">
             <button className="text-white/30 hover:text-white transition-colors">
-              <Twitter size={18} />
+              <MessageCircle size={18} />
             </button>
             <button className="text-white/30 hover:text-white transition-colors">
-              <Instagram size={18} />
+              <Camera size={18} />
             </button>
             <button className="text-white/30 hover:text-white transition-colors">
-              <Github size={18} />
+              <Globe size={18} />
             </button>
           </div>
         </div>

@@ -256,8 +256,9 @@ export const journalEntries: JournalEntry[] = [
 ];
 
 export const navLinks = [
-  { href: "/artists", label: "ARTISTS" },
-  { href: "/releases", label: "RELEASES" },
-  { href: "/journal", label: "JOURNAL" },
-  { href: "/tours", label: "TOURS" },
+  { href: "#home", label: "HOME" },
+  { href: "#services", label: "SERVICES" },
+  { href: "#portfolio", label: "PORTFOLIO" },
+  { href: "#about", label: "ABOUT" },
+  { href: "#contact", label: "CONTACT" },
 ];

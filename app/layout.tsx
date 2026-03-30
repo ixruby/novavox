@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, DM_Mono } from "next/font/google";
 import NoiseOverlay from "@/components/layout/NoiseOverlay";
+import { CartProvider } from "@/context/CartContext";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -16,19 +17,19 @@ const dmMono = DM_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NOVAVOX — Sonic Gallery",
-  description: "Architectural Rigor. Built in Berlin. A record label redefining the spatial audio experience.",
+  title: "NOVAVOX — Where Ideas Become Cinematic Realities",
+  description: "Film & video production, advertising, post production, and music — cinematic excellence by Kaushik Jayakumar and team.",
   metadataBase: new URL("https://novavox.vercel.app"),
   openGraph: {
-    title: "NOVAVOX — Sonic Gallery",
-    description: "Architectural Rigor. Built in Berlin. A record label redefining the spatial audio experience.",
+    title: "NOVAVOX — Where Ideas Become Cinematic Realities",
+    description: "Film & video production, advertising, post production, and music — cinematic excellence by Kaushik Jayakumar and team.",
     siteName: "NOVAVOX",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "NOVAVOX — Sonic Gallery",
-    description: "Architectural Rigor. Built in Berlin.",
+    title: "NOVAVOX — Where Ideas Become Cinematic Realities",
+    description: "Film & video production, advertising, post production, and music.",
   },
 };
 
@@ -50,7 +51,9 @@ export default function RootLayout({
           Skip to content
         </a>
         <NoiseOverlay />
-        <main id="main-content">{children}</main>
+        <CartProvider>
+          <main id="main-content">{children}</main>
+        </CartProvider>
       </body>
     </html>
   );
