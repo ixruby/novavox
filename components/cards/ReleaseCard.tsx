@@ -3,7 +3,7 @@ import { Release } from "@/lib/data";
 
 export default function ReleaseCard({ release }: { release: Release }) {
   return (
-    <Link href="/releases" className="group block hover-lift">
+    <Link href={`/releases/${release.catalogNumber}`} className="group block hover-lift">
       <div className="relative overflow-hidden aspect-square bg-[#1F1F1F]">
         <img
           src={release.image}

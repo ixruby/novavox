@@ -2,70 +2,35 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useMemo, useEffect } from "react";
-import { DeepStringsBackground } from "@/components/ui/deep-strings";
-import { WavyBackground } from "@/components/ui/wavy-background";
-import { SparklesCore } from "@/components/ui/sparkles";
-import { LampContainer } from "@/components/ui/lamp";
-import { MobileMenu } from "@/components/MobileMenu";
-import { motion, useMotionValue, useMotionTemplate } from "motion/react";
-import { artists, portfolioWorks, type PortfolioWork } from "@/lib/data";
+import { useState, useEffect, useRef } from "react";
+import { motion, useMotionValue, useMotionTemplate, useScroll, useTransform } from "motion/react";
+import { artists, releases, portfolioWorks, tourEvents, journalEntries, products } from "@/lib/data";
 
-/* ─── Global Cursor Glow ─── */
-function GlobalCursorGlow() {
+/* ─── Cursor Glow ─── */
+function CursorGlow() {
   const mouseX = useMotionValue(-1000);
   const mouseY = useMotionValue(-1000);
-
   useEffect(() => {
-    const handleMove = (e: MouseEvent | TouchEvent) => {
-      if ('touches' in e && e.touches.length > 0) {
-        mouseX.set(e.touches[0].clientX);
-        mouseY.set(e.touches[0].clientY);
-      } else if ('clientX' in e) {
-        mouseX.set(e.clientX);
-        mouseY.set(e.clientY);
-      }
-    };
-    window.addEventListener('mousemove', handleMove);
-    window.addEventListener('touchmove', handleMove);
-    return () => {
-      window.removeEventListener('mousemove', handleMove);
-      window.removeEventListener('touchmove', handleMove);
-    };
+    const move = (e: MouseEvent) => { mouseX.set(e.clientX); mouseY.set(e.clientY); };
+    window.addEventListener("mousemove", move);
+    return () => window.removeEventListener("mousemove", move);
   }, [mouseX, mouseY]);
-
   return (
-    <motion.div 
-      className="fixed inset-0 pointer-events-none z-[9999]"
-      style={{
-        background: useMotionTemplate`radial-gradient(600px circle at ${mouseX}px ${mouseY}px, rgba(56, 189, 248, 0.07), transparent 40%)`
-      }}
+    <motion.div
+      className="fixed inset-0 pointer-events-none z-[9998]"
+      style={{ background: useMotionTemplate`radial-gradient(600px circle at ${mouseX}px ${mouseY}px, rgba(255,255,255,0.04), transparent 40%)` }}
     />
   );
 }
 
-/* ─── Animation helper ─── */
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0 },
-};
-
-function Reveal({
-  children,
-  className = "",
-  delay = 0,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-}) {
+/* ─── Reveal on scroll ─── */
+function Reveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   return (
     <motion.div
-      variants={fadeUp}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.12 }}
+      transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
       className={className}
     >
       {children}
@@ -73,702 +38,662 @@ function Reveal({
   );
 }
 
-const categories = ["ALL", "MUSIC", "ADS", "FILMS"] as const;
+/* ─── Section label ─── */
+function SectionLabel({ number, label }: { number: string; label: string }) {
+  return (
+    <div className="flex items-center gap-4 mb-6">
+      <span className="font-mono text-[10px] text-white/20 tracking-[0.3em]">{number}</span>
+      <div className="w-12 h-[1px] bg-white/10" />
+      <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-white/30">{label}</span>
+    </div>
+  );
+}
 
-const sectionCoords: Record<string, { x: number; y: number }> = {
-  home: { x: 0, y: 0 },
-  services: { x: -100, y: 0 },
-  about: { x: 0, y: -100 },
-  portfolio: { x: -100, y: -100 },
-  contact: { x: -100, y: -100 }, // contact is grouped with portfolio
-};
+/* ─── Stats counter ─── */
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div>
+      <span className="font-headline text-3xl md:text-5xl font-bold text-white tracking-tight">{value}</span>
+      <span className="block font-mono text-[9px] uppercase tracking-[0.3em] text-white/25 mt-2">{label}</span>
+    </div>
+  );
+}
 
+/* ═══════════════════════════════════════════════ */
 export default function LandingPage() {
-  const [activeCategory, setActiveCategory] = useState<string>("ALL");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentCoords, setCurrentCoords] = useState(sectionCoords.home);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 0.8], [1, 0.92]);
 
-  useEffect(() => {
-    const handleNav = (e: Event) => {
-      const target = (e as CustomEvent).detail;
-      if (sectionCoords[target]) {
-        setCurrentCoords(sectionCoords[target]);
-      }
-    };
-    window.addEventListener("nav-spatial", handleNav);
-
-    // Edge Gliding Logic
-    let timeoutId: NodeJS.Timeout;
-    const handleMouseMove = (e: MouseEvent) => {
-      const { clientX, clientY } = e;
-      const { innerWidth, innerHeight } = window;
-      const EDGE_THRESHOLD = 20;
-
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        setCurrentCoords((prev) => {
-          let target = prev;
-          if (prev.x === 0 && prev.y === 0) {
-            // Home
-            if (clientX >= innerWidth - EDGE_THRESHOLD) target = sectionCoords.services;
-            else if (clientY >= innerHeight - EDGE_THRESHOLD) target = sectionCoords.about;
-          } else if (prev.x === -100 && prev.y === 0) {
-            // Services
-            if (clientX <= EDGE_THRESHOLD) target = sectionCoords.home;
-            else if (clientY >= innerHeight - EDGE_THRESHOLD) target = sectionCoords.portfolio;
-          } else if (prev.x === 0 && prev.y === -100) {
-            // About
-            if (clientX >= innerWidth - EDGE_THRESHOLD) target = sectionCoords.portfolio;
-            else if (clientY <= EDGE_THRESHOLD) target = sectionCoords.home;
-          } else if (prev.x === -100 && prev.y === -100) {
-            // Portfolio
-            if (clientX <= EDGE_THRESHOLD) target = sectionCoords.about;
-            else if (clientY <= EDGE_THRESHOLD) target = sectionCoords.services;
-          }
-          return target;
-        });
-      }, 50);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-
-    return () => {
-      window.removeEventListener("nav-spatial", handleNav);
-      window.removeEventListener("mousemove", handleMouseMove);
-      clearTimeout(timeoutId);
-    };
-  }, []);
-
-  const handleDesktopNav = (e: React.MouseEvent<HTMLAnchorElement>, target: string) => {
-    e.preventDefault();
-    if (sectionCoords[target]) {
-      setCurrentCoords(sectionCoords[target]);
-    }
-  };
-
-  const filteredWorks = useMemo(() => {
-    let works = portfolioWorks;
-    if (activeCategory !== "ALL") {
-      works = works.filter((w) => w.category === activeCategory);
-    }
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      works = works.filter(
-        (w) =>
-          w.title.toLowerCase().includes(q) ||
-          w.description.toLowerCase().includes(q)
-      );
-    }
-    return works;
-  }, [activeCategory, searchQuery]);
-
-  const emergingArtists = artists.filter((a) => a.status === "EMERGING");
-  const activeArtistsSample = artists
-    .filter((a) => a.status === "ACTIVE")
-    .slice(0, 3);
-  const featuredArtists = [...emergingArtists, ...activeArtistsSample];
+  const activeArtists = artists.filter(a => a.status === "ACTIVE");
+  const featuredReleases = releases.slice(0, 6);
+  const featuredWorks = portfolioWorks.slice(0, 8);
+  const upcomingTours = tourEvents.filter(t => t.status === "RESERVE");
 
   return (
-    <div className="overflow-hidden w-[100vw] h-[100vh] bg-[#0a0a0a]">
-      {/* Noise overlay */}
-      <div
-        className="fixed inset-0 z-[999] pointer-events-none opacity-[0.03]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-        }}
-      />
+    <div className="bg-[#0a0a0a] text-white min-h-screen">
+      <CursorGlow />
 
-      <GlobalCursorGlow />
+      {/* ═══ NOISE OVERLAY ═══ */}
+      <div className="fixed inset-0 z-[9999] pointer-events-none opacity-[0.025]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }} />
 
       {/* ═══ FIXED NAV ═══ */}
-      <nav className="fixed top-0 w-full z-50 bg-transparent md:bg-[#0e0e0e]/60 md:backdrop-blur-xl md:border-b md:border-white/5 pointer-events-none">
-        <div className="flex justify-between items-center px-6 md:px-12 lg:px-24 py-4 md:py-5 pointer-events-auto">
-          {/* Logo icon + NOVAVOX wordmark */}
-          <a href="#home" className="flex items-center" onClick={(e) => handleDesktopNav(e, "home")}>
-            <span className="text-lg md:text-xl font-black tracking-[0.3em] text-white font-headline uppercase drop-shadow-md">
-              NOVAVOX
-            </span>
-          </a>
-
-          {/* Desktop links */}
-          <div className="hidden md:flex gap-10 items-center">
+      <nav className="fixed top-0 w-full z-50 bg-[#0a0a0a]/70 backdrop-blur-2xl border-b border-white/5">
+        <div className="flex justify-between items-center px-6 md:px-12 lg:px-20 py-4">
+          <Link href="/" className="flex items-center gap-3">
+            <Image src="/novavox-mark-512.png" alt="Novavox" width={28} height={28} className="opacity-80" />
+            <span className="text-sm font-black tracking-[0.3em] text-white font-headline uppercase">NOVAVOX</span>
+          </Link>
+          <div className="hidden md:flex items-center gap-8">
             {[
-              { label: "HOME", target: "home" },
-              { label: "SERVICES", target: "services" },
-              { label: "ABOUT", target: "about" },
-              { label: "PORTFOLIO", target: "portfolio" },
-            ].map((link) => (
-              <a
-                key={link.label}
-                href={`#${link.target}`}
-                onClick={(e) => handleDesktopNav(e, link.target)}
-                className="nav-link text-[#919191] text-[10px] tracking-[0.25em] font-headline uppercase hover:text-white transition-colors"
-              >
+              { label: "SERVICES", href: "#services" },
+              { label: "PORTFOLIO", href: "#portfolio" },
+              { label: "ARTISTS", href: "/artists" },
+              { label: "RELEASES", href: "/releases" },
+              { label: "TOURS", href: "/tours" },
+              { label: "JOURNAL", href: "/journal" },
+              { label: "SHOP", href: "/shop" },
+            ].map(link => (
+              <Link key={link.label} href={link.href} className="nav-link font-mono text-[9px] tracking-[0.25em] text-white/40 hover:text-white transition-colors uppercase">
                 {link.label}
-              </a>
+              </Link>
             ))}
           </div>
+          <Link href="#contact" className="hidden md:block font-mono text-[9px] tracking-[0.25em] text-white/60 border border-white/15 px-5 py-2.5 hover:bg-white hover:text-black transition-all uppercase">
+            START A PROJECT
+          </Link>
         </div>
       </nav>
 
-      {/* ═══ MOBILE FLOATING HAMBURGER ═══ */}
-      <div className="md:hidden fixed bottom-6 right-6 z-[100] pointer-events-auto">
-        <MobileMenu />
-      </div>
-
-      {/* ═══ SPATIAL NAVIGATION WRAPPER ═══ */}
-      <motion.div
-        animate={{ x: `${currentCoords.x}vw`, y: `${currentCoords.y}vh` }}
-        transition={{ type: "spring", stiffness: 40, damping: 20, mass: 1.2 }}
-        className="w-[200vw] h-[200vh] relative will-change-transform"
-      >
-        {/* ═══════════════════════════════════════════════════════
-            SECTION 1 — HOME (Top Left: 0, 0)
-        ═══════════════════════════════════════════════════════ */}
-        <div className="absolute top-0 left-0 w-[100vw] h-[100vh] overflow-y-auto overflow-x-hidden no-scrollbar">
-          <section id="home" className="relative min-h-[100vh] overflow-hidden bg-black">
-        {/* 4-Portion Animated Grid Structure */}
-        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
-          {/* Top Left: Deep Strings */}
-          <div className="relative border-r border-b border-white/5 overflow-hidden">
-            <DeepStringsBackground className="absolute inset-0" />
-            <motion.div 
-              className="absolute inset-0 bg-gradient-to-br from-black/0 to-black/80 pointer-events-none"
-            />
-          </div>
-          
-          {/* Top Right: Sparkles / Stars */}
-          <div className="relative border-b border-white/5 overflow-hidden flex items-center justify-center">
-            <SparklesCore
-              background="transparent"
-              minSize={0.2}
-              maxSize={1.5}
-              particleDensity={40}
-              particleColor="#FFFFFF"
-            />
-            <motion.div 
-              animate={{ opacity: [0.2, 0.5, 0.2] }}
-              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03)_0%,transparent_70%)]"
-            />
-          </div>
-
-          {/* Bottom Left: Clean Architectural Space */}
-          <div className="relative border-r border-white/5 overflow-hidden bg-gradient-to-tr from-black/80 to-transparent">
-            {/* Removed smokey effect per requirements */}
-          </div>
-
-          {/* Bottom Right: Digital Noise + Fast Pan */}
-          <div className="relative overflow-hidden">
-            <DeepStringsBackground className="absolute inset-0 opacity-50" />
-            <motion.div
-              animate={{ x: ["-10%", "10%"] }}
-              transition={{ duration: 10, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
-              className="absolute inset-0 bg-white/5 blur-3xl rounded-full"
-              style={{ top: '-50%', left: '-50%', width: '200%', height: '200%' }}
-            />
-          </div>
-        </div>
-
-        {/* Center Crosshair / HUD elements */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 pointer-events-none z-10">
-          <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/30 -translate-y-1/2"></div>
-          <div className="absolute left-1/2 top-0 w-[1px] h-full bg-white/30 -translate-x-1/2"></div>
-        </div>
-
-        {/* Main Content Overlay */}
-        <div className="relative z-20 flex flex-col items-center justify-center min-h-screen px-6 pointer-events-none">
+      {/* ═══════════════════════════════════════════
+          HERO — Full viewport cinematic intro
+      ═══════════════════════════════════════════ */}
+      <motion.section ref={heroRef} style={{ opacity: heroOpacity, scale: heroScale }} className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Background video-like gradient animation */}
+        <div className="absolute inset-0">
           <motion.div
-            initial={{ scale: 0.85, filter: "blur(12px)", opacity: 0 }}
-            animate={{ scale: 1, filter: "blur(0px)", opacity: 1 }}
-            transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <Image
-              src="/novavox-mark-512.png"
-              alt="Novavox Logo"
-              width={512}
-              height={512}
-              className="w-[260px] sm:w-[360px] md:w-[440px] lg:w-[500px] object-contain opacity-90 drop-shadow-2xl mix-blend-screen"
-              priority
-            />
+            animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
+            transition={{ duration: 20, repeat: Infinity, repeatType: "reverse", ease: "linear" }}
+            className="absolute inset-0 opacity-20"
+            style={{ backgroundImage: "radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(255,255,255,0.05) 0%, transparent 50%)", backgroundSize: "200% 200%" }}
+          />
+          {/* Grid lines */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)", backgroundSize: "120px 120px" }} />
+          {/* Crosshair */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 pointer-events-none opacity-20">
+            <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/40" />
+            <div className="absolute left-1/2 top-0 w-[1px] h-full bg-white/40" />
+          </div>
+        </div>
+
+        <div className="relative z-10 text-center px-6">
+          <motion.div initial={{ scale: 0.8, filter: "blur(20px)", opacity: 0 }} animate={{ scale: 1, filter: "blur(0px)", opacity: 1 }} transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}>
+            <Image src="/novavox-mark-512.png" alt="Novavox" width={512} height={512} className="w-[220px] sm:w-[300px] md:w-[380px] mx-auto opacity-90 drop-shadow-2xl" priority />
           </motion.div>
 
-          {/* Music Platforms */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="font-mono text-[10px] md:text-[11px] tracking-[0.5em] text-white/30 mt-8 uppercase"
+          >
+            Where Ideas Become Cinematic Realities
+          </motion.p>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 1.5, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute bottom-12 left-0 right-0 flex justify-center items-center gap-6 md:gap-12 px-6 pointer-events-auto"
+            transition={{ duration: 1, delay: 1.8, ease: [0.16, 1, 0.3, 1] }}
+            className="flex justify-center items-center gap-8 md:gap-14 mt-12"
           >
-            {["SPOTIFY", "APPLE MUSIC", "YOUTUBE", "SOUNDCLOUD"].map((platform) => (
-              <a
-                key={platform}
-                href="#"
-                className="font-mono text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-white/30 hover:text-white transition-colors"
-              >
-                {platform}
-              </a>
+            {["FILM", "ADVERTISING", "POST PRODUCTION", "MUSIC"].map((s) => (
+              <span key={s} className="font-mono text-[8px] md:text-[9px] uppercase tracking-[0.3em] text-white/20">{s}</span>
             ))}
           </motion.div>
-
-          {/* Spatial Edge-Gliding active (HUD Removed) */}
-        </div>
-          </section>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════
-            SECTION 2 — SERVICES (Top Right: 100vw, 0)
-        ═══════════════════════════════════════════════════════ */}
-        <div className="absolute top-0 left-[100vw] w-[100vw] h-[100vh] overflow-y-auto overflow-x-hidden no-scrollbar">
-          <section id="services" className="relative min-h-[100vh]">
-        <WavyBackground
-          className="min-h-screen"
-          containerClassName="min-h-screen bg-[#0a0a0a]"
-          colors={["#1a1a2e", "#16213e", "#0f3460", "#1a1a2e", "#16213e"]}
-          waveWidth={60}
-          backgroundFill="#0a0a0a"
-          blur={6}
-          speed="slow"
-          waveOpacity={0.3}
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2.5, duration: 1 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
         >
-          <div className="relative z-10 flex items-center justify-center min-h-screen px-6 md:px-16 py-32">
-            <div className="max-w-5xl w-full">
-              <Reveal>
-                <span className="font-mono uppercase tracking-[0.5em] text-[9px] text-white/25 mb-4 block">
-                  What We Do
-                </span>
-                <h2 className="font-headline text-4xl md:text-6xl font-extrabold uppercase tracking-tighter text-white mb-10 md:mb-16">
-                  Our Services
-                </h2>
-              </Reveal>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-[1px] bg-white/5">
-                {[
-                  {
-                    n: "001",
-                    t: "Advertising & Commercials",
-                    d: "Visually captivating ads with strong brand connection — crafted for digital, television, and corporate campaigns. From storyboards to final output.",
-                  },
-                  {
-                    n: "002",
-                    t: "Film & Video Production",
-                    d: "Cinematic storytelling from concept to completion — including scripting, direction, cinematography, editing, and DI. Feature films, short films, branded content, documentaries.",
-                  },
-                  {
-                    n: "003",
-                    t: "Post Production",
-                    d: "Premium post workflows that elevate your visuals and sound. DI, re-recording mix, spatial audio, and audio restoration.",
-                  },
-                  {
-                    n: "004",
-                    t: "Music Videos & Audios",
-                    d: "High-end production for artists who want their sound to look as good as it feels. Concept creation, shooting, editing, DI, and sound mastering.",
-                  },
-                ].map((s, i) => (
-                  <SpotlightCard key={s.n} delay={i * 0.12}>
-                    <span className="font-mono text-[9px] text-white/15 block mb-3 group-hover:text-white/40 transition-colors">
-                      {s.n}
-                    </span>
-                    <h3 className="font-headline text-lg md:text-xl font-bold uppercase tracking-tight text-white mb-3">
-                      {s.t}
-                    </h3>
-                    <p className="text-[11px] text-white/35 leading-relaxed group-hover:text-white/50 transition-colors">
-                      {s.d}
-                    </p>
-                  </SpotlightCard>
-                ))}
-              </div>
-            </div>
-          </div>
-        </WavyBackground>
-          </section>
-        </div>
+          <span className="font-mono text-[8px] tracking-[0.4em] text-white/20 uppercase">Scroll</span>
+          <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }} className="w-[1px] h-6 bg-white/20" />
+        </motion.div>
+      </motion.section>
 
-        {/* ═══════════════════════════════════════════════════════
-            SECTION 3 — ABOUT (Bottom Left: 0, 100vh)
-        ═══════════════════════════════════════════════════════ */}
-        <div className="absolute top-[100vh] left-0 w-[100vw] h-[100vh] overflow-y-auto overflow-x-hidden no-scrollbar">
-          <section id="about" className="relative bg-[#0a0a0a] min-h-[100vh]">
-        <div className="absolute inset-0">
-          <SparklesCore
-            background="transparent"
-            minSize={0.4}
-            maxSize={1.2}
-            particleDensity={25}
-            particleColor="#FFFFFF"
-          />
-        </div>
-        <div className="relative z-10 px-6 md:px-16 py-32">
-          <div className="max-w-5xl w-full mx-auto">
-            {/* Header */}
-            <Reveal>
-              <span className="font-mono uppercase tracking-[0.5em] text-[9px] text-white/25 mb-4 block">
-                Who We Are
-              </span>
-              <h2 className="font-headline text-4xl md:text-6xl font-extrabold uppercase tracking-tighter text-white mb-12">
-                About
-              </h2>
-            </Reveal>
-
-            {/* Company + Team — 2 columns */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 mb-20">
-              <div>
-                <Reveal>
-                  <p className="text-sm text-white/60 leading-relaxed mb-6">
-                    We&apos;re not just a team — we&apos;re a collective built
-                    on trust, freedom, and creativity focused on Quality.
-                  </p>
-                </Reveal>
-                <Reveal delay={0.12}>
-                  <p className="text-xs text-white/35 leading-relaxed">
-                    <span className="text-white/60">Novavox</span> was founded
-                    by{" "}
-                    <span className="text-white/60">Kaushik Jayakumar</span>, an
-                    accomplished audio engineer and music producer who has worked
-                    on over{" "}
-                    <span className="text-white/60">
-                      100+ international and Indian projects
-                    </span>{" "}
-                    across{" "}
-                    <span className="text-white/60">15+ languages</span>. Our
-                    crew includes IMDB-rated Writers, Directors, Editors and
-                    DOPs, with a shared vision of delivering cinematic excellence
-                    at standard prices.
-                  </p>
-                </Reveal>
-              </div>
-
-              <div>
-                <Reveal delay={0.1}>
-                  <div className="mb-8">
-                    <span className="font-mono text-[9px] uppercase tracking-widest text-white/15 mb-3 block">
-                      Our Team
-                    </span>
-                    <p className="text-xs text-white/35 leading-relaxed">
-                      IMDB-Rated, Award-Winning, and Passion-Driven. Our team
-                      consists of Scriptwriters, Directors, DOP, Editors, &amp;
-                      Sound engineers who have worked on acclaimed feature films
-                      and international projects. Each member brings unique
-                      experience from across the industry, combining creativity
-                      with precision. Together, we form Novavox — not a company,
-                      but a trust-built family of creators.
-                    </p>
-                  </div>
-                </Reveal>
-                <Reveal delay={0.2}>
-                  <div className="border-t border-white/5 pt-6">
-                    <span className="font-mono text-[9px] uppercase tracking-widest text-white/15 block mb-3">
-                      Our Vision
-                    </span>
-                    <p className="text-xs text-white/30 leading-relaxed italic">
-                      &ldquo;To create a world where every creative mind —
-                      artist or technician — can work freely, fearlessly, and
-                      with full trust. Novavox stands for quality, creative
-                      freedom, and unity in craftsmanship.&rdquo;
-                    </p>
-                  </div>
-                </Reveal>
-              </div>
-            </div>
-
-            {/* Emerging Artists — bottom subsection */}
-            <div className="border-t border-white/5 pt-16">
-              <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-12 md:gap-20">
-                <div>
-                  <Reveal>
-                    <span className="font-mono uppercase tracking-[0.5em] text-[9px] text-white/25 mb-4 block">
-                      Our New Found Artists
-                    </span>
-                    <h3 className="font-headline text-2xl md:text-4xl font-extrabold uppercase tracking-tighter text-white mb-6">
-                      Supporting Emerging Artists
-                    </h3>
-                  </Reveal>
-                  <Reveal delay={0.12}>
-                    <p className="text-sm text-white/50 leading-relaxed mb-4">
-                      At Novavox, we actively support new talent by producing,
-                      developing, and releasing music — even without upfront
-                      investment from the artist.
-                    </p>
-                    <p className="text-xs text-white/30 leading-relaxed">
-                      We focus on long-term growth, helping artists build their
-                      sound, identity, and revenue streams. Our model ensures
-                      that creativity is not limited by budget, but driven by
-                      vision.
-                    </p>
-                  </Reveal>
+      {/* ═══════════════════════════════════════════
+          STATS BAR — Credibility at a glance
+      ═══════════════════════════════════════════ */}
+      <section className="border-y border-white/5 py-16 md:py-20">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+          <Reveal>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-0 md:divide-x md:divide-white/5">
+              {[
+                { value: "100+", label: "Projects Delivered" },
+                { value: "15+", label: "Languages" },
+                { value: "12", label: "Active Artists" },
+                { value: "6", label: "World Tour Cities" },
+              ].map((s, i) => (
+                <div key={i} className="md:px-10 first:md:pl-0 last:md:pr-0">
+                  <Stat value={s.value} label={s.label} />
                 </div>
-
-                <div>
-                  <Reveal delay={0.15}>
-                    <span className="font-mono text-[9px] uppercase tracking-widest text-white/15 mb-4 block">
-                      Latest Artists
-                    </span>
-                    <div className="space-y-0">
-                      {featuredArtists.map((a) => (
-                        <Link
-                          key={a.slug}
-                          href={`/artist/${a.slug}`}
-                          className="group relative flex justify-between items-center py-[18px] border-b border-white/5 hover:pl-4 hover:pr-4 hover:bg-white/[0.03] transition-all duration-500 cursor-crosshair overflow-hidden"
-                        >
-                          {/* Deep Hover Image Reveal */}
-                          <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-32 h-20 opacity-0 group-hover:opacity-100 group-hover:scale-110 pointer-events-none transition-all duration-700 z-0 select-none overflow-hidden rounded-sm mix-blend-screen grayscale group-hover:grayscale-0">
-                            <Image src={a.image} alt={a.name} fill className="object-cover" />
-                            <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] to-transparent opacity-80" />
-                          </div>
-                          
-                          <div className="relative z-10 transition-transform duration-500 group-hover:translate-x-2">
-                            <span className="font-mono text-[11px] tracking-widest text-white/60 block group-hover:text-white">
-                              {a.name}
-                            </span>
-                            <span className="font-mono text-[8px] tracking-widest text-white/20 group-hover:text-white/40">
-                              {a.genre}
-                            </span>
-                          </div>
-                          <span
-                            className={`relative z-10 font-mono text-[7px] tracking-widest transition-transform duration-500 group-hover:-translate-x-2 ${
-                              a.status === "EMERGING"
-                                ? "text-green-400/50 group-hover:text-green-400"
-                                : "text-white/15 group-hover:text-white/40"
-                            }`}
-                          >
-                            {a.status}
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
-                  </Reveal>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-          </section>
-        </div>
-
-        {/* ═══════════════════════════════════════════════════════
-            SECTION 4 — WORKS + CONTACT (Bottom Right: 100vw, 100vh)
-        ═══════════════════════════════════════════════════════ */}
-        <div className="absolute top-[100vh] left-[100vw] w-[100vw] h-[100vh] overflow-y-auto overflow-x-hidden no-scrollbar">
-          {/* Portfolio half */}
-          <section id="portfolio" className="relative bg-[#0a0a0a] min-h-[100vh]">
-        <div className="absolute inset-0 border-t border-white/5" />
-        <div className="relative z-10 w-full px-6 md:px-16 py-32">
-          <div className="max-w-6xl mx-auto">
-            <Reveal>
-              <span className="font-mono uppercase tracking-[0.5em] text-[9px] text-white/25 mb-4 block">
-                Our Work
-              </span>
-              <h2 className="font-headline text-4xl md:text-6xl font-extrabold uppercase tracking-tighter text-white mb-10">
-                Portfolio
-              </h2>
-            </Reveal>
-
-            {/* Filters & Search */}
-            <Reveal delay={0.12}>
-              <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between mb-10">
-                <div className="flex gap-[1px] bg-white/5">
-                  {categories.map((cat) => (
-                    <button
-                      key={cat}
-                      onClick={() => setActiveCategory(cat)}
-                      className={`px-5 py-3 font-mono text-[10px] uppercase tracking-[0.2em] transition-colors ${
-                        activeCategory === cat
-                          ? "bg-white text-black"
-                          : "bg-black/50 text-white/40 hover:bg-white/5 hover:text-white/60"
-                      }`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
-                </div>
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search works..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="bg-black/50 border border-white/10 px-4 py-3 font-mono text-[11px] text-white/60 placeholder:text-white/20 w-full sm:w-64 focus:outline-none focus:border-white/30 transition-colors"
-                  />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-white/20 text-[16px]">
-                    search
-                  </span>
-                </div>
-              </div>
-            </Reveal>
-
-            {/* Works Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[1px] bg-white/5">
-              {filteredWorks.map((work, i) => (
-                <Reveal key={work.id} delay={Math.min(i * 0.06, 0.36)}>
-                  <WorkCard work={work} />
-                </Reveal>
               ))}
             </div>
+          </Reveal>
+        </div>
+      </section>
 
-            {filteredWorks.length === 0 && (
-              <div className="text-center py-20">
-                <p className="font-mono text-[11px] text-white/25 tracking-widest">
-                  NO WORKS FOUND
-                </p>
-              </div>
-            )}
+      {/* ═══════════════════════════════════════════
+          SERVICES — What we do
+      ═══════════════════════════════════════════ */}
+      <section id="services" className="py-24 md:py-36">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+          <Reveal>
+            <SectionLabel number="001" label="What We Do" />
+            <h2 className="font-headline text-4xl md:text-6xl lg:text-7xl font-extrabold uppercase tracking-tighter text-white leading-[0.9] mb-16">
+              Our<br />Services
+            </h2>
+          </Reveal>
 
-            {/* About Releases */}
-            <Reveal delay={0.15}>
-              <div className="mt-16 border-t border-white/5 pt-8">
-                <span className="font-mono text-[9px] uppercase tracking-widest text-white/15 mb-3 block">
-                  About Our Releases
-                </span>
-                <p className="text-xs text-white/30 leading-relaxed max-w-2xl">
-                  Every project at Novavox is treated as a cinematic experience —
-                  from music videos and ad campaigns to feature films. Our
-                  releases showcase the depth of our production capabilities
-                  across all mediums.
-                </p>
-              </div>
-            </Reveal>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[1px] bg-white/5">
+            {[
+              { n: "001", t: "Advertising & Commercials", d: "Visually captivating ads with strong brand connection — crafted for digital, television, and corporate campaigns. From storyboards to final output.", icon: "campaign" },
+              { n: "002", t: "Film & Video Production", d: "Cinematic storytelling from concept to completion — including scripting, direction, cinematography, editing, and DI. Feature films, short films, branded content.", icon: "movie" },
+              { n: "003", t: "Post Production", d: "Premium post workflows that elevate your visuals and sound. DI, re-recording mix, spatial audio, and audio restoration.", icon: "tune" },
+              { n: "004", t: "Music Videos & Audio", d: "High-end production for artists who want their sound to look as good as it feels. Concept creation, shooting, editing, DI, and sound mastering.", icon: "music_note" },
+            ].map((s, i) => (
+              <Reveal key={s.n} delay={i * 0.1}>
+                <div className="group bg-black/40 p-8 md:p-10 hover:bg-white/[0.03] transition-colors duration-500 h-full">
+                  <div className="flex items-start justify-between mb-6">
+                    <span className="font-mono text-[9px] text-white/15 tracking-[0.2em]">{s.n}</span>
+                    <span className="material-symbols-outlined text-white/10 text-[28px] group-hover:text-white/25 transition-colors">{s.icon}</span>
+                  </div>
+                  <h3 className="font-headline text-xl md:text-2xl font-bold uppercase tracking-tight text-white mb-4">{s.t}</h3>
+                  <p className="text-[12px] text-white/30 leading-relaxed group-hover:text-white/45 transition-colors">{s.d}</p>
+                </div>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Contact half */}
-      <section id="contact" className="relative min-h-screen">
-        <LampContainer className="min-h-screen">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center px-6"
-          >
-            <div>
-              <span className="font-mono text-[9px] uppercase tracking-[0.5em] text-white/30 mb-4 block">
-                Get In Touch
-              </span>
-              <h2 className="font-headline text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none text-white mb-6">
-                Let&apos;s Create
-                <br />
-                Something
-                <br />
-                Cinematic
-                <br />
-                Together.
+      {/* ═══════════════════════════════════════════
+          PORTFOLIO — Our work
+      ═══════════════════════════════════════════ */}
+      <section id="portfolio" className="py-24 md:py-36 border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+          <Reveal>
+            <SectionLabel number="002" label="Selected Work" />
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
+              <h2 className="font-headline text-4xl md:text-6xl lg:text-7xl font-extrabold uppercase tracking-tighter text-white leading-[0.9]">
+                Portfolio
               </h2>
-              <p className="text-xs uppercase tracking-[0.2em] leading-loose text-white/40 max-w-md">
-                Start your project with us.
-              </p>
+              <Link href="/work/m-001" className="font-mono text-[10px] tracking-[0.25em] text-white/30 hover:text-white transition-colors uppercase group">
+                VIEW ALL WORK <span className="inline-block group-hover:translate-x-1 transition-transform">&rarr;</span>
+              </Link>
             </div>
-            <div className="flex flex-col gap-6">
-              <a
-                href="mailto:kaushik2002.22@gmail.com?subject=Project%20Inquiry"
-                className="group relative border border-white/20 px-8 py-5 overflow-hidden text-center block"
-              >
-                <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-                <span className="relative z-10 font-mono text-[10px] uppercase tracking-[0.4em] group-hover:text-black transition-colors">
-                  Start a Project
-                </span>
-              </a>
-              <a
-                href="https://wa.me/916282725324"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative border border-white/20 px-8 py-5 overflow-hidden text-center block"
-              >
-                <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-                <span className="relative z-10 font-mono text-[10px] uppercase tracking-[0.4em] group-hover:text-black transition-colors">
-                  WhatsApp Us
-                </span>
-              </a>
-              <div className="space-y-2 pt-4">
-                <a
-                  href="tel:+916282725324"
-                  className="font-mono text-[11px] tracking-widest text-white/30 hover:text-white transition-colors block"
-                >
-                  +91 62827 25324
+          </Reveal>
+
+          {/* Featured large work */}
+          <Reveal>
+            <Link href={`/work/${featuredWorks[0].id}`} className="group block relative aspect-[21/9] overflow-hidden mb-[1px]">
+              <Image src={featuredWorks[0].image} alt={featuredWorks[0].title} fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" sizes="100vw" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
+                <span className="font-mono text-[8px] tracking-[0.3em] text-white/40 mb-3 block">{featuredWorks[0].category} — {featuredWorks[0].year}</span>
+                <h3 className="font-headline text-2xl md:text-4xl font-bold uppercase tracking-tight text-white">{featuredWorks[0].title}</h3>
+                <p className="text-[11px] text-white/35 mt-2 max-w-xl">{featuredWorks[0].description}</p>
+              </div>
+            </Link>
+          </Reveal>
+
+          {/* Grid of works */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[1px] bg-white/5">
+            {featuredWorks.slice(1, 7).map((work, i) => (
+              <Reveal key={work.id} delay={Math.min(i * 0.06, 0.3)}>
+                <Link href={`/work/${work.id}`} className="group block bg-black/40 hover:bg-white/[0.03] transition-colors duration-500 overflow-hidden">
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <Image src={work.image} alt={work.title} fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
+                    <div className="absolute top-3 left-3">
+                      <span className="font-mono text-[7px] uppercase tracking-widest bg-black/60 backdrop-blur-sm px-2 py-1 text-white/50">{work.category}</span>
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="font-headline text-sm font-bold uppercase tracking-tight text-white mb-1">{work.title}</h3>
+                    <p className="text-[10px] text-white/25 line-clamp-2 group-hover:text-white/40 transition-colors">{work.description}</p>
+                  </div>
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          ARTISTS — Featured roster
+      ═══════════════════════════════════════════ */}
+      <section className="py-24 md:py-36 border-t border-white/5 bg-[#080808]">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+          <Reveal>
+            <SectionLabel number="003" label="Artist Roster" />
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
+              <h2 className="font-headline text-4xl md:text-6xl lg:text-7xl font-extrabold uppercase tracking-tighter text-white leading-[0.9]">
+                Artists
+              </h2>
+              <Link href="/artists" className="font-mono text-[10px] tracking-[0.25em] text-white/30 hover:text-white transition-colors uppercase group">
+                VIEW ALL {artists.length} ARTISTS <span className="inline-block group-hover:translate-x-1 transition-transform">&rarr;</span>
+              </Link>
+            </div>
+          </Reveal>
+
+          {/* Artist feature rows */}
+          <div className="border-t border-white/5">
+            {activeArtists.slice(0, 8).map((artist, i) => (
+              <Reveal key={artist.slug} delay={Math.min(i * 0.05, 0.3)}>
+                <Link href={`/artist/${artist.slug}`} className="group flex items-center justify-between py-5 md:py-6 border-b border-white/5 hover:bg-white/[0.02] hover:px-4 transition-all duration-500">
+                  <div className="flex items-center gap-5 md:gap-8">
+                    <div className="relative w-12 h-12 md:w-16 md:h-16 overflow-hidden flex-shrink-0">
+                      <Image src={artist.image} alt={artist.name} fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500" sizes="64px" />
+                    </div>
+                    <div>
+                      <span className="font-headline text-sm md:text-base font-bold uppercase tracking-tight text-white block group-hover:translate-x-1 transition-transform duration-500">{artist.name}</span>
+                      <span className="font-mono text-[9px] tracking-[0.2em] text-white/20">{artist.genre}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-6 md:gap-10">
+                    <span className="hidden md:block font-mono text-[9px] text-white/15 tracking-widest">{artist.coordinates}</span>
+                    <span className="font-mono text-[9px] text-white/20 tracking-widest">{artist.listeners}</span>
+                    <span className="material-symbols-outlined text-white/15 text-[16px] group-hover:text-white/50 group-hover:translate-x-1 transition-all duration-500">arrow_forward</span>
+                  </div>
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          RELEASES — Latest catalog
+      ═══════════════════════════════════════════ */}
+      <section className="py-24 md:py-36 border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+          <Reveal>
+            <SectionLabel number="004" label="Latest Releases" />
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
+              <h2 className="font-headline text-4xl md:text-6xl lg:text-7xl font-extrabold uppercase tracking-tighter text-white leading-[0.9]">
+                Releases
+              </h2>
+              <Link href="/releases" className="font-mono text-[10px] tracking-[0.25em] text-white/30 hover:text-white transition-colors uppercase group">
+                FULL CATALOG <span className="inline-block group-hover:translate-x-1 transition-transform">&rarr;</span>
+              </Link>
+            </div>
+          </Reveal>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-[1px] bg-white/5">
+            {featuredReleases.map((release, i) => (
+              <Reveal key={release.catalogNumber} delay={Math.min(i * 0.06, 0.3)}>
+                <Link href="/releases" className="group block bg-black/40 hover:bg-white/[0.03] transition-colors duration-500">
+                  <div className="relative aspect-square overflow-hidden">
+                    <Image src={release.image} alt={release.title} fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" sizes="(max-width: 768px) 50vw, 16vw" />
+                    <div className="absolute top-2 left-2">
+                      <span className="font-mono text-[7px] tracking-widest bg-black/60 backdrop-blur-sm px-1.5 py-0.5 text-white/40">{release.catalogNumber}</span>
+                    </div>
+                    <div className="absolute bottom-2 right-2">
+                      <span className="font-mono text-[7px] tracking-widest bg-black/60 backdrop-blur-sm px-1.5 py-0.5 text-white/30">{release.format}</span>
+                    </div>
+                  </div>
+                  <div className="p-3">
+                    <h3 className="font-headline text-[11px] font-bold uppercase tracking-tight text-white truncate">{release.title}</h3>
+                    <span className="font-mono text-[8px] text-white/20 tracking-widest">{release.artist}</span>
+                  </div>
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          ABOUT — Who we are
+      ═══════════════════════════════════════════ */}
+      <section className="py-24 md:py-36 border-t border-white/5 bg-[#080808]">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+          <Reveal>
+            <SectionLabel number="005" label="Who We Are" />
+          </Reveal>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+            <div>
+              <Reveal>
+                <h2 className="font-headline text-4xl md:text-6xl font-extrabold uppercase tracking-tighter text-white leading-[0.9] mb-10">
+                  About<br />Novavox
+                </h2>
+              </Reveal>
+              <Reveal delay={0.1}>
+                <p className="text-sm text-white/50 leading-relaxed mb-6">
+                  We&apos;re not just a team — we&apos;re a collective built on trust, freedom, and creativity focused on Quality.
+                </p>
+              </Reveal>
+              <Reveal delay={0.15}>
+                <p className="text-xs text-white/30 leading-relaxed mb-8">
+                  <span className="text-white/50">Novavox</span> was founded by{" "}
+                  <span className="text-white/50">Kaushik Jayakumar</span>, an accomplished audio engineer and music producer who has worked on over{" "}
+                  <span className="text-white/50">100+ international and Indian projects</span> across{" "}
+                  <span className="text-white/50">15+ languages</span>. Our crew includes IMDB-rated Writers, Directors, Editors and DOPs, with a shared vision of delivering cinematic excellence at standard prices.
+                </p>
+              </Reveal>
+              <Reveal delay={0.2}>
+                <div className="grid grid-cols-2 gap-6">
+                  {[
+                    { label: "Founded", value: "2022" },
+                    { label: "Team Size", value: "12+" },
+                    { label: "Languages", value: "15+" },
+                    { label: "Projects", value: "100+" },
+                  ].map(s => (
+                    <div key={s.label} className="border-t border-white/5 pt-4">
+                      <span className="font-headline text-xl font-bold text-white">{s.value}</span>
+                      <span className="block font-mono text-[8px] uppercase tracking-[0.3em] text-white/20 mt-1">{s.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </Reveal>
+            </div>
+
+            <div>
+              <Reveal delay={0.1}>
+                <div className="mb-10">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-white/15 mb-4 block">Our Team</span>
+                  <p className="text-xs text-white/30 leading-relaxed">
+                    IMDB-Rated, Award-Winning, and Passion-Driven. Our team consists of Scriptwriters, Directors, DOP, Editors, &amp; Sound engineers who have worked on acclaimed feature films and international projects. Each member brings unique experience from across the industry, combining creativity with precision.
+                  </p>
+                </div>
+              </Reveal>
+              <Reveal delay={0.2}>
+                <div className="border-t border-white/5 pt-8 mb-10">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-white/15 block mb-4">Our Vision</span>
+                  <p className="text-xs text-white/25 leading-relaxed italic">
+                    &ldquo;To create a world where every creative mind — artist or technician — can work freely, fearlessly, and with full trust. Novavox stands for quality, creative freedom, and unity in craftsmanship.&rdquo;
+                  </p>
+                </div>
+              </Reveal>
+              <Reveal delay={0.25}>
+                <div className="border-t border-white/5 pt-8">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-white/15 block mb-4">Capabilities</span>
+                  <div className="flex flex-wrap gap-2">
+                    {["Scripting", "Direction", "Cinematography", "Editing", "DI", "Spatial Audio", "Sound Design", "Mastering", "Motion Graphics", "VFX"].map(cap => (
+                      <span key={cap} className="font-mono text-[8px] tracking-widest text-white/25 border border-white/5 px-3 py-1.5 hover:border-white/15 hover:text-white/40 transition-colors">{cap.toUpperCase()}</span>
+                    ))}
+                  </div>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          TOURS — Upcoming events
+      ═══════════════════════════════════════════ */}
+      <section className="py-24 md:py-36 border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+          <Reveal>
+            <SectionLabel number="006" label="Live Events" />
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
+              <h2 className="font-headline text-4xl md:text-6xl lg:text-7xl font-extrabold uppercase tracking-tighter text-white leading-[0.9]">
+                Tours
+              </h2>
+              <Link href="/tours" className="font-mono text-[10px] tracking-[0.25em] text-white/30 hover:text-white transition-colors uppercase group">
+                ALL EVENTS <span className="inline-block group-hover:translate-x-1 transition-transform">&rarr;</span>
+              </Link>
+            </div>
+          </Reveal>
+
+          <div className="border-t border-white/5">
+            {tourEvents.slice(0, 4).map((event, i) => (
+              <Reveal key={i} delay={i * 0.08}>
+                <div className="group flex flex-col md:flex-row md:items-center justify-between py-6 border-b border-white/5 hover:bg-white/[0.02] hover:px-4 transition-all duration-500">
+                  <div className="flex items-center gap-6 md:gap-10">
+                    <span className="font-headline text-2xl md:text-3xl font-bold text-white w-28 md:w-32">{event.date}</span>
+                    <div>
+                      <span className="font-headline text-sm md:text-base font-bold uppercase tracking-tight text-white">{event.city}, {event.country}</span>
+                      <span className="block font-mono text-[9px] text-white/20 tracking-widest mt-1">{event.venue}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 mt-3 md:mt-0">
+                    <div className="flex gap-2">
+                      {event.features.map(f => (
+                        <span key={f} className="font-mono text-[7px] tracking-widest text-white/20 border border-white/5 px-2 py-1">{f.toUpperCase()}</span>
+                      ))}
+                    </div>
+                    <span className={`font-mono text-[9px] tracking-[0.2em] px-4 py-2 ${event.status === "SOLD OUT" ? "text-white/30 border border-white/10" : "bg-white text-black"}`}>
+                      {event.status}
+                    </span>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          JOURNAL — Latest editorial
+      ═══════════════════════════════════════════ */}
+      <section className="py-24 md:py-36 border-t border-white/5 bg-[#080808]">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+          <Reveal>
+            <SectionLabel number="007" label="Editorial" />
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
+              <h2 className="font-headline text-4xl md:text-6xl lg:text-7xl font-extrabold uppercase tracking-tighter text-white leading-[0.9]">
+                Journal
+              </h2>
+              <Link href="/journal" className="font-mono text-[10px] tracking-[0.25em] text-white/30 hover:text-white transition-colors uppercase group">
+                READ ALL <span className="inline-block group-hover:translate-x-1 transition-transform">&rarr;</span>
+              </Link>
+            </div>
+          </Reveal>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-white/5">
+            {journalEntries.slice(0, 3).map((entry, i) => (
+              <Reveal key={entry.slug} delay={i * 0.1}>
+                <Link href="/journal" className="group block bg-black/40 hover:bg-white/[0.03] transition-colors duration-500">
+                  <div className="relative aspect-[16/10] overflow-hidden">
+                    <Image src={entry.image} alt={entry.title} fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" sizes="(max-width: 768px) 100vw, 33vw" />
+                    <div className="absolute top-3 left-3">
+                      <span className="font-mono text-[7px] tracking-widest bg-black/60 backdrop-blur-sm px-2 py-1 text-white/40">{entry.type}</span>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <span className="font-mono text-[8px] text-white/15 tracking-widest block mb-2">ISSUE {entry.issue}</span>
+                    <h3 className="font-headline text-base font-bold uppercase tracking-tight text-white mb-2">{entry.title}</h3>
+                    <p className="text-[10px] text-white/25 line-clamp-2 group-hover:text-white/40 transition-colors">{entry.description}</p>
+                    <div className="flex items-center gap-4 mt-4">
+                      <span className="font-mono text-[8px] text-white/15 tracking-widest">{entry.author}</span>
+                      <span className="font-mono text-[8px] text-white/10 tracking-widest">{entry.readTime}</span>
+                    </div>
+                  </div>
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          SHOP — Featured products
+      ═══════════════════════════════════════════ */}
+      <section className="py-24 md:py-36 border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+          <Reveal>
+            <SectionLabel number="008" label="Merchandise" />
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
+              <h2 className="font-headline text-4xl md:text-6xl lg:text-7xl font-extrabold uppercase tracking-tighter text-white leading-[0.9]">
+                Shop
+              </h2>
+              <Link href="/shop" className="font-mono text-[10px] tracking-[0.25em] text-white/30 hover:text-white transition-colors uppercase group">
+                BROWSE ARCHIVE <span className="inline-block group-hover:translate-x-1 transition-transform">&rarr;</span>
+              </Link>
+            </div>
+          </Reveal>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-[1px] bg-white/5">
+            {products.slice(0, 3).map((product, i) => (
+              <Reveal key={product.sku} delay={i * 0.1}>
+                <div className="group bg-black/40 hover:bg-white/[0.03] transition-colors duration-500">
+                  <div className="relative aspect-square overflow-hidden">
+                    <Image src={product.image} alt={product.name} fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" sizes="(max-width: 768px) 50vw, 33vw" />
+                    {product.badge && (
+                      <div className="absolute top-3 left-3">
+                        <span className="font-mono text-[7px] tracking-widest bg-black/60 backdrop-blur-sm px-2 py-1 text-white/40">{product.badge.toUpperCase()}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-5">
+                    <h3 className="font-headline text-sm font-bold uppercase tracking-tight text-white mb-1">{product.name}</h3>
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[9px] text-white/20 tracking-widest">{product.material}</span>
+                      <span className="font-headline text-sm font-bold text-white">&euro;{product.price.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          CONTACT — Get in touch
+      ═══════════════════════════════════════════ */}
+      <section id="contact" className="py-24 md:py-36 border-t border-white/5 bg-[#080808]">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+            <div>
+              <Reveal>
+                <SectionLabel number="009" label="Get In Touch" />
+                <h2 className="font-headline text-4xl md:text-6xl lg:text-7xl font-black uppercase tracking-tighter leading-[0.9] text-white mb-8">
+                  Let&apos;s Create<br />Something<br />Cinematic.
+                </h2>
+              </Reveal>
+              <Reveal delay={0.1}>
+                <p className="text-xs text-white/30 leading-relaxed max-w-md mb-10">
+                  Whether it&apos;s a feature film, music video, commercial, or sonic installation — we bring cinematic excellence to every frame and frequency.
+                </p>
+              </Reveal>
+              <Reveal delay={0.15}>
+                <div className="space-y-3">
+                  <a href="tel:+916282725324" className="font-mono text-[11px] tracking-widest text-white/25 hover:text-white transition-colors block">+91 62827 25324</a>
+                  <a href="mailto:kaushik2002.22@gmail.com" className="font-mono text-[11px] tracking-widest text-white/25 hover:text-white transition-colors block">kaushik2002.22@gmail.com</a>
+                </div>
+              </Reveal>
+            </div>
+
+            <div className="flex flex-col gap-5 justify-center">
+              <Reveal delay={0.1}>
+                <a href="mailto:kaushik2002.22@gmail.com?subject=Project%20Inquiry" className="group relative border border-white/15 px-8 py-6 overflow-hidden text-center block">
+                  <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+                  <span className="relative z-10 font-mono text-[10px] uppercase tracking-[0.4em] group-hover:text-black transition-colors">Start a Project</span>
                 </a>
-                <a
-                  href="mailto:kaushik2002.22@gmail.com"
-                  className="font-mono text-[11px] tracking-widest text-white/30 hover:text-white transition-colors block"
-                >
-                  kaushik2002.22@gmail.com
+              </Reveal>
+              <Reveal delay={0.15}>
+                <a href="https://wa.me/916282725324" target="_blank" rel="noopener noreferrer" className="group relative border border-white/15 px-8 py-6 overflow-hidden text-center block">
+                  <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+                  <span className="relative z-10 font-mono text-[10px] uppercase tracking-[0.4em] group-hover:text-black transition-colors">WhatsApp Us</span>
                 </a>
+              </Reveal>
+              <Reveal delay={0.2}>
+                <Link href="/distribution" className="group relative border border-white/15 px-8 py-6 overflow-hidden text-center block">
+                  <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+                  <span className="relative z-10 font-mono text-[10px] uppercase tracking-[0.4em] group-hover:text-black transition-colors">Submit Your Work</span>
+                </Link>
+              </Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          FOOTER
+      ═══════════════════════════════════════════ */}
+      <footer className="border-t border-white/5 py-16 md:py-20">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
+            {/* Brand */}
+            <div className="col-span-2 md:col-span-1">
+              <span className="font-headline text-sm font-black tracking-[0.3em] text-white uppercase block mb-4">NOVAVOX</span>
+              <p className="text-[10px] text-white/20 leading-relaxed max-w-[200px]">Where ideas become cinematic realities. Film, music, and sound — crafted with precision.</p>
+            </div>
+
+            {/* Explore */}
+            <div>
+              <span className="font-mono text-[8px] tracking-[0.3em] text-white/30 uppercase block mb-4">Explore</span>
+              <div className="space-y-2.5">
+                {[
+                  { label: "Artists", href: "/artists" },
+                  { label: "Releases", href: "/releases" },
+                  { label: "Shop", href: "/shop" },
+                  { label: "Tours", href: "/tours" },
+                  { label: "Journal", href: "/journal" },
+                ].map(link => (
+                  <Link key={link.label} href={link.href} className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest">{link.label.toUpperCase()}</Link>
+                ))}
               </div>
             </div>
-          </motion.div>
 
-          {/* Footer Designed By */}
-          <div className="absolute bottom-8 left-0 w-full text-center pointer-events-none">
-            <span className="font-mono text-[8px] uppercase tracking-widest text-white/20">
-              Designed by 9RUBY
-            </span>
+            {/* Studio */}
+            <div>
+              <span className="font-mono text-[8px] tracking-[0.3em] text-white/30 uppercase block mb-4">Studio</span>
+              <div className="space-y-2.5">
+                {[
+                  { label: "Gallery", href: "/gallery" },
+                  { label: "Distribution", href: "/distribution" },
+                  { label: "Player", href: "/player" },
+                  { label: "Catalog", href: "/catalog" },
+                ].map(link => (
+                  <Link key={link.label} href={link.href} className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest">{link.label.toUpperCase()}</Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <span className="font-mono text-[8px] tracking-[0.3em] text-white/30 uppercase block mb-4">Contact</span>
+              <div className="space-y-2.5">
+                <a href="mailto:kaushik2002.22@gmail.com" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest">EMAIL</a>
+                <a href="https://wa.me/916282725324" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest">WHATSAPP</a>
+                <a href="tel:+916282725324" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest">PHONE</a>
+              </div>
+            </div>
           </div>
-        </LampContainer>
-            </section>
+
+          <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <span className="font-mono text-[8px] text-white/15 tracking-widest">&copy; {new Date().getFullYear()} NOVAVOX. ALL RIGHTS RESERVED.</span>
+            <span className="font-mono text-[8px] text-white/15 tracking-widest">DESIGNED BY <Link href="https://9ruby.com" className="hover:text-white/40 transition-colors">9RUBY</Link></span>
           </div>
-        </motion.div>
-      </div>
-    );
-  }
+        </div>
+      </footer>
 
-/* ─── Spotlight interaction card ─── */
-function SpotlightCard({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [opacity, setOpacity] = useState(0);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  };
-
-  return (
-    <Reveal delay={delay} className="h-full">
-      <div
-        onMouseMove={handleMouseMove}
-        onMouseEnter={() => setOpacity(1)}
-        onMouseLeave={() => setOpacity(0)}
-        className={`relative h-full bg-black/50 backdrop-blur-sm p-6 md:p-8 overflow-hidden group transition-colors duration-500 hover:bg-white/5 ${className}`}
-      >
-        <div
-          className="pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"
-          style={{
-            opacity,
-            background: `radial-gradient(400px circle at ${position.x}px ${position.y}px, rgba(255,255,255,0.08), transparent 40%)`,
-          }}
-        />
-        <div className="relative z-10">{children}</div>
-      </div>
-    </Reveal>
-  );
-}
-
-/* ─── Portfolio work card ─── */
-function WorkCard({ work }: { work: PortfolioWork }) {
-  return (
-    <Link href={`/work/${work.id}`} className="block bg-black/50 group hover:bg-white/5 transition-colors duration-500 overflow-hidden cursor-pointer relative h-full">
-      <div className="relative aspect-[4/3] overflow-hidden">
-        <Image
-          src={work.image}
-          alt={work.title}
-          fill
-          className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
-        <div className="absolute top-3 left-3">
-          <span className="font-mono text-[8px] uppercase tracking-widest bg-black/60 backdrop-blur-sm px-2 py-1 text-white/50">
-            {work.category}
-          </span>
+      {/* ═══ Mobile Bottom Nav ═══ */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0a0a0a]/90 backdrop-blur-2xl border-t border-white/5">
+        <div className="flex justify-around items-center py-3">
+          {[
+            { icon: "home", label: "Home", href: "/" },
+            { icon: "album", label: "Releases", href: "/releases" },
+            { icon: "group", label: "Artists", href: "/artists" },
+            { icon: "shopping_bag", label: "Shop", href: "/shop" },
+            { icon: "menu", label: "More", href: "/tours" },
+          ].map(item => (
+            <Link key={item.label} href={item.href} className="flex flex-col items-center gap-1 text-white/30 hover:text-white transition-colors">
+              <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+              <span className="font-mono text-[7px] tracking-widest uppercase">{item.label}</span>
+            </Link>
+          ))}
         </div>
       </div>
-      <div className="p-5">
-        <h3 className="font-headline text-sm font-bold uppercase tracking-tight text-white mb-1">
-          {work.title}
-        </h3>
-        <p className="text-[10px] text-white/30 leading-relaxed line-clamp-2 group-hover:text-white/50 transition-colors">
-          {work.description}
-        </p>
-        <span className="font-mono text-[8px] text-white/15 mt-3 block">
-          {work.year}
-        </span>
-      </div>
-    </Link>
+    </div>
   );
 }

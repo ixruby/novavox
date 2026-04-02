@@ -2,66 +2,66 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer role="contentinfo" className="w-full bg-[#0E0E0E] border-t border-white/5 px-4 sm:px-8 md:px-12 py-8 md:py-16">
-      {/* Top Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start gap-12">
-        {/* Left - Brand */}
-        <div>
-          <h2 className="font-headline text-lg tracking-[0.3em] font-bold text-white mb-4">
-            NOVAVOX
-          </h2>
-          <p className="text-[10px] text-[#919191] tracking-[0.15em] uppercase">
-            Architectural Rigor. Built in Berlin.
-          </p>
+    <footer role="contentinfo" className="w-full bg-[#080808] border-t border-white/5 px-6 md:px-12 lg:px-20 py-16 md:py-20">
+      <div className="max-w-7xl mx-auto">
+        {/* Top Section — 4 columns */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
+          {/* Brand */}
+          <div className="col-span-2 md:col-span-1">
+            <span className="font-headline text-sm font-bold tracking-[0.3em] text-white block mb-4">NOVAVOX</span>
+            <p className="text-[10px] text-white/20 leading-relaxed max-w-[200px]">
+              Where ideas become cinematic realities. Film, music, and sound — crafted with precision.
+            </p>
+          </div>
+
+          {/* Explore */}
+          <div>
+            <span className="font-mono text-[8px] tracking-[0.3em] text-white/30 uppercase block mb-4">Explore</span>
+            <div className="space-y-2.5">
+              {[
+                { label: "Artists", href: "/artists" },
+                { label: "Releases", href: "/releases" },
+                { label: "Shop", href: "/shop" },
+                { label: "Tours", href: "/tours" },
+                { label: "Journal", href: "/journal" },
+              ].map(link => (
+                <Link key={link.label} href={link.href} className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest uppercase">{link.label}</Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Studio */}
+          <div>
+            <span className="font-mono text-[8px] tracking-[0.3em] text-white/30 uppercase block mb-4">Studio</span>
+            <div className="space-y-2.5">
+              {[
+                { label: "Gallery", href: "/gallery" },
+                { label: "Distribution", href: "/distribution" },
+                { label: "Player", href: "/player" },
+                { label: "Catalog", href: "/catalog" },
+              ].map(link => (
+                <Link key={link.label} href={link.href} className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest uppercase">{link.label}</Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <span className="font-mono text-[8px] tracking-[0.3em] text-white/30 uppercase block mb-4">Contact</span>
+            <div className="space-y-2.5">
+              <a href="mailto:kaushik2002.22@gmail.com" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest uppercase">Email</a>
+              <a href="https://wa.me/916282725324" target="_blank" rel="noopener noreferrer" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest uppercase">WhatsApp</a>
+              <a href="tel:+916282725324" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest uppercase">Phone</a>
+              <a href="https://instagram.com/novavox" target="_blank" rel="noopener noreferrer" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest uppercase">Instagram</a>
+            </div>
+          </div>
         </div>
 
-        {/* Right - Link Columns */}
-        <div className="flex gap-8 md:gap-16">
-          <div className="flex flex-col gap-3">
-            <Link
-              href="/privacy"
-              className="text-[10px] text-[#919191] hover:text-white tracking-[0.15em] uppercase transition-colors duration-300"
-            >
-              Privacy
-            </Link>
-            <Link
-              href="/terms"
-              className="text-[10px] text-[#919191] hover:text-white tracking-[0.15em] uppercase transition-colors duration-300"
-            >
-              Terms
-            </Link>
-          </div>
-          <div className="flex flex-col gap-3">
-            <Link
-              href="/press"
-              className="text-[10px] text-[#919191] hover:text-white tracking-[0.15em] uppercase transition-colors duration-300"
-            >
-              Press
-            </Link>
-            <Link
-              href="/contact"
-              className="text-[10px] text-[#919191] hover:text-white tracking-[0.15em] uppercase transition-colors duration-300"
-            >
-              Contact
-            </Link>
-            <a
-              href="https://instagram.com/novavox"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="NOVAVOX on Instagram"
-              className="text-[10px] text-[#919191] hover:text-white tracking-[0.15em] uppercase transition-colors duration-300"
-            >
-              Instagram
-            </a>
-          </div>
+        {/* Bottom */}
+        <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <span className="font-mono text-[8px] text-white/15 tracking-widest">&copy; {new Date().getFullYear()} NOVAVOX. ALL RIGHTS RESERVED.</span>
+          <span className="font-mono text-[8px] text-white/15 tracking-widest">DESIGNED BY <a href="https://9ruby.com" target="_blank" rel="noopener noreferrer" className="hover:text-white/40 transition-colors">9RUBY</a></span>
         </div>
-      </div>
-
-      {/* Bottom Section */}
-      <div className="border-t border-white/5 mt-12 pt-8">
-        <p className="text-[11px] sm:text-[9px] text-[#474747] tracking-[0.2em]">
-          &copy; 2024 NOVAVOX. ALL RIGHTS RESERVED.
-        </p>
       </div>
     </footer>
   );
