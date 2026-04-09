@@ -62,7 +62,7 @@ export default function Footer() {
           <span className="font-mono text-[8px] text-white/15 tracking-widest">&copy; {new Date().getFullYear()} NOVAVOX. ALL RIGHTS RESERVED.</span>
           <div className="flex items-center gap-6">
             <span className="font-mono text-[8px] text-white/15 tracking-widest">DESIGNED BY <a href="https://9ruby.com" target="_blank" rel="noopener noreferrer" className="hover:text-white/40 transition-colors">9RUBY</a></span>
-            <Link href="/admin/login" className="font-mono text-[8px] text-white/[0.06] hover:text-white/20 transition-colors tracking-widest">ADMIN</Link>
+            <Link href="/admin/login" className="font-mono text-[8px] text-white/30 hover:text-white/70 transition-colors tracking-widest">ADMIN</Link>
           </div>
         </div>
       </div>
