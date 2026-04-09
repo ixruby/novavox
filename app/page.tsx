@@ -690,11 +690,8 @@ export default function LandingPage() {
           </div>
 
           <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <span className="font-mono text-[8px] text-white/15 tracking-widest">&copy; {new Date().getFullYear()} NOVAVOX. ALL RIGHTS RESERVED.</span>
-            <div className="flex items-center gap-6">
-              <span className="font-mono text-[8px] text-white/15 tracking-widest">DESIGNED BY <Link href="https://9ruby.com" className="hover:text-white/40 transition-colors">9RUBY</Link></span>
-              <Link href="/admin/login" className="font-mono text-[8px] text-white/30 hover:text-white/70 transition-colors tracking-widest">ADMIN</Link>
-            </div>
+            <span className="font-mono text-[8px] text-white/15 tracking-widest">&copy; {new Date().getFullYear()} <Link href="/admin/login" className="hover:text-white/40 transition-colors">NOVAVOX</Link>. ALL RIGHTS RESERVED.</span>
+            <span className="font-mono text-[8px] text-white/15 tracking-widest">DESIGNED BY <Link href="https://9ruby.com" className="hover:text-white/40 transition-colors">9RUBY</Link></span>
           </div>
         </div>
       </footer>
