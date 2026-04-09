@@ -9,8 +9,9 @@ import {
   Save, Plus, Trash2, Users, Disc3, ShoppingBag, Calendar, FileText, Briefcase,
   Settings, ExternalLink, ChevronDown, ChevronRight, Check, AlertCircle, Loader2,
   LogOut, Key, Lock, X, Globe, Layers, User, Layout, Navigation, Mail, Shield,
-  Eye, EyeOff, Star
+  Eye, EyeOff, Star, Clock
 } from 'lucide-react';
+import type { RevisionEntry } from '@/lib/get-data';
 
 type SiteData = {
   artists: (Artist & { visible?: boolean; featured?: boolean })[];
@@ -22,7 +23,7 @@ type SiteData = {
   settings: SiteSettings;
 };
 
-type Tab = 'site' | 'services' | 'about' | 'artists' | 'releases' | 'portfolio' | 'tours' | 'journal' | 'shop' | 'pages' | 'navigation' | 'contact' | 'users' | 'settings';
+type Tab = 'site' | 'services' | 'about' | 'artists' | 'releases' | 'portfolio' | 'tours' | 'journal' | 'shop' | 'pages' | 'navigation' | 'contact' | 'users' | 'settings' | 'revisions';
 
 const allTabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'site', label: 'SITE', icon: <Globe size={15} /> },
@@ -39,6 +40,7 @@ const allTabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'contact', label: 'CONTACT', icon: <Mail size={15} /> },
   { id: 'users', label: 'USERS', icon: <Shield size={15} /> },
   { id: 'settings', label: 'SETTINGS', icon: <Settings size={15} /> },
+  { id: 'revisions', label: 'REVISIONS', icon: <Clock size={15} /> },
 ];
 
 function Input({ label, value, onChange, placeholder, type = 'text' }: { label: string; value: string | number; onChange: (v: string) => void; placeholder?: string; type?: string }) {
@@ -85,6 +87,10 @@ export default function AdminDashboard() {
   const [pwLoading, setPwLoading] = useState(false);
   const [users, setUsers] = useState<Omit<AdminUser, 'password'>[]>([]);
   const [newUser, setNewUser] = useState({ username: '', password: '', role: 'client' as UserRole, allowedTabs: [] as string[] });
+  const [revisions, setRevisions] = useState<Omit<RevisionEntry, 'data'>[]>([]);
+  const [revisionsLoading, setRevisionsLoading] = useState(false);
+  const [revisionsError, setRevisionsError] = useState('');
+  const [restoringId, setRestoringId] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -113,6 +119,8 @@ export default function AdminDashboard() {
   const fetchUsers = () => { fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'get-users' }) }).then(r => r.json()).then(d => d.users && setUsers(d.users)).catch(() => {}); };
   const handleAddUser = async () => { if (!newUser.username || !newUser.password) return; await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'add-user', ...newUser }) }); setNewUser({ username: '', password: '', role: 'client', allowedTabs: [] }); fetchUsers(); };
   const handleRemoveUser = async (username: string) => { await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'remove-user', username }) }); fetchUsers(); };
+  const fetchRevisions = useCallback(async () => { setRevisionsLoading(true); setRevisionsError(''); try { const res = await fetch('/api/revisions'); if (!res.ok) throw new Error('Failed'); const json = await res.json(); setRevisions(json.revisions || []); } catch { setRevisionsError('Failed to load revisions'); } finally { setRevisionsLoading(false); } }, []);
+  const handleRestore = async (id: string) => { setRestoringId(id); setRevisionsError(''); try { const res = await fetch('/api/revisions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }); if (!res.ok) throw new Error('Restore failed'); const dataRes = await fetch('/api/data'); const newData = await dataRes.json(); setData({ ...newData, settings: { ...defaultSettings, ...newData.settings } }); setHasChanges(false); fetchRevisions(); } catch { setRevisionsError('Restore failed'); } finally { setRestoringId(''); } };
 
   if (authChecking || !authenticated || !data) return <div className="fixed inset-0 z-50 bg-[#0a0a0a] flex items-center justify-center"><Loader2 size={20} className="animate-spin text-white/30" /></div>;
 
@@ -146,13 +154,18 @@ export default function AdminDashboard() {
 
   const renderSettingsTab = () => (<div className="space-y-4"><Section title="Account" defaultOpen={true}><div className="flex items-center justify-between py-2"><div><div className="text-[10px] font-mono tracking-[0.2em] text-white/40">LOGGED IN AS</div><div className="text-sm font-mono text-white/70 mt-1">{adminUser} <span className="text-white/30">({userRole})</span></div></div><button onClick={() => { setShowPwModal(true); setPwError(''); setPwSuccess(false); setCurrentPw(''); setNewPw(''); setConfirmPw(''); }} className="flex items-center gap-2 px-4 py-2 border border-white/10 text-[10px] font-mono tracking-widest text-white/50 hover:text-white hover:bg-white/5 transition-colors"><Key size={12} /> CHANGE PASSWORD</button></div></Section><Section title="Data Summary" defaultOpen={true}><div className="grid grid-cols-3 gap-3">{[{ l: 'Artists', c: data.artists.length, v: data.artists.filter(a => a.visible !== false).length }, { l: 'Releases', c: data.releases.length, v: data.releases.filter(r => r.visible !== false).length }, { l: 'Portfolio', c: data.portfolioWorks.length, v: data.portfolioWorks.filter(w => w.visible !== false).length }, { l: 'Tours', c: data.tourEvents.length, v: data.tourEvents.filter(t => t.visible !== false).length }, { l: 'Journal', c: data.journalEntries.length, v: data.journalEntries.filter(j => j.visible !== false).length }, { l: 'Products', c: data.products.length, v: data.products.filter(p => p.visible !== false).length }].map(st => (<div key={st.l} className="bg-white/5 border border-white/10 p-3"><div className="text-xl font-bold">{st.v}<span className="text-white/20 text-sm">/{st.c}</span></div><div className="text-[10px] font-mono tracking-widest text-white/40 mt-1">{st.l.toUpperCase()}</div></div>))}</div></Section><Section title="Danger Zone"><button onClick={logout} className="flex items-center gap-2 px-4 py-2.5 border border-red-500/20 text-[10px] font-mono tracking-widest text-red-400/60 hover:text-red-400 hover:bg-red-500/5 transition-colors"><LogOut size={12} /> LOGOUT</button></Section></div>);
 
-  const content: Record<Tab, () => React.ReactNode> = { site: renderSite, services: renderServices, about: renderAbout, artists: renderArtists, releases: renderReleases, portfolio: renderPortfolio, tours: renderTours, journal: renderJournal, shop: renderShop, pages: renderPages, navigation: renderNavigation, contact: renderContact, users: renderUsers, settings: renderSettingsTab };
+  const renderRevisions = () => {
+    if (revisionsLoading) return <div className="flex items-center gap-3 text-white/30 text-xs font-mono py-8"><Loader2 size={14} className="animate-spin" /> LOADING REVISIONS...</div>;
+    return (<div className="space-y-4"><div className="text-[10px] font-mono tracking-[0.2em] text-white/30 uppercase mb-2">SAVED SNAPSHOTS — UP TO 20</div>{revisionsError && <div className="p-3 border border-red-500/30 bg-red-500/10 flex items-center gap-3 text-red-400 text-xs font-mono"><AlertCircle size={14} /> {revisionsError}</div>}{revisions.length === 0 ? <div className="text-white/20 text-xs font-mono py-8 text-center border border-white/5">NO REVISIONS YET — SAVE CHANGES TO CREATE A SNAPSHOT</div> : revisions.map(rev => (<div key={rev.id} className="flex items-center justify-between p-3 border border-white/10 hover:border-white/20 transition-colors"><div><div className="text-xs font-mono text-white/70">{new Date(rev.timestamp).toLocaleString()}</div><div className="text-[10px] font-mono text-white/30 tracking-widest mt-0.5">{rev.username}</div></div><button onClick={() => handleRestore(rev.id)} disabled={!!restoringId} className={`flex items-center gap-2 px-4 py-2 text-[10px] font-mono tracking-widest border transition-all ${restoringId === rev.id ? 'border-white/20 text-white/30 cursor-not-allowed' : 'border-white/20 text-white/50 hover:bg-white hover:text-black hover:border-white'}`}>{restoringId === rev.id ? <Loader2 size={11} className="animate-spin" /> : <Clock size={11} />}{restoringId === rev.id ? 'RESTORING...' : 'RESTORE'}</button></div>))}</div>);
+  };
+
+  const content: Record<Tab, () => React.ReactNode> = { site: renderSite, services: renderServices, about: renderAbout, artists: renderArtists, releases: renderReleases, portfolio: renderPortfolio, tours: renderTours, journal: renderJournal, shop: renderShop, pages: renderPages, navigation: renderNavigation, contact: renderContact, users: renderUsers, settings: renderSettingsTab, revisions: renderRevisions };
 
   return (
     <div className="fixed inset-0 z-50 bg-[#0a0a0a] text-white flex overflow-hidden">
       <aside className="hidden lg:flex flex-col w-56 bg-black/80 border-r border-white/10">
         <div className="p-5 border-b border-white/10"><div className="text-lg font-bold tracking-tighter">NOVAVOX</div><div className="text-[9px] font-mono tracking-[0.2em] text-white/25 mt-1">ADMIN DASHBOARD</div></div>
-        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">{visibleTabs.map(tab => (<button key={tab.id} onClick={() => { setActiveTab(tab.id); if (tab.id === 'users') fetchUsers(); }} className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-[10px] font-mono tracking-[0.12em] transition-all ${activeTab === tab.id ? 'bg-white text-black' : 'text-white/40 hover:text-white hover:bg-white/5'}`}>{tab.icon} {tab.label}</button>))}</nav>
+        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">{visibleTabs.map(tab => (<button key={tab.id} onClick={() => { setActiveTab(tab.id); if (tab.id === 'users') fetchUsers(); if (tab.id === 'revisions') fetchRevisions(); }} className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-[10px] font-mono tracking-[0.12em] transition-all ${activeTab === tab.id ? 'bg-white text-black' : 'text-white/40 hover:text-white hover:bg-white/5'}`}>{tab.icon} {tab.label}</button>))}</nav>
         <div className="p-3 border-t border-white/10 space-y-1.5"><div className="px-3 py-1.5"><div className="text-[8px] font-mono tracking-[0.2em] text-white/15">LOGGED IN AS</div><div className="text-[10px] font-mono tracking-widest text-white/40">{adminUser} <span className="text-white/20">({userRole})</span></div></div><a href="/" target="_blank" className="w-full flex items-center justify-center gap-2 px-3 py-2 border border-white/10 text-[10px] font-mono tracking-widest text-white/40 hover:text-white hover:bg-white/5 transition-colors"><ExternalLink size={11} /> VIEW SITE</a><button onClick={logout} className="w-full flex items-center justify-center gap-2 px-3 py-2 border border-red-500/15 text-[10px] font-mono tracking-widest text-red-400/35 hover:text-red-400 hover:bg-red-500/5 transition-colors"><LogOut size={11} /> LOGOUT</button></div>
       </aside>
       {showPwModal && (<div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-center justify-center"><div className="w-full max-w-sm bg-[#111] border border-white/10 p-8"><div className="flex items-center justify-between mb-6"><span className="text-xs font-mono tracking-[0.2em] text-white/70 flex items-center gap-2"><Key size={14} /> CHANGE PASSWORD</span><button onClick={() => setShowPwModal(false)} className="text-white/30 hover:text-white"><X size={16} /></button></div><div className="space-y-3"><Input label="Current Password" value={currentPw} onChange={setCurrentPw} /><Input label="New Password" value={newPw} onChange={setNewPw} /><Input label="Confirm" value={confirmPw} onChange={setConfirmPw} />{pwError && <div className="flex items-center gap-2 text-red-400 text-[10px] font-mono"><AlertCircle size={12} /> {pwError}</div>}{pwSuccess && <div className="flex items-center gap-2 text-green-400 text-[10px] font-mono"><Check size={12} /> UPDATED</div>}<button onClick={changePw} disabled={pwLoading || !currentPw || !newPw || !confirmPw} className={`w-full flex items-center justify-center gap-2 py-2.5 text-[10px] font-mono tracking-widest font-bold transition-all ${pwLoading || !currentPw || !newPw || !confirmPw ? 'bg-white/10 text-white/30 cursor-not-allowed' : 'bg-white text-black hover:bg-white/90'}`}>{pwLoading ? <Loader2 size={12} className="animate-spin" /> : <Lock size={12} />} {pwLoading ? 'UPDATING...' : 'UPDATE'}</button></div></div></div>)}

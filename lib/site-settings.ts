@@ -114,7 +114,7 @@ export const defaultSettings: SiteSettings = {
 
 // Role permission definitions
 export const rolePermissions: Record<UserRole, { tabs: string[]; canDelete: boolean; canManageUsers: boolean; canEditSettings: boolean }> = {
-  owner: { tabs: ['site', 'services', 'about', 'artists', 'releases', 'portfolio', 'tours', 'journal', 'shop', 'pages', 'navigation', 'contact', 'users', 'settings'], canDelete: true, canManageUsers: true, canEditSettings: true },
-  admin: { tabs: ['site', 'services', 'about', 'artists', 'releases', 'portfolio', 'tours', 'journal', 'shop', 'pages', 'navigation', 'contact', 'settings'], canDelete: true, canManageUsers: false, canEditSettings: true },
+  owner: { tabs: ['site', 'services', 'about', 'artists', 'releases', 'portfolio', 'tours', 'journal', 'shop', 'pages', 'navigation', 'contact', 'users', 'settings', 'revisions'], canDelete: true, canManageUsers: true, canEditSettings: true },
+  admin: { tabs: ['site', 'services', 'about', 'artists', 'releases', 'portfolio', 'tours', 'journal', 'shop', 'pages', 'navigation', 'contact', 'settings', 'revisions'], canDelete: true, canManageUsers: false, canEditSettings: true },
   client: { tabs: ['artists', 'releases', 'portfolio', 'tours', 'journal', 'shop'], canDelete: false, canManageUsers: false, canEditSettings: false },
 };
