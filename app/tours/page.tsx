@@ -9,7 +9,7 @@ import ScrollToTop from "@/components/ui/ScrollToTop";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import TourEventRow from "@/components/cards/TourEventRow";
-import { tourEvents } from "@/lib/data";
+import { getSiteData } from "@/lib/get-data";
 
 const sideNavItems = [
   { icon: "event", label: "UPCOMING", href: "#schedule", active: true },
@@ -29,7 +29,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ToursPage() {
+export default async function ToursPage() {
+  const { tourEvents } = await getSiteData();
   return (
     <div className="min-h-screen bg-[#131313] text-[#E2E2E2]">
       <TopNav />

@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { portfolioWorks } from "@/lib/data";
+import { getSiteData } from "@/lib/get-data";
 
-export default function WorkPage({ params }: { params: { id: string } }) {
+export default async function WorkPage({ params }: { params: { id: string } }) {
+  const { portfolioWorks } = await getSiteData();
   const work = portfolioWorks.find((w) => w.id === params.id);
   
   if (!work) {

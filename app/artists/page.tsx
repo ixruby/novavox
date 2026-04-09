@@ -9,7 +9,7 @@ import ScrollToTop from "@/components/ui/ScrollToTop";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import ArtistCard from "@/components/cards/ArtistCard";
-import { artists } from "@/lib/data";
+import { getSiteData } from "@/lib/get-data";
 
 export const metadata: Metadata = {
   title: "Artists — NOVAVOX",
@@ -22,7 +22,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ArtistsPage() {
+export default async function ArtistsPage() {
+  const { artists } = await getSiteData();
   return (
     <div className="min-h-screen bg-[#131313] text-white">
       <TopNav />

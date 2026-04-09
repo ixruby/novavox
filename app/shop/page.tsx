@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TopNav from "@/components/layout/TopNav";
 import Footer from "@/components/layout/Footer";
 import MobileNav from "@/components/layout/MobileNav";
@@ -10,12 +10,15 @@ import ProductCard from "@/components/cards/ProductCard";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
-import { products } from "@/lib/data";
+import { products as defaultProducts, type Product } from "@/lib/data";
 
 const SERIES_FILTERS = ["ALL", "NVX-001", "NVX-002", "NVX-003", "NVX-004", "NVX-005"];
 
 export default function ShopPage() {
+  const [products, setProducts] = useState<Product[]>(defaultProducts);
   const [activeSeries, setActiveSeries] = useState("ALL");
+
+  useEffect(() => { fetch("/api/data").then(r => r.json()).then(d => d.products && setProducts(d.products)).catch(() => {}); }, []);
 
   const filteredProducts =
     activeSeries === "ALL"

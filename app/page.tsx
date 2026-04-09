@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { motion, useMotionValue, useMotionTemplate, useScroll, useTransform } from "motion/react";
-import { artists, releases, portfolioWorks, tourEvents, journalEntries, products } from "@/lib/data";
+import { artists as defaultArtists, releases as defaultReleases, portfolioWorks as defaultPortfolioWorks, tourEvents as defaultTourEvents, journalEntries as defaultJournalEntries, products as defaultProducts } from "@/lib/data";
+import type { Artist, Release, PortfolioWork, TourEvent, JournalEntry, Product } from "@/lib/data";
 
 /* ─── Cursor Glow ─── */
 function CursorGlow() {
@@ -61,6 +62,24 @@ function Stat({ value, label }: { value: string; label: string }) {
 
 /* ═══════════════════════════════════════════════ */
 export default function LandingPage() {
+  const [artists, setArtists] = useState<Artist[]>(defaultArtists);
+  const [releases, setReleases] = useState<Release[]>(defaultReleases);
+  const [portfolioWorks, setPortfolioWorks] = useState<PortfolioWork[]>(defaultPortfolioWorks);
+  const [tourEvents, setTourEvents] = useState<TourEvent[]>(defaultTourEvents);
+  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>(defaultJournalEntries);
+  const [products, setProducts] = useState<Product[]>(defaultProducts);
+
+  useEffect(() => {
+    fetch("/api/data").then(r => r.json()).then(d => {
+      if (d.artists) setArtists(d.artists);
+      if (d.releases) setReleases(d.releases);
+      if (d.portfolioWorks) setPortfolioWorks(d.portfolioWorks);
+      if (d.tourEvents) setTourEvents(d.tourEvents);
+      if (d.journalEntries) setJournalEntries(d.journalEntries);
+      if (d.products) setProducts(d.products);
+    }).catch(() => {});
+  }, []);
+
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);

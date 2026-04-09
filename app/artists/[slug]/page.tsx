@@ -9,10 +9,11 @@ import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import ReleaseCard from "@/components/cards/ReleaseCard";
-import { artists, releases } from "@/lib/data";
+import { getSiteData } from "@/lib/get-data";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
+  const { artists } = await getSiteData();
   const artist = artists.find((a) => a.slug === slug);
   if (!artist) return { title: "Artist Not Found — NOVAVOX" };
   return {
@@ -32,6 +33,7 @@ export default async function ArtistDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const { artists, releases } = await getSiteData();
 
   const artist = artists.find((a) => a.slug === slug);
   if (!artist) {

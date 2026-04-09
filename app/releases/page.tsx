@@ -1,23 +1,26 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import TopNav from "@/components/layout/TopNav";
 import Footer from "@/components/layout/Footer";
 import MobileNav from "@/components/layout/MobileNav";
 import ReleaseCard from "@/components/cards/ReleaseCard";
 import { SpatialHUD } from "@/components/ui/SpatialHUD";
 import { DotGrid } from "@/components/ui/DotGrid";
-import { releases } from "@/lib/data";
+import { releases as defaultReleases, type Release } from "@/lib/data";
 
 type SortOption = "newest" | "oldest" | "title-az" | "title-za";
 
 export default function ReleasesPage() {
+  const [releases, setReleases] = useState<Release[]>(defaultReleases);
   const [formatFilter, setFormatFilter] = useState("ALL");
   const [yearFilter, setYearFilter] = useState("ALL");
   const [artistFilter, setArtistFilter] = useState("ALL");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
 
-  const years = useMemo(() => [...new Set(releases.map((r) => String(r.year)))].sort().reverse(), []);
+  useEffect(() => { fetch("/api/data").then(r => r.json()).then(d => d.releases && setReleases(d.releases)).catch(() => {}); }, []);
+
+  const years = useMemo(() => [...new Set(releases.map((r) => String(r.year)))].sort().reverse(), [releases]);
   const artistNames = useMemo(() => [...new Set(releases.map((r) => r.artist))].sort(), []);
   const formats = ["ALL", "PHYSICAL", "DIGITAL", "SPATIAL"];
 

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { releases, artists } from "@/lib/data";
+import { getSiteData } from "@/lib/get-data";
 import TopNav from "@/components/layout/TopNav";
 import Footer from "@/components/layout/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
@@ -9,6 +9,7 @@ import ScrollToTop from "@/components/ui/ScrollToTop";
 
 export default async function ReleasePage({ params }: { params: Promise<{ catalogNumber: string }> }) {
   const { catalogNumber } = await params;
+  const { releases, artists } = await getSiteData();
   const release = releases.find((r) => r.catalogNumber.toLowerCase() === catalogNumber.toLowerCase());
 
   if (!release) {

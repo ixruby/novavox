@@ -9,7 +9,7 @@ import ScrollToTop from "@/components/ui/ScrollToTop";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import JournalCard from "@/components/cards/JournalCard";
 import EmailCapture from "@/components/forms/EmailCapture";
-import { journalEntries } from "@/lib/data";
+import { getSiteData } from "@/lib/get-data";
 
 export const metadata: Metadata = {
   title: "Sonic Journal — NOVAVOX",
@@ -22,7 +22,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function JournalPage() {
+export default async function JournalPage() {
+  const { journalEntries } = await getSiteData();
   const featuredEntry = journalEntries.find((e) => e.type === "ESSAY") ?? journalEntries[0];
   const noteEntries = journalEntries.filter((e) => e.type === "NOTE");
   const interviewEntries = journalEntries.filter((e) => e.type === "INTERVIEW");

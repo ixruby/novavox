@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { artists, releases } from "@/lib/data";
+import { getSiteData } from "@/lib/get-data";
 import TopNav from "@/components/layout/TopNav";
 import Footer from "@/components/layout/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
@@ -9,6 +9,7 @@ import ScrollToTop from "@/components/ui/ScrollToTop";
 
 export default async function ArtistPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const { artists, releases } = await getSiteData();
   const artist = artists.find((a) => a.slug === slug);
 
   if (!artist) {
