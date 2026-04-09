@@ -5,37 +5,28 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
-import { 
-  Home, 
-  Grid, 
-  Box, 
-  Layers, 
-  User, 
-  ShoppingBag, 
-  Share2, 
-  Music,
-  Menu,
-  X
+import { useSiteConfig } from '@/context/SiteConfigContext';
+import {
+  Home, Grid, Box, Layers, User, ShoppingBag, Share2, Music, Menu, X
 } from 'lucide-react';
 
-const navItems = [
-  { name: 'HOME', path: '/', icon: Home },
-  { name: 'CATALOG', path: '/catalog', icon: Box },
-  { name: 'INTEGRATION', path: '/integration', icon: Layers },
-  { name: 'NARRATIVE', path: '/narrative', icon: Music },
-  { name: 'GALLERY', path: '/gallery', icon: Grid },
-  { name: 'ARTIST', path: '/artist', icon: User },
-  { name: 'RELEASES', path: '/releases', icon: Share2 },
-  { name: 'CHECKOUT', path: '/checkout', icon: ShoppingBag },
-];
+const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+  Home, Grid, Box, Layers, User, ShoppingBag, Share2, Music,
+};
 
 export function Sidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = React.useState(false);
+  const { config } = useSiteConfig();
+
+  // Hide sidebar on admin pages
+  if (pathname?.startsWith('/admin')) return null;
+
+  const visibleNavItems = config.navItems.filter(n => n.visible);
 
   return (
     <>
-      <button 
+      <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed top-6 left-6 z-50 p-2 glass rounded-none md:hidden"
       >
@@ -49,17 +40,18 @@ export function Sidebar() {
         <div className="flex flex-col h-full p-8">
           <div className="mb-12">
             <Link href="/" className="text-2xl font-bold tracking-tighter">
-              NOVAVOX
+              {config.siteName}
             </Link>
-            <div className="mono-label mt-1">SONIC ARCHITECTURE</div>
+            <div className="mono-label mt-1">{config.siteTagline}</div>
           </div>
 
           <nav className="flex-1 space-y-2">
-            {navItems.map((item) => {
+            {visibleNavItems.map((item) => {
               const isActive = pathname === item.path;
+              const Icon = iconMap[item.icon] || Box;
               return (
-                <Link 
-                  key={item.path} 
+                <Link
+                  key={item.path}
                   href={item.path}
                   className={cn(
                     "flex items-center gap-4 px-4 py-3 text-xs font-medium tracking-widest transition-all duration-300 group",
@@ -67,10 +59,10 @@ export function Sidebar() {
                   )}
                   onClick={() => setIsOpen(false)}
                 >
-                  <item.icon size={16} className={cn(isActive ? "text-black" : "text-white/30 group-hover:text-white")} />
+                  <Icon size={16} className={cn(isActive ? "text-black" : "text-white/30 group-hover:text-white")} />
                   {item.name}
                   {isActive && (
-                    <motion.div 
+                    <motion.div
                       layoutId="active-pill"
                       className="ml-auto w-1 h-4 bg-black"
                     />
@@ -84,7 +76,7 @@ export function Sidebar() {
             <div className="mono-label mb-4">SYSTEM STATUS</div>
             <div className="flex items-center gap-2 text-[10px] text-white/40">
               <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              CORE ENGINE ONLINE
+              {config.systemStatus}
             </div>
           </div>
         </div>

@@ -4,32 +4,12 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Play, ArrowRight, Music, Headphones, Layers } from 'lucide-react';
 import Image from 'next/image';
-
-const journeys = [
-  {
-    title: 'THE BRUTALIST ECHO',
-    duration: '45:00',
-    category: 'ARCHITECTURAL SONICS',
-    image: 'https://picsum.photos/seed/brutalist/1200/600',
-    desc: 'An immersive journey through the concrete corridors of modernist architecture. Frequency-tuned for spatial depth.'
-  },
-  {
-    title: 'VOID RESONANCE',
-    duration: '32:15',
-    category: 'MINIMALIST AMBIENT',
-    image: 'https://picsum.photos/seed/void/1200/600',
-    desc: 'A deep exploration of silence and the space between sounds. Designed for the VOID_RESONATOR hardware.'
-  },
-  {
-    title: 'KINETIC PULSE',
-    duration: '58:40',
-    category: 'RHYTHMIC ARCHITECTURE',
-    image: 'https://picsum.photos/seed/kinetic/1200/600',
-    desc: 'Dynamic rhythmic structures that respond to your movement through space. Best experienced with NEBULA_ARRAY.'
-  }
-];
+import { useSiteConfig } from '@/context/SiteConfigContext';
 
 export default function Narrative() {
+  const { config } = useSiteConfig();
+  const visibleJourneys = config.journeys.filter(j => j.visible);
+
   return (
     <div className="space-y-32">
       <header className="max-w-4xl">
@@ -41,8 +21,8 @@ export default function Narrative() {
       </header>
 
       <div className="space-y-24">
-        {journeys.map((journey, i) => (
-          <motion.div 
+        {visibleJourneys.map((journey, i) => (
+          <motion.div
             key={i}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -51,8 +31,8 @@ export default function Narrative() {
             className="group relative"
           >
             <div className="aspect-[21/9] bg-white/5 border border-white/10 overflow-hidden relative">
-              <Image 
-                src={journey.image} 
+              <Image
+                src={journey.image}
                 alt={journey.title}
                 fill
                 className="object-cover opacity-30 group-hover:opacity-60 group-hover:scale-105 transition-all duration-1000 grayscale"
@@ -76,9 +56,7 @@ export default function Narrative() {
             <div className="mt-12 flex flex-col md:flex-row justify-between items-start gap-8">
               <div className="max-w-xl">
                 <h3 className="text-4xl font-bold mb-4 tracking-tighter">{journey.title}</h3>
-                <p className="text-white/50 leading-relaxed">
-                  {journey.desc}
-                </p>
+                <p className="text-white/50 leading-relaxed">{journey.desc}</p>
               </div>
               <div className="flex flex-col gap-4 w-full md:w-auto">
                 <button className="px-8 py-4 bg-white text-black font-bold tracking-widest hover:bg-white/90 transition-all flex items-center justify-center gap-4">
@@ -93,7 +71,6 @@ export default function Narrative() {
         ))}
       </div>
 
-      {/* Stats Section */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-white/10 pt-24">
         <div className="space-y-4">
           <Music size={32} className="text-white/40" />

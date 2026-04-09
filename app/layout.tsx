@@ -6,6 +6,7 @@ import { TopNav } from '@/components/TopNav';
 import { Player } from '@/components/Player';
 import { Footer } from '@/components/Footer';
 import { CartProvider } from '@/context/CartContext';
+import { SiteConfigProvider } from '@/context/SiteConfigContext';
 import { GlideWrapper } from '@/components/GlideWrapper';
 import { ClientOnlyBackground } from '@/components/ClientOnlyBackground';
 
@@ -32,20 +33,22 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
       <body className="bg-black text-white min-h-screen selection:bg-white selection:text-black overflow-x-hidden" suppressHydrationWarning>
-        <CartProvider>
-          <ClientOnlyBackground />
-          <Sidebar />
-          <div className="md:pl-64 flex flex-col min-h-screen perspective-container">
-            <TopNav />
-            <main className="flex-1 pt-24 pb-32 px-8 max-w-7xl mx-auto w-full">
-              <GlideWrapper>
-                {children}
-                <Footer />
-              </GlideWrapper>
-            </main>
-            <Player />
-          </div>
-        </CartProvider>
+        <SiteConfigProvider>
+          <CartProvider>
+            <ClientOnlyBackground />
+            <Sidebar />
+            <div className="md:pl-64 flex flex-col min-h-screen perspective-container">
+              <TopNav />
+              <main className="flex-1 pt-24 pb-32 px-8 max-w-7xl mx-auto w-full">
+                <GlideWrapper>
+                  {children}
+                  <Footer />
+                </GlideWrapper>
+              </main>
+              <Player />
+            </div>
+          </CartProvider>
+        </SiteConfigProvider>
       </body>
     </html>
   );

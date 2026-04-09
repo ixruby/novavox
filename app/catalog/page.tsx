@@ -5,44 +5,12 @@ import { motion } from 'motion/react';
 import { ShoppingCart, Info } from 'lucide-react';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
-
-const objects = [
-  {
-    id: '01',
-    name: 'MONOLITH_X1',
-    category: 'SPATIAL TRANSDUCER',
-    price: '$2,400',
-    image: 'https://picsum.photos/seed/monolith/800/800',
-    specs: ['360° DISPERSION', 'CARBON FIBER CHASSIS', 'HAPTIC FEEDBACK']
-  },
-  {
-    id: '02',
-    name: 'VOID_RESONATOR',
-    category: 'ACOUSTIC DIFFUSER',
-    price: '$1,850',
-    image: 'https://picsum.photos/seed/resonator/800/800',
-    specs: ['PARAMETRIC DESIGN', 'SOLID ALUMINUM', 'FREQUENCY TUNED']
-  },
-  {
-    id: '03',
-    name: 'NEBULA_ARRAY',
-    category: 'ATMOSPHERIC SYSTEM',
-    price: '$4,200',
-    image: 'https://picsum.photos/seed/nebula/800/800',
-    specs: ['16-CHANNEL OUTPUT', 'AI CALIBRATION', 'MODULAR DESIGN']
-  },
-  {
-    id: '04',
-    name: 'PULSE_MODULE',
-    category: 'KINETIC AUDIO',
-    price: '$950',
-    image: 'https://picsum.photos/seed/pulse/800/800',
-    specs: ['VIBRATION ISOLATION', 'OLED DISPLAY', 'WIRELESS SYNC']
-  }
-];
+import { useSiteConfig } from '@/context/SiteConfigContext';
 
 export default function Catalog() {
   const { addToCart } = useCart();
+  const { config } = useSiteConfig();
+  const visibleProducts = config.products.filter(p => p.visible);
 
   return (
     <div className="space-y-16">
@@ -57,8 +25,8 @@ export default function Catalog() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        {objects.map((obj, i) => (
-          <motion.div 
+        {visibleProducts.map((obj, i) => (
+          <motion.div
             key={obj.id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -67,8 +35,8 @@ export default function Catalog() {
             className="group relative"
           >
             <div className="aspect-square bg-white/5 border border-white/10 overflow-hidden relative">
-              <Image 
-                src={obj.image} 
+              <Image
+                src={obj.image}
                 alt={obj.name}
                 fill
                 className="object-cover opacity-50 group-hover:opacity-80 group-hover:scale-105 transition-all duration-700 grayscale"
@@ -78,7 +46,7 @@ export default function Catalog() {
                 ID_{obj.id}
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-8 translate-y-full group-hover:translate-y-0 transition-transform duration-500 bg-gradient-to-t from-black to-transparent">
-                <button 
+                <button
                   onClick={() => addToCart(obj)}
                   className="w-full py-4 bg-white text-black font-bold tracking-widest flex items-center justify-center gap-2 hover:bg-white/90 transition-all"
                 >

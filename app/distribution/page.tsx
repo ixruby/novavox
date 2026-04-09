@@ -3,104 +3,76 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Share2, Globe, Zap, ShieldCheck, ArrowRight } from 'lucide-react';
+import { useSiteConfig } from '@/context/SiteConfigContext';
+
+const featureIcons: Record<string, React.ComponentType<{ size?: number }>> = { Globe, Zap, ShieldCheck };
 
 export default function Distribution() {
+  const { config } = useSiteConfig();
+
   return (
     <div className="space-y-32">
       <header className="max-w-4xl">
-        <div className="mono-label mb-6">DISTRIBUTION_V1.0</div>
-        <h1 className="text-7xl font-bold leading-none mb-8">ARCHITECTING THE <br /> <span className="text-white/20">FUTURE OF SOUND</span></h1>
-        <p className="text-xl text-white/60 leading-relaxed max-w-2xl">
-          NOVAVOX provides a decentralized distribution network for sonic architects. 
-          Share your spatial audio experiences with a global audience through our high-fidelity infrastructure.
-        </p>
+        <div className="mono-label mb-6">{config.distribution.label}</div>
+        <h1 className="text-7xl font-bold leading-none mb-8">{config.distribution.headline} <br /> <span className="text-white/20">{config.distribution.headlineFaded}</span></h1>
+        <p className="text-xl text-white/60 leading-relaxed max-w-2xl">{config.distribution.description}</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-24">
         <div className="space-y-12">
-          {[
-            {
-              title: 'GLOBAL REACH',
-              desc: 'Deploy your sonic objects and narrative journeys to listeners across 120+ countries.',
-              icon: Globe
-            },
-            {
-              title: 'LOSSLESS STREAMING',
-              desc: 'Our network supports up to 24-bit/192kHz spatial audio distribution without compromise.',
-              icon: Zap
-            },
-            {
-              title: 'SECURE LICENSING',
-              desc: 'Blockchain-backed rights management ensures your architectural soundscapes are protected.',
-              icon: ShieldCheck
-            }
-          ].map((item, i) => (
-            <motion.div 
-              key={i}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.1 }}
-              viewport={{ once: true }}
-              className="flex gap-8 group"
-            >
-              <div className="w-16 h-16 border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all duration-500">
-                <item.icon size={24} />
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold mb-2 uppercase">{item.title}</h3>
-                <p className="text-white/50 text-sm leading-relaxed max-w-sm">
-                  {item.desc}
-                </p>
-              </div>
-            </motion.div>
-          ))}
+          {config.distribution.features.map((item, i) => {
+            const Icon = featureIcons[item.icon] || Globe;
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.1 }}
+                viewport={{ once: true }}
+                className="flex gap-8 group"
+              >
+                <div className="w-16 h-16 border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all duration-500">
+                  <Icon size={24} />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold mb-2 uppercase">{item.title}</h3>
+                  <p className="text-white/50 text-sm leading-relaxed max-w-sm">{item.desc}</p>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
 
         <div className="relative glass border border-white/10 p-12 flex flex-col justify-center space-y-8 overflow-hidden">
           <div className="absolute inset-0 grid-bg opacity-10 -z-10" />
           <div className="scanline" />
-          
           <div className="mono-label mb-4">PARTNER_WITH_US</div>
           <h2 className="text-4xl font-bold leading-tight uppercase">JOIN THE <br /> SONIC NETWORK</h2>
           <p className="text-white/50 text-sm leading-relaxed">
-            We are looking for visionary artists and architects to help us define the next generation of spatial audio. 
-            Apply to become a verified NOVAVOX distributor.
+            We are looking for visionary artists and architects to help us define the next generation of spatial audio. Apply to become a verified {config.siteName} distributor.
           </p>
-          
           <div className="space-y-4 pt-8">
             <button className="w-full py-5 bg-white text-black font-bold tracking-widest hover:bg-white/90 transition-all flex items-center justify-center gap-4">
               APPLY NOW <ArrowRight size={20} />
             </button>
             <button className="w-full py-5 border border-white/20 text-white font-bold tracking-widest hover:bg-white/5 transition-all flex items-center justify-center gap-4">
-              <Share2 size={18} />
-              SHARE NETWORK
+              <Share2 size={18} /> SHARE NETWORK
             </button>
           </div>
         </div>
       </div>
 
-      {/* Network Map Mockup */}
       <section className="relative h-[400px] border border-white/10 overflow-hidden">
         <div className="absolute inset-0 grid-bg opacity-20" />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="relative w-full h-full">
             {[...Array(20)].map((_, i) => (
-              <motion.div 
+              <motion.div
                 key={i}
                 className="absolute w-1 h-1 bg-white rounded-full"
-                style={{
-                  top: `${(i * 137) % 100}%`,
-                  left: `${(i * 241) % 100}%`,
-                }}
-                animate={{
-                  opacity: [0.2, 1, 0.2],
-                  scale: [1, 1.5, 1],
-                }}
-                transition={{
-                  duration: 2 + (i % 3),
-                  repeat: Infinity,
-                  delay: (i % 5),
-                }}
+                style={{ top: `${(i * 137) % 100}%`, left: `${(i * 241) % 100}%` }}
+                animate={{ opacity: [0.2, 1, 0.2], scale: [1, 1.5, 1] }}
+                transition={{ duration: 2 + (i % 3), repeat: Infinity, delay: (i % 5) }}
               />
             ))}
             <svg className="absolute inset-0 w-full h-full opacity-10">
@@ -112,7 +84,7 @@ export default function Distribution() {
           </div>
         </div>
         <div className="absolute bottom-8 left-8 mono-label text-white/40">
-          LIVE_NETWORK_NODES: 1,242_ACTIVE
+          LIVE_NETWORK_NODES: {config.distribution.networkNodes}
         </div>
       </section>
     </div>
