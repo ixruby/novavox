@@ -5,6 +5,9 @@ import { artists, releases, products, tourEvents, journalEntries, portfolioWorks
 import { defaultSettings, type SiteSettings } from './site-settings';
 
 const DATA_PATH = path.join(process.cwd(), 'site-data.json');
+const GIST_ID = process.env.GIST_ID;
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const USE_GIST = !!(GIST_ID && GITHUB_TOKEN);
 
 export type SiteData = {
   artists: (Artist & { visible?: boolean; featured?: boolean })[];
@@ -50,25 +53,75 @@ function parseSiteData(saved: Record<string, unknown>): SiteData {
   };
 }
 
-export async function getStoredFile(): Promise<StoredFile> {
+function parseStored(parsed: Record<string, unknown>): StoredFile {
+  if (parsed.current) {
+    return {
+      current: parseSiteData(parsed.current as Record<string, unknown>),
+      revisions: (parsed.revisions as RevisionEntry[]) || [],
+    };
+  }
+  return { current: parseSiteData(parsed), revisions: [] };
+}
+
+// ── GitHub Gist storage (used on Vercel) ───────────────────────────────────
+
+async function readFromGist(): Promise<StoredFile> {
+  const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+    headers: { Authorization: `token ${GITHUB_TOKEN}`, 'User-Agent': 'novavox' },
+    cache: 'no-store',
+  });
+  if (!res.ok) return { current: defaults, revisions: [] };
+  const data = await res.json() as { files: Record<string, { content: string }> };
+  const content = data.files['site-data.json']?.content;
+  if (!content) return { current: defaults, revisions: [] };
   try {
-    const raw = await fs.readFile(DATA_PATH, 'utf-8');
-    const parsed = JSON.parse(raw) as Record<string, unknown>;
-    if (parsed.current) {
-      return {
-        current: parseSiteData(parsed.current as Record<string, unknown>),
-        revisions: (parsed.revisions as RevisionEntry[]) || [],
-      };
-    }
-    // Legacy flat format — migrate transparently
-    return { current: parseSiteData(parsed), revisions: [] };
+    return parseStored(JSON.parse(content) as Record<string, unknown>);
   } catch {
     return { current: defaults, revisions: [] };
   }
 }
 
-export async function writeStoredFile(file: StoredFile): Promise<void> {
+async function writeToGist(file: StoredFile): Promise<void> {
+  await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `token ${GITHUB_TOKEN}`,
+      'Content-Type': 'application/json',
+      'User-Agent': 'novavox',
+    },
+    body: JSON.stringify({
+      files: { 'site-data.json': { content: JSON.stringify(file, null, 2) } },
+    }),
+  });
+}
+
+// ── Local filesystem storage (used in dev) ─────────────────────────────────
+
+async function readFromFile(): Promise<StoredFile> {
+  try {
+    const raw = await fs.readFile(DATA_PATH, 'utf-8');
+    return parseStored(JSON.parse(raw) as Record<string, unknown>);
+  } catch {
+    return { current: defaults, revisions: [] };
+  }
+}
+
+async function writeToFile(file: StoredFile): Promise<void> {
   await fs.writeFile(DATA_PATH, JSON.stringify(file, null, 2), 'utf-8');
+}
+
+// ── Public API ──────────────────────────────────────────────────────────────
+
+export async function getStoredFile(): Promise<StoredFile> {
+  return USE_GIST ? readFromGist() : readFromFile();
+}
+
+export async function writeStoredFile(file: StoredFile): Promise<void> {
+  if (USE_GIST) {
+    await writeToGist(file);
+  } else {
+    await writeToFile(file);
+  }
 }
 
 export async function getSiteData(): Promise<SiteData> {
