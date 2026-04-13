@@ -1,6 +1,8 @@
 {
   "name": "novavox",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "description": "NOVAVOX — Music distribution and artist platform",
+  "author": "Nine Ruby Management FZ-LLC",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -13,6 +15,7 @@
     "@tsparticles/engine": "^3.9.1",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.9.1",
+    "@vercel/blob": "^2.3.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.7.0",
