@@ -108,7 +108,11 @@ export default function LandingPage() {
             <span className="text-sm font-black tracking-[0.3em] text-white font-headline uppercase">NOVAVOX</span>
           </Link>
           <div className="hidden md:flex items-center gap-8">
-            {settings.navigation.filter(link => link.visible).map(link => (
+            {settings.navigation.filter(link => {
+              if (!link.visible) return false;
+              const pageKey = link.href.replace(/^[#/]/, '');
+              return !settings.pages[pageKey] || settings.pages[pageKey].visible !== false;
+            }).map(link => (
               <Link key={link.label} href={link.href} className="nav-link font-mono text-[9px] tracking-[0.25em] text-white/40 hover:text-white transition-colors uppercase">
                 {link.label}
               </Link>
