@@ -452,7 +452,7 @@ export default function LandingPage() {
               </Reveal>
             </div>
           </div>
-        )}
+        </div>
       </section>
 
       {/* ═══════════════════════════════════════════

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Globe, MessageCircle, Camera, Mail, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSiteConfig } from '@/context/SiteConfigContext';
