@@ -1,54 +1,60 @@
-import type { Metadata } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
-import './globals.css';
-import { Sidebar } from '@/components/Sidebar';
-import { TopNav } from '@/components/TopNav';
-import { Player } from '@/components/Player';
-import { Footer } from '@/components/Footer';
-import { CartProvider } from '@/context/CartContext';
-import { SiteConfigProvider } from '@/context/SiteConfigContext';
-import { GlideWrapper } from '@/components/GlideWrapper';
-import { ClientOnlyBackground } from '@/components/ClientOnlyBackground';
+import type { Metadata } from "next";
+import { Space_Grotesk, DM_Mono, Geist } from "next/font/google";
+import { CartProvider } from "@/context/CartContext";
+import "./globals.css";
+import { cn } from "@/lib/utils";
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-sans',
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-headline",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
+const dmMono = DM_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
 });
 
 export const metadata: Metadata = {
-  title: 'NOVAVOX | Sonic Architecture',
-  description: 'International Modernist Sonic Architecture - High contrast, monochrome, sharp edges, cinematic, architectural.',
+  title: "NOVAVOX — Where Ideas Become Cinematic Realities",
+  description: "Film & video production, advertising, post production, and music — cinematic excellence by Kaushik Jayakumar and team.",
+  metadataBase: new URL("https://novavox.vercel.app"),
+  openGraph: {
+    title: "NOVAVOX — Where Ideas Become Cinematic Realities",
+    description: "Film & video production, advertising, post production, and music.",
+    siteName: "NOVAVOX",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "NOVAVOX — Where Ideas Become Cinematic Realities",
+    description: "Film & video production, advertising, post production, and music.",
+  },
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
-      <body className="bg-black text-white min-h-screen selection:bg-white selection:text-black overflow-x-hidden" suppressHydrationWarning>
-        <SiteConfigProvider>
-          <CartProvider>
-            <ClientOnlyBackground />
-            <Sidebar />
-            <div className="md:pl-64 flex flex-col min-h-screen perspective-container">
-              <TopNav />
-              <main className="flex-1 pt-24 pb-32 px-8 max-w-7xl mx-auto w-full">
-                <GlideWrapper>
-                  {children}
-                  <Footer />
-                </GlideWrapper>
-              </main>
-              <Player />
-            </div>
-          </CartProvider>
-        </SiteConfigProvider>
+    <html lang="en" className={cn("dark", spaceGrotesk.variable, dmMono.variable, "font-sans", geist.variable)}>
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+        />
+      </head>
+      <body className="min-h-screen antialiased film-grain">
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:bg-white focus:text-[#1A1C1C] focus:px-4 focus:py-2 focus:text-sm focus:tracking-widest focus:uppercase">
+          Skip to content
+        </a>
+        <CartProvider>
+          <main id="main-content">{children}</main>
+        </CartProvider>
       </body>
     </html>
   );

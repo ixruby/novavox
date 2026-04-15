@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOVAVOX — Visualizer Options Preview</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0e0e0e; color: #e2e2e2; font-family: 'Inter', system-ui, sans-serif; }
+    h1 { text-align: center; padding: 30px; font-size: 12px; letter-spacing: 0.5em; text-transform: uppercase; color: rgba(255,255,255,0.3); border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .options { max-width: 1200px; margin: 0 auto; padding: 30px; }
+    .option {
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .option-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 20px;
+      background: #131313;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .option-header h2 { font-size: 14px; letter-spacing: 0.15em; text-transform: uppercase; }
+    .option-header span { font-size: 9px; color: rgba(255,255,255,0.3); letter-spacing: 0.2em; text-transform: uppercase; }
+    .option-body {
+      position: relative;
+      height: 400px;
+      background: #0a0a0a;
+      cursor: crosshair;
+    }
+    .option-body canvas { position: absolute; inset: 0; }
+    .label-overlay {
+      position: absolute; bottom: 16px; left: 16px; z-index: 10;
+      font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.25);
+    }
+    .current-tag {
+      display: inline-block;
+      padding: 3px 10px;
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.5);
+    }
+  </style>
+</head>
+<body>
+  <h1>Novavox — Hero Visualizer Options — Move your mouse over each</h1>
+
+  <div class="options">
+
+    <!-- Option A: Current Tone.js Parametric -->
+    <div class="option">
+      <div class="option-header">
+        <h2>A — Current (Tone.js Parametric Lines)</h2>
+        <span class="current-tag">Currently Active</span>
+      </div>
+      <div class="option-body" id="canvas-a">
+        <canvas id="a"></canvas>
+        <div class="label-overlay">Lines repel from cursor + play pentatonic notes on hover</div>
+      </div>
+    </div>
+
+    <!-- Option B: Vanta WAVES -->
+    <div class="option">
+      <div class="option-header">
+        <h2>B — Vanta.js Waves</h2>
+        <span>6.5K stars — cinematic wave motion</span>
+      </div>
+      <div class="option-body" id="canvas-b">
+        <div class="label-overlay">Flowing 3D waves — mouse tilts the perspective</div>
+      </div>
+    </div>
+
+    <!-- Option C: Vanta HALO -->
+    <div class="option">
+      <div class="option-header">
+        <h2>C — Vanta.js Halo</h2>
+        <span>Ambient light rings</span>
+      </div>
+      <div class="option-body" id="canvas-c">
+        <div class="label-overlay">Ethereal light halo — mouse shifts the glow</div>
+      </div>
+    </div>
+
+    <!-- Option D: Particle Network -->
+    <div class="option">
+      <div class="option-header">
+        <h2>D — Particle Network (Custom Canvas)</h2>
+        <span>No dependencies — pure canvas</span>
+      </div>
+      <div class="option-body" id="canvas-d">
+        <canvas id="d"></canvas>
+        <div class="label-overlay">Floating particles with connecting lines — mouse attracts</div>
+      </div>
+    </div>
+
+    <!-- Option E: Waveform -->
+    <div class="option">
+      <div class="option-header">
+        <h2>E — Audio Waveform (Custom Canvas)</h2>
+        <span>No dependencies — pure canvas</span>
+      </div>
+      <div class="option-body" id="canvas-e">
+        <canvas id="e"></canvas>
+        <div class="label-overlay">Flowing sine waves — mouse distorts the frequency</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Three.js for Vanta -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.waves.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.halo.min.js"></script>
+
+  <script>
+    // ═══ OPTION B: Vanta Waves ═══
+    try {
+      VANTA.WAVES({
+        el: "#canvas-b",
+        mouseControls: true,
+        touchControls: true,
+        minHeight: 400,
+        minWidth: 200,
+        scale: 1.0,
+        color: 0x0a0a0a,
+        shininess: 20,
+        waveHeight: 15,
+        waveSpeed: 0.7,
+        zoom: 0.8,
+      });
+    } catch(e) { console.log('Vanta Waves failed:', e); }
+
+    // ═══ OPTION C: Vanta Halo ═══
+    try {
+      VANTA.HALO({
+        el: "#canvas-c",
+        mouseControls: true,
+        touchControls: true,
+        minHeight: 400,
+        minWidth: 200,
+        baseColor: 0x111111,
+        backgroundColor: 0x0a0a0a,
+        size: 1.5,
+      });
+    } catch(e) { console.log('Vanta Halo failed:', e); }
+
+    // ═══ OPTION D: Particle Network ═══
+    (function() {
+      const canvas = document.getElementById('d');
+      const ctx = canvas.getContext('2d');
+      const container = canvas.parentElement;
+      let mouse = { x: -1000, y: -1000 };
+      let particles = [];
+
+      function resize() {
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+      container.addEventListener('mousemove', e => {
+        const r = container.getBoundingClientRect();
+        mouse.x = e.clientX - r.left;
+        mouse.y = e.clientY - r.top;
+      });
+      container.addEventListener('mouseleave', () => { mouse.x = -1000; mouse.y = -1000; });
+
+      class Particle {
+        constructor() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.vx = (Math.random() - 0.5) * 0.5;
+          this.vy = (Math.random() - 0.5) * 0.5;
+          this.size = Math.random() * 1.5 + 0.5;
+        }
+        update() {
+          const dx = mouse.x - this.x;
+          const dy = mouse.y - this.y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if (dist < 200) {
+            this.vx += dx * 0.0003;
+            this.vy += dy * 0.0003;
+          }
+          this.x += this.vx;
+          this.y += this.vy;
+          this.vx *= 0.99;
+          this.vy *= 0.99;
+          if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+          if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+        }
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,255,255,0.4)';
+          ctx.fill();
+        }
+      }
+
+      for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+      function animate() {
+        ctx.fillStyle = '#0a0a0a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        // Draw connections
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i+1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < 120) {
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `rgba(255,255,255,${0.08 * (1 - dist/120)})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+      animate();
+    })();
+
+    // ═══ OPTION E: Flowing Waveform ═══
+    (function() {
+      const canvas = document.getElementById('e');
+      const ctx = canvas.getContext('2d');
+      const container = canvas.parentElement;
+      let mouse = { x: 0, y: 0 };
+      let t = 0;
+
+      function resize() {
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+      container.addEventListener('mousemove', e => {
+        const r = container.getBoundingClientRect();
+        mouse.x = (e.clientX - r.left) / canvas.width;
+        mouse.y = (e.clientY - r.top) / canvas.height;
+      });
+
+      function animate() {
+        t += 0.008;
+        ctx.fillStyle = '#0a0a0a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const numWaves = 12;
+        for (let w = 0; w < numWaves; w++) {
+          ctx.beginPath();
+          const baseY = canvas.height * (0.2 + (w / numWaves) * 0.6);
+          const amp = 30 + mouse.y * 40 + w * 3;
+          const freq = 0.005 + mouse.x * 0.008;
+          const phase = t + w * 0.4;
+          const opacity = 0.04 + (w / numWaves) * 0.06;
+
+          for (let x = 0; x <= canvas.width; x += 2) {
+            const y = baseY + Math.sin(x * freq + phase) * amp + Math.sin(x * freq * 2.3 + phase * 1.5) * amp * 0.3;
+            if (x === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.strokeStyle = `rgba(255,255,255,${opacity})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+        requestAnimationFrame(animate);
+      }
+      animate();
+    })();
+  </script>
+</body>
+</html>

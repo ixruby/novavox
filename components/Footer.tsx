@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Github, Twitter, Instagram, Mail, Check } from 'lucide-react';
+import { Globe, MessageCircle, Camera, Mail, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSiteConfig } from '@/context/SiteConfigContext';
 
@@ -35,9 +34,15 @@ export function Footer() {
             {config.footer.brandDescription}
           </p>
           <div className="flex gap-4">
-            <a href={config.footer.socialLinks.twitter} className="text-white/30 hover:text-white transition-colors"><Twitter size={18} /></a>
-            <a href={config.footer.socialLinks.instagram} className="text-white/30 hover:text-white transition-colors"><Instagram size={18} /></a>
-            <a href={config.footer.socialLinks.github} className="text-white/30 hover:text-white transition-colors"><Github size={18} /></a>
+            <button className="text-white/30 hover:text-white transition-colors">
+              <MessageCircle size={18} />
+            </button>
+            <button className="text-white/30 hover:text-white transition-colors">
+              <Camera size={18} />
+            </button>
+            <button className="text-white/30 hover:text-white transition-colors">
+              <Globe size={18} />
+            </button>
           </div>
         </div>
 

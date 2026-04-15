@@ -1,125 +1,183 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion } from 'motion/react';
-import Image from 'next/image';
-import { ArrowRight, Layers, Box, Music, Share2 } from 'lucide-react';
+import Image from "next/image";
+import Link from "next/link";
+import { motion } from "motion/react";
+import TopNav from "@/components/layout/TopNav";
+import Footer from "@/components/layout/Footer";
+import MobileNav from "@/components/layout/MobileNav";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import ScrollToTop from "@/components/ui/ScrollToTop";
+import { DotGrid } from "@/components/ui/DotGrid";
 
-export default function Brutalism() {
+function Reveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   return (
-    <div className="space-y-32">
-      {/* Hero Section */}
-      <section className="relative h-[70vh] flex flex-col justify-end pb-12">
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <Image 
-            src="https://picsum.photos/seed/brutalist-hero/1920/1080" 
-            alt="Sonic Brutalism"
-            fill
-            className="object-cover opacity-40 grayscale"
-            referrerPolicy="no-referrer"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-        </div>
-        
-        <div className="max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="mono-label mb-6 flex items-center gap-4">
-              <span className="w-12 h-[1px] bg-white/30" />
-              PROJECT_ID_042
-            </div>
-            <h1 className="text-7xl md:text-9xl font-bold leading-[0.85] mb-8 tracking-tighter">
-              SONIC <br />
-              <span className="text-white/20">BRUTALISM</span>
-            </h1>
-            <div className="flex flex-wrap gap-8 items-center">
-              <div className="mono-label text-white/40">LOCATION: NEO-BERLIN</div>
-              <div className="mono-label text-white/40">COMPLETED: 2024.01.12</div>
-              <div className="mono-label text-white/40">CLIENT: PRIVATE_COLLECTOR</div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }} className={className}>
+      {children}
+    </motion.div>
+  );
+}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-24">
-        <div className="lg:col-span-2 space-y-16">
-          <div className="space-y-8">
-            <h2 className="text-4xl font-bold uppercase border-b border-white/10 pb-6">THE CONCEPT</h2>
-            <p className="text-xl text-white/60 leading-relaxed">
-              Sonic Brutalism is an architectural sound installation that explores the raw, unadorned power of concrete and frequency. 
-              By utilizing the natural resonance of brutalist structures, we&apos;ve created a sonic environment that feels both ancient and futuristic.
-            </p>
-            <p className="text-white/40 text-sm leading-relaxed">
-              The project utilizes 16 MONOLITH_X1 transducers strategically placed to activate the structural nodes of the building. 
-              The result is a low-frequency standing wave that permeates the entire space, creating a physical sensation of sound.
-            </p>
+export default function BrutalismPage() {
+  return (
+    <>
+      <TopNav />
+      <MobileNav />
+      <div className="min-h-screen bg-[#0a0a0a] pt-16 pb-20 md:pb-0">
+        <DotGrid />
+
+        {/* Hero */}
+        <section className="px-6 md:px-12 lg:px-20 pt-12 pb-8">
+          <div className="max-w-7xl mx-auto">
+            <Breadcrumbs items={[{ label: "Case Studies", href: "/gallery" }, { label: "Sonic Brutalism" }]} />
           </div>
+        </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="aspect-square bg-white/5 border border-white/10 relative overflow-hidden group">
-              <Image 
-                src="https://picsum.photos/seed/brut-detail-1/800/800" 
-                alt="Detail 1"
-                fill
-                className="object-cover opacity-40 group-hover:opacity-80 transition-all duration-700 grayscale"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute bottom-4 left-4 mono-label text-[8px]">DETAIL_01_TRANSDUCER_MOUNT</div>
-            </div>
-            <div className="aspect-square bg-white/5 border border-white/10 relative overflow-hidden group">
-              <Image 
-                src="https://picsum.photos/seed/brut-detail-2/800/800" 
-                alt="Detail 2"
-                fill
-                className="object-cover opacity-40 group-hover:opacity-80 transition-all duration-700 grayscale"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute bottom-4 left-4 mono-label text-[8px]">DETAIL_02_ACOUSTIC_MAP</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-16">
-          <div className="space-y-8">
-            <h2 className="text-3xl font-bold border-b border-white/10 pb-6">SYSTEM_SPECS</h2>
-            <div className="space-y-6">
-              {[
-                { label: 'HARDWARE', value: '16x MONOLITH_X1', icon: Box },
-                { label: 'SOFTWARE', value: 'SPATIAL_ARCHITECT_V2', icon: Layers },
-                { label: 'FREQUENCY', value: '12HZ - 24KHZ', icon: Music }
-              ].map((spec, i) => (
-                <div key={i} className="flex items-center gap-4 p-4 glass border border-white/10 group">
-                  <spec.icon size={18} className="text-white/40 group-hover:text-white transition-colors" />
-                  <div>
-                    <div className="mono-label text-[8px] text-white/30">{spec.label}</div>
-                    <div className="text-sm font-bold tracking-widest">{spec.value}</div>
-                  </div>
+        {/* Hero Image */}
+        <section className="px-6 md:px-12 lg:px-20 pb-16">
+          <div className="max-w-7xl mx-auto">
+            <Reveal>
+              <div className="relative aspect-[21/9] overflow-hidden">
+                <Image src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=1600&q=80" alt="Sonic Brutalism Installation" fill className="object-cover grayscale" sizes="100vw" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-black/30 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
+                  <span className="font-mono text-[8px] tracking-widest text-white/30 block mb-3">CASE STUDY — PROJECT NVX-CS-001</span>
+                  <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-extrabold uppercase tracking-tighter text-white leading-[0.9]">Sonic<br />Brutalism</h1>
                 </div>
-              ))}
-            </div>
+              </div>
+            </Reveal>
           </div>
+        </section>
 
-          <div className="space-y-8">
-            <h2 className="text-3xl font-bold border-b border-white/10 pb-6">SHARE_PROJECT</h2>
-            <div className="flex gap-4">
-              <button className="flex-1 py-4 border border-white/10 hover:bg-white hover:text-black transition-all font-bold tracking-widest text-xs flex items-center justify-center gap-2">
-                <Share2 size={14} /> EXPORT_DATA
-              </button>
+        {/* Project Details */}
+        <section className="px-6 md:px-12 lg:px-20 pb-24">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_0.4fr] gap-16">
+              {/* Main Content */}
+              <div>
+                <Reveal>
+                  <div className="grid grid-cols-3 gap-6 mb-12 border-b border-white/5 pb-8">
+                    {[
+                      { label: "Location", value: "Berlin, DE" },
+                      { label: "Completed", value: "October 2024" },
+                      { label: "Client", value: "St. Agnes Gallery" },
+                    ].map(d => (
+                      <div key={d.label}>
+                        <span className="font-mono text-[7px] tracking-widest text-white/15 uppercase block mb-1">{d.label}</span>
+                        <span className="font-headline text-sm font-bold text-white">{d.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </Reveal>
+
+                <Reveal delay={0.1}>
+                  <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight text-white mb-6">The Concept</h2>
+                  <p className="text-sm text-white/40 leading-relaxed mb-6">
+                    Sonic Brutalism is an immersive installation that transforms raw concrete into a resonating instrument. Using precisely calibrated transducers embedded within the walls, floors, and ceiling of St. Agnes — a brutalist church converted into a contemporary art space — the installation renders the building itself as the primary sound source.
+                  </p>
+                  <p className="text-xs text-white/25 leading-relaxed mb-10">
+                    The piece consists of 48 channels of spatial audio, distributed across 96 transducers. Each channel processes environmental input — wind, traffic, visitor movement — through a custom algorithmic composition engine that generates real-time harmonic content based on the building&apos;s natural resonant frequencies. The result is a living soundscape that evolves with its environment, never repeating, always in dialogue with the architecture it inhabits.
+                  </p>
+                </Reveal>
+
+                {/* Detail Images */}
+                <Reveal delay={0.15}>
+                  <div className="grid grid-cols-2 gap-[2px] mb-10">
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <Image src="https://images.unsplash.com/photo-1509114397022-ed747cca3f92?w=800&q=80" alt="Transducer mount detail" fill className="object-cover grayscale hover:grayscale-0 transition-all duration-700" sizes="50vw" />
+                      <div className="absolute bottom-3 left-3">
+                        <span className="font-mono text-[7px] tracking-widest bg-black/60 backdrop-blur-sm px-2 py-1 text-white/40">TRANSDUCER MOUNT</span>
+                      </div>
+                    </div>
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <Image src="https://images.unsplash.com/photo-1504297050568-910d24c426d3?w=800&q=80" alt="Acoustic mapping" fill className="object-cover grayscale hover:grayscale-0 transition-all duration-700" sizes="50vw" />
+                      <div className="absolute bottom-3 left-3">
+                        <span className="font-mono text-[7px] tracking-widest bg-black/60 backdrop-blur-sm px-2 py-1 text-white/40">ACOUSTIC MAP</span>
+                      </div>
+                    </div>
+                  </div>
+                </Reveal>
+
+                <Reveal delay={0.2}>
+                  <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight text-white mb-6">The Process</h2>
+                  <p className="text-xs text-white/25 leading-relaxed mb-6">
+                    Development spanned 8 months — beginning with extensive acoustic mapping of the venue using impulse response measurements at 200+ positions. This data informed the transducer placement algorithm, which optimized for maximum modal excitation while minimizing destructive interference patterns.
+                  </p>
+                  <p className="text-xs text-white/25 leading-relaxed">
+                    The composition engine runs on a custom FPGA array, processing 48 channels of input at 96kHz/32-bit with sub-millisecond latency. Each channel independently tracks room resonance modes and generates harmonic content that reinforces the building&apos;s natural acoustic character.
+                  </p>
+                </Reveal>
+              </div>
+
+              {/* Sidebar — Specs */}
+              <div>
+                <Reveal delay={0.1}>
+                  <div className="sticky top-24 space-y-8">
+                    <div>
+                      <span className="font-mono text-[8px] tracking-[0.3em] text-white/20 uppercase block mb-4">System Specs</span>
+                      <div className="space-y-4">
+                        {[
+                          { label: "Channels", value: "48" },
+                          { label: "Transducers", value: "96" },
+                          { label: "Sample Rate", value: "96kHz" },
+                          { label: "Bit Depth", value: "32-bit" },
+                          { label: "Latency", value: "<1ms" },
+                          { label: "Processing", value: "Custom FPGA" },
+                          { label: "Power", value: "12kW" },
+                        ].map(s => (
+                          <div key={s.label} className="flex justify-between border-b border-white/5 pb-3">
+                            <span className="font-mono text-[9px] text-white/20 tracking-widest uppercase">{s.label}</span>
+                            <span className="font-mono text-[11px] text-white/50">{s.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="font-mono text-[8px] tracking-[0.3em] text-white/20 uppercase block mb-4">Team</span>
+                      <div className="space-y-3">
+                        {[
+                          { role: "Sound Design", name: "Kaushik Jayakumar" },
+                          { role: "Acoustic Eng.", name: "Elias Thorne" },
+                          { role: "FPGA Design", name: "Sarah Kovac" },
+                          { role: "Installation", name: "Marcus Vane" },
+                        ].map(t => (
+                          <div key={t.role}>
+                            <span className="font-mono text-[7px] text-white/15 tracking-widest uppercase block">{t.role}</span>
+                            <span className="font-mono text-[10px] text-white/40">{t.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <Link href="/gallery" className="block font-mono text-[9px] tracking-[0.25em] text-white/40 border border-white/10 px-5 py-3 hover:bg-white hover:text-black transition-all uppercase text-center">
+                      View Gallery
+                    </Link>
+                  </div>
+                </Reveal>
+              </div>
             </div>
           </div>
-          
-          <div className="p-8 bg-white/5 border border-white/10 space-y-4">
-            <div className="mono-label">NEXT_PROJECT</div>
-            <h3 className="text-2xl font-bold tracking-tighter uppercase">VOID_RESONANCE_LAB</h3>
-            <button className="flex items-center gap-2 text-xs font-bold tracking-widest hover:translate-x-2 transition-transform">
-              VIEW CASE STUDY <ArrowRight size={14} />
-            </button>
+        </section>
+
+        {/* Next Project */}
+        <section className="px-6 md:px-12 lg:px-20 pb-24">
+          <div className="max-w-7xl mx-auto border-t border-white/5 pt-12">
+            <Reveal>
+              <span className="font-mono text-[8px] tracking-[0.3em] text-white/20 uppercase block mb-6">Next Case Study</span>
+              <Link href="/narrative" className="group block">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-headline text-2xl md:text-4xl font-bold uppercase tracking-tight text-white group-hover:translate-x-2 transition-transform duration-500">Narrative Experiences</h3>
+                  <span className="material-symbols-outlined text-white/20 text-[28px] group-hover:text-white/60 group-hover:translate-x-2 transition-all duration-500">arrow_forward</span>
+                </div>
+              </Link>
+            </Reveal>
           </div>
-        </div>
+        </section>
+
+        <ScrollToTop />
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }

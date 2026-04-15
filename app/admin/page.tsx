@@ -1,824 +1,178 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { defaultConfig, type SiteConfig, type Product, type Journey, type GalleryItem, type Track, type Release, type NavItem } from '@/lib/site-config';
+import { useRouter } from 'next/navigation';
+import type { Artist, Release, Product, TourEvent, JournalEntry, PortfolioWork } from '@/lib/data';
+import type { SiteSettings, UserRole, AdminUser } from '@/lib/site-settings';
+import { rolePermissions, defaultSettings } from '@/lib/site-settings';
 import {
-  Save, RotateCcw, Eye, EyeOff, Plus, Trash2, GripVertical,
-  Home, Box, Layers, Music, Image, User, Share2, ShoppingBag,
-  Settings, Globe, Zap, Layout, Type, Navigation, Disc3,
-  Monitor, Palette, FileText, ChevronDown, ChevronRight,
-  ExternalLink, Check, AlertCircle, Loader2
+  Save, Plus, Trash2, Users, Disc3, ShoppingBag, Calendar, FileText, Briefcase,
+  Settings, ExternalLink, ChevronDown, ChevronRight, Check, AlertCircle, Loader2,
+  LogOut, Key, Lock, X, Globe, Layers, User, Layout, Navigation, Mail, Shield,
+  Eye, EyeOff, Star, Clock
 } from 'lucide-react';
+import type { RevisionEntry } from '@/lib/get-data';
 
-type Tab = 'general' | 'hero' | 'features' | 'manifesto' | 'products' | 'journeys' | 'gallery' | 'artist' | 'tracks' | 'releases' | 'integration' | 'distribution' | 'navigation' | 'footer' | 'player';
+type SiteData = {
+  artists: (Artist & { visible?: boolean; featured?: boolean })[];
+  releases: (Release & { visible?: boolean; featured?: boolean })[];
+  products: (Product & { visible?: boolean })[];
+  tourEvents: (TourEvent & { visible?: boolean })[];
+  journalEntries: (JournalEntry & { visible?: boolean })[];
+  portfolioWorks: (PortfolioWork & { visible?: boolean })[];
+  settings: SiteSettings;
+};
 
-const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
-  { id: 'general', label: 'GENERAL', icon: <Settings size={16} /> },
-  { id: 'hero', label: 'HERO', icon: <Monitor size={16} /> },
-  { id: 'features', label: 'FEATURES', icon: <Layout size={16} /> },
-  { id: 'manifesto', label: 'MANIFESTO', icon: <Type size={16} /> },
-  { id: 'products', label: 'PRODUCTS', icon: <Box size={16} /> },
-  { id: 'journeys', label: 'JOURNEYS', icon: <Music size={16} /> },
-  { id: 'gallery', label: 'GALLERY', icon: <Image size={16} /> },
-  { id: 'artist', label: 'ARTIST', icon: <User size={16} /> },
-  { id: 'tracks', label: 'TRACKS', icon: <Disc3 size={16} /> },
-  { id: 'releases', label: 'RELEASES', icon: <Share2 size={16} /> },
-  { id: 'integration', label: 'INTEGRATION', icon: <Layers size={16} /> },
-  { id: 'distribution', label: 'DISTRIBUTION', icon: <Globe size={16} /> },
-  { id: 'navigation', label: 'NAVIGATION', icon: <Navigation size={16} /> },
-  { id: 'footer', label: 'FOOTER', icon: <FileText size={16} /> },
-  { id: 'player', label: 'PLAYER', icon: <Music size={16} /> },
+type Tab = 'site' | 'services' | 'about' | 'artists' | 'releases' | 'portfolio' | 'tours' | 'journal' | 'shop' | 'pages' | 'navigation' | 'contact' | 'users' | 'settings' | 'revisions';
+
+const allTabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
+  { id: 'site', label: 'SITE', icon: <Globe size={15} /> },
+  { id: 'services', label: 'SERVICES', icon: <Layers size={15} /> },
+  { id: 'about', label: 'ABOUT', icon: <Users size={15} /> },
+  { id: 'artists', label: 'ARTISTS', icon: <User size={15} /> },
+  { id: 'releases', label: 'RELEASES', icon: <Disc3 size={15} /> },
+  { id: 'portfolio', label: 'PORTFOLIO', icon: <Briefcase size={15} /> },
+  { id: 'tours', label: 'TOURS', icon: <Calendar size={15} /> },
+  { id: 'journal', label: 'JOURNAL', icon: <FileText size={15} /> },
+  { id: 'shop', label: 'SHOP', icon: <ShoppingBag size={15} /> },
+  { id: 'pages', label: 'PAGES', icon: <Layout size={15} /> },
+  { id: 'navigation', label: 'NAV', icon: <Navigation size={15} /> },
+  { id: 'contact', label: 'CONTACT', icon: <Mail size={15} /> },
+  { id: 'users', label: 'USERS', icon: <Shield size={15} /> },
+  { id: 'settings', label: 'SETTINGS', icon: <Settings size={15} /> },
+  { id: 'revisions', label: 'REVISIONS', icon: <Clock size={15} /> },
 ];
 
-function Input({ label, value, onChange, placeholder, type = 'text' }: {
-  label: string; value: string; onChange: (v: string) => void; placeholder?: string; type?: string;
-}) {
-  return (
-    <div className="space-y-2">
-      <label className="text-[10px] font-mono tracking-[0.2em] text-white/50 uppercase">{label}</label>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-white/40 transition-colors font-mono"
-      />
-    </div>
-  );
+function Input({ label, value, onChange, placeholder, type = 'text' }: { label: string; value: string | number; onChange: (v: string) => void; placeholder?: string; type?: string }) {
+  return (<div className="space-y-1.5"><label className="text-[10px] font-mono tracking-[0.2em] text-white/40 uppercase">{label}</label><input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} className="w-full bg-white/5 border border-white/10 px-3 py-2 text-sm text-white placeholder-white/15 focus:outline-none focus:border-white/40 transition-colors font-mono" /></div>);
 }
-
-function Textarea({ label, value, onChange, rows = 3 }: {
-  label: string; value: string; onChange: (v: string) => void; rows?: number;
-}) {
-  return (
-    <div className="space-y-2">
-      <label className="text-[10px] font-mono tracking-[0.2em] text-white/50 uppercase">{label}</label>
-      <textarea
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        rows={rows}
-        className="w-full bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-white/40 transition-colors font-mono resize-none"
-      />
-    </div>
-  );
+function Textarea({ label, value, onChange, rows = 3 }: { label: string; value: string; onChange: (v: string) => void; rows?: number }) {
+  return (<div className="space-y-1.5"><label className="text-[10px] font-mono tracking-[0.2em] text-white/40 uppercase">{label}</label><textarea value={value} onChange={e => onChange(e.target.value)} rows={rows} className="w-full bg-white/5 border border-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:border-white/40 transition-colors font-mono resize-none" /></div>);
 }
-
-function Toggle({ label, value, onChange }: {
-  label: string; value: boolean; onChange: (v: boolean) => void;
-}) {
-  return (
-    <div className="flex items-center justify-between py-2">
-      <label className="text-[10px] font-mono tracking-[0.2em] text-white/50 uppercase">{label}</label>
-      <button
-        onClick={() => onChange(!value)}
-        className={`w-12 h-6 rounded-full transition-colors relative ${value ? 'bg-white' : 'bg-white/10'}`}
-      >
-        <div className={`absolute top-1 w-4 h-4 rounded-full transition-all ${value ? 'left-7 bg-black' : 'left-1 bg-white/40'}`} />
-      </button>
-    </div>
-  );
+function Select({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: string[] }) {
+  return (<div className="space-y-1.5"><label className="text-[10px] font-mono tracking-[0.2em] text-white/40 uppercase">{label}</label><select value={value} onChange={e => onChange(e.target.value)} className="w-full bg-white/5 border border-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:border-white/40 transition-colors font-mono appearance-none">{options.map(o => <option key={o} value={o} className="bg-[#111]">{o}</option>)}</select></div>);
 }
-
-function Section({ title, children, defaultOpen = true }: {
-  title: string; children: React.ReactNode; defaultOpen?: boolean;
-}) {
+function Toggle({ label, value, onChange, icon }: { label: string; value: boolean; onChange: (v: boolean) => void; icon?: React.ReactNode }) {
+  return (<div className="flex items-center justify-between py-1.5"><div className="flex items-center gap-2">{icon}<label className="text-[10px] font-mono tracking-[0.2em] text-white/40 uppercase">{label}</label></div><button onClick={() => onChange(!value)} className={`w-10 h-5 rounded-full transition-colors relative ${value ? 'bg-white' : 'bg-white/10'}`}><div className={`absolute top-0.5 w-4 h-4 rounded-full transition-all ${value ? 'left-5 bg-black' : 'left-0.5 bg-white/40'}`} /></button></div>);
+}
+function Section({ title, children, defaultOpen = false, onDelete, extra }: { title: string; children: React.ReactNode; defaultOpen?: boolean; onDelete?: () => void; extra?: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div className="border border-white/10">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
-      >
-        <span className="text-xs font-mono tracking-[0.2em] text-white/70 uppercase">{title}</span>
-        {open ? <ChevronDown size={14} className="text-white/40" /> : <ChevronRight size={14} className="text-white/40" />}
-      </button>
-      {open && <div className="p-6 pt-2 space-y-4 border-t border-white/5">{children}</div>}
-    </div>
-  );
+  return (<div className="border border-white/10"><div className="flex items-center"><button onClick={() => setOpen(!open)} className="flex-1 flex items-center justify-between p-3 hover:bg-white/5 transition-colors"><span className="text-[11px] font-mono tracking-[0.12em] text-white/60 uppercase truncate">{title}</span>{open ? <ChevronDown size={13} className="text-white/30 shrink-0" /> : <ChevronRight size={13} className="text-white/30 shrink-0" />}</button>{extra}{onDelete && <button onClick={onDelete} className="px-3 text-red-400/30 hover:text-red-400 transition-colors"><Trash2 size={13} /></button>}</div>{open && <div className="p-4 pt-2 space-y-3 border-t border-white/5">{children}</div>}</div>);
 }
-
-function TagsInput({ label, value, onChange }: {
-  label: string; value: string[]; onChange: (v: string[]) => void;
-}) {
+function AddButton({ label, onClick }: { label: string; onClick: () => void }) {
+  return (<button onClick={onClick} className="w-full py-3 border border-dashed border-white/15 text-white/25 hover:text-white hover:border-white/40 transition-colors flex items-center justify-center gap-2 text-[10px] font-mono tracking-widest"><Plus size={13} /> {label}</button>);
+}
+function TagsInput({ label, value, onChange }: { label: string; value: string[]; onChange: (v: string[]) => void }) {
   const [input, setInput] = useState('');
-  return (
-    <div className="space-y-2">
-      <label className="text-[10px] font-mono tracking-[0.2em] text-white/50 uppercase">{label}</label>
-      <div className="flex flex-wrap gap-2 mb-2">
-        {value.map((tag, i) => (
-          <span key={i} className="flex items-center gap-1 text-[10px] border border-white/10 px-2 py-1 text-white/60 tracking-widest">
-            {tag}
-            <button onClick={() => onChange(value.filter((_, j) => j !== i))} className="text-white/30 hover:text-red-400">
-              <Trash2 size={10} />
-            </button>
-          </span>
-        ))}
-      </div>
-      <div className="flex gap-2">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value.toUpperCase())}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && input.trim()) {
-              onChange([...value, input.trim()]);
-              setInput('');
-            }
-          }}
-          placeholder="Type and press Enter"
-          className="flex-1 bg-white/5 border border-white/10 px-3 py-2 text-xs text-white placeholder-white/20 focus:outline-none focus:border-white/40 font-mono"
-        />
-      </div>
-    </div>
-  );
+  return (<div className="space-y-1.5"><label className="text-[10px] font-mono tracking-[0.2em] text-white/40 uppercase">{label}</label><div className="flex flex-wrap gap-1.5 mb-1">{value.map((tag, i) => (<span key={i} className="flex items-center gap-1 text-[10px] border border-white/10 px-2 py-0.5 text-white/50 tracking-widest">{tag}<button onClick={() => onChange(value.filter((_, j) => j !== i))} className="text-white/20 hover:text-red-400"><X size={9} /></button></span>))}</div><input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && input.trim()) { onChange([...value, input.trim()]); setInput(''); } }} placeholder="Type + Enter" className="w-full bg-white/5 border border-white/10 px-3 py-1.5 text-xs text-white placeholder-white/15 focus:outline-none focus:border-white/40 font-mono" /></div>);
 }
 
 export default function AdminDashboard() {
-  const [config, setConfig] = useState<SiteConfig>(defaultConfig);
-  const [activeTab, setActiveTab] = useState<Tab>('general');
+  const [data, setData] = useState<SiteData | null>(null);
+  const [activeTab, setActiveTab] = useState<Tab>('site');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
   const [hasChanges, setHasChanges] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [authChecking, setAuthChecking] = useState(true);
+  const [adminUser, setAdminUser] = useState('');
+  const [userRole, setUserRole] = useState<UserRole>('client');
+  const [showPwModal, setShowPwModal] = useState(false);
+  const [currentPw, setCurrentPw] = useState('');
+  const [newPw, setNewPw] = useState('');
+  const [confirmPw, setConfirmPw] = useState('');
+  const [pwError, setPwError] = useState('');
+  const [pwSuccess, setPwSuccess] = useState(false);
+  const [pwLoading, setPwLoading] = useState(false);
+  const [users, setUsers] = useState<Omit<AdminUser, 'password'>[]>([]);
+  const [newUser, setNewUser] = useState({ username: '', password: '', role: 'client' as UserRole, allowedTabs: [] as string[] });
+  const [revisions, setRevisions] = useState<Omit<RevisionEntry, 'data'>[]>([]);
+  const [revisionsLoading, setRevisionsLoading] = useState(false);
+  const [revisionsError, setRevisionsError] = useState('');
+  const [restoringId, setRestoringId] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
-    fetch('/api/config').then(r => r.json()).then(setConfig).catch(() => {});
-  }, []);
+    fetch('/api/auth').then(r => r.json()).then(d => {
+      if (d.authenticated) { setAuthenticated(true); setAdminUser(d.username || ''); setUserRole(d.role || 'client'); }
+      else router.replace('/admin/login');
+    }).catch(() => router.replace('/admin/login')).finally(() => setAuthChecking(false));
+  }, [router]);
 
-  const updateConfig = useCallback((updater: (prev: SiteConfig) => SiteConfig) => {
-    setConfig(prev => {
-      const next = updater(prev);
-      setHasChanges(true);
-      return next;
-    });
-  }, []);
+  useEffect(() => {
+    if (authenticated) fetch('/api/data').then(r => r.json()).then(d => setData({ ...d, settings: { ...defaultSettings, ...d.settings } })).catch(() => {});
+  }, [authenticated]);
 
-  const save = async () => {
-    setSaving(true);
-    setError('');
-    try {
-      const res = await fetch('/api/config', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(config),
-      });
-      if (res.ok) {
-        setSaved(true);
-        setHasChanges(false);
-        setTimeout(() => setSaved(false), 2000);
-      } else {
-        setError('Failed to save');
-      }
-    } catch {
-      setError('Network error');
-    } finally {
-      setSaving(false);
-    }
+  const allowedTabs = rolePermissions[userRole]?.tabs || [];
+  const canDelete = rolePermissions[userRole]?.canDelete ?? false;
+  const visibleTabs = allTabs.filter(t => allowedTabs.includes(t.id));
+
+  useEffect(() => { if (visibleTabs.length > 0 && !allowedTabs.includes(activeTab)) setActiveTab(visibleTabs[0].id); }, [userRole]);
+
+  const upd = useCallback(<K extends keyof SiteData>(key: K, value: SiteData[K]) => { setData(prev => prev ? { ...prev, [key]: value } : prev); setHasChanges(true); }, []);
+  const updS = useCallback((fn: (s: SiteSettings) => SiteSettings) => { setData(prev => prev ? { ...prev, settings: fn(prev.settings) } : prev); setHasChanges(true); }, []);
+
+  const save = async () => { if (!data) return; setSaving(true); setError(''); try { const res = await fetch('/api/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (res.ok) { setSaved(true); setHasChanges(false); setTimeout(() => setSaved(false), 2000); } else setError('Save failed'); } catch { setError('Network error'); } finally { setSaving(false); } };
+  const logout = async () => { await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'logout' }) }); router.replace('/admin/login'); };
+  const changePw = async () => { setPwError(''); setPwSuccess(false); if (newPw !== confirmPw) { setPwError('PASSWORDS_DO_NOT_MATCH'); return; } if (!newPw) { setPwError('PASSWORD_REQUIRED'); return; } setPwLoading(true); try { const res = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'change-password', currentPassword: currentPw, newPassword: newPw }) }); const d = await res.json(); if (d.success) { setPwSuccess(true); setCurrentPw(''); setNewPw(''); setConfirmPw(''); setTimeout(() => { setPwSuccess(false); setShowPwModal(false); }, 1500); } else setPwError(d.error?.toUpperCase().replace(/ /g, '_') || 'FAILED'); } catch { setPwError('NETWORK_ERROR'); } finally { setPwLoading(false); } };
+  const fetchUsers = () => { fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'get-users' }) }).then(r => r.json()).then(d => d.users && setUsers(d.users)).catch(() => {}); };
+  const handleAddUser = async () => { if (!newUser.username || !newUser.password) return; await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'add-user', ...newUser }) }); setNewUser({ username: '', password: '', role: 'client', allowedTabs: [] }); fetchUsers(); };
+  const handleRemoveUser = async (username: string) => { await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'remove-user', username }) }); fetchUsers(); };
+  const fetchRevisions = useCallback(async () => { setRevisionsLoading(true); setRevisionsError(''); try { const res = await fetch('/api/revisions'); if (!res.ok) throw new Error('Failed'); const json = await res.json(); setRevisions(json.revisions || []); } catch { setRevisionsError('Failed to load revisions'); } finally { setRevisionsLoading(false); } }, []);
+  const handleRestore = async (id: string) => { setRestoringId(id); setRevisionsError(''); try { const res = await fetch('/api/revisions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }); if (!res.ok) throw new Error('Restore failed'); const dataRes = await fetch('/api/data'); const newData = await dataRes.json(); setData({ ...newData, settings: { ...defaultSettings, ...newData.settings } }); setHasChanges(false); fetchRevisions(); } catch { setRevisionsError('Restore failed'); } finally { setRestoringId(''); } };
+
+  if (authChecking || !authenticated || !data) return <div className="fixed inset-0 z-50 bg-[#0a0a0a] flex items-center justify-center"><Loader2 size={20} className="animate-spin text-white/30" /></div>;
+
+  const s = data.settings;
+
+  const renderSite = () => (<div className="space-y-4"><Section title="Hero Section" defaultOpen={true}><Input label="Tagline" value={s.hero.tagline} onChange={v => updS(p => ({ ...p, hero: { ...p.hero, tagline: v } }))} /><TagsInput label="Categories" value={s.hero.categories} onChange={v => updS(p => ({ ...p, hero: { ...p.hero, categories: v } }))} /></Section><Section title="Stats" defaultOpen={true}>{s.stats.map((st, i) => (<div key={i} className="flex gap-2 items-end"><input value={st.value} onChange={e => updS(p => { const stats = [...p.stats]; stats[i] = { ...stats[i], value: e.target.value }; return { ...p, stats }; })} className="w-24 bg-white/5 border border-white/10 px-2 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white/40" /><input value={st.label} onChange={e => updS(p => { const stats = [...p.stats]; stats[i] = { ...stats[i], label: e.target.value }; return { ...p, stats }; })} className="flex-1 bg-white/5 border border-white/10 px-2 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white/40" /><button onClick={() => updS(p => ({ ...p, stats: p.stats.filter((_, j) => j !== i) }))} className="text-red-400/30 hover:text-red-400"><Trash2 size={12} /></button></div>))}<button onClick={() => updS(p => ({ ...p, stats: [...p.stats, { value: '0', label: 'Label' }] }))} className="text-[10px] font-mono tracking-widest text-white/20 hover:text-white/50 flex items-center gap-1"><Plus size={10} /> ADD STAT</button></Section><Section title="SEO"><Input label="Page Title" value={s.seo.title} onChange={v => updS(p => ({ ...p, seo: { ...p.seo, title: v } }))} /><Textarea label="Meta Description" value={s.seo.description} onChange={v => updS(p => ({ ...p, seo: { ...p.seo, description: v } }))} rows={2} /></Section></div>);
+
+  const renderServices = () => (<div className="space-y-4">{s.services.map((svc, i) => (<Section key={i} title={`${svc.tag} — ${svc.title}`} onDelete={canDelete ? () => updS(p => ({ ...p, services: p.services.filter((_, j) => j !== i) })) : undefined}><Toggle label="Visible" value={svc.visible} onChange={v => updS(p => { const services = [...p.services]; services[i] = { ...services[i], visible: v }; return { ...p, services }; })} icon={svc.visible ? <Eye size={12} className="text-green-400/60" /> : <EyeOff size={12} className="text-red-400/60" />} /><div className="grid grid-cols-2 gap-3"><Input label="Tag/Number" value={svc.tag} onChange={v => updS(p => { const services = [...p.services]; services[i] = { ...services[i], tag: v }; return { ...p, services }; })} /><Input label="Icon" value={svc.icon} onChange={v => updS(p => { const services = [...p.services]; services[i] = { ...services[i], icon: v }; return { ...p, services }; })} /></div><Input label="Title" value={svc.title} onChange={v => updS(p => { const services = [...p.services]; services[i] = { ...services[i], title: v }; return { ...p, services }; })} /><Textarea label="Description" value={svc.description} onChange={v => updS(p => { const services = [...p.services]; services[i] = { ...services[i], description: v }; return { ...p, services }; })} rows={2} /></Section>))}<AddButton label="ADD SERVICE" onClick={() => updS(p => ({ ...p, services: [...p.services, { icon: 'star', tag: String(p.services.length + 1).padStart(3, '0'), title: 'New Service', description: '', visible: true }] }))} /></div>);
+
+  const renderAbout = () => (<div className="space-y-4"><Section title="Introduction" defaultOpen={true}><Textarea label="Intro" value={s.about.intro} onChange={v => updS(p => ({ ...p, about: { ...p.about, intro: v } }))} rows={2} /><Textarea label="Full Story" value={s.about.story} onChange={v => updS(p => ({ ...p, about: { ...p.about, story: v } }))} rows={4} /></Section><Section title="About Stats">{s.about.stats.map((st, i) => (<div key={i} className="flex gap-2 items-end"><input value={st.value} onChange={e => updS(p => { const stats = [...p.about.stats]; stats[i] = { ...stats[i], value: e.target.value }; return { ...p, about: { ...p.about, stats } }; })} className="w-24 bg-white/5 border border-white/10 px-2 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white/40" /><input value={st.label} onChange={e => updS(p => { const stats = [...p.about.stats]; stats[i] = { ...stats[i], label: e.target.value }; return { ...p, about: { ...p.about, stats } }; })} className="flex-1 bg-white/5 border border-white/10 px-2 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white/40" /><button onClick={() => updS(p => ({ ...p, about: { ...p.about, stats: p.about.stats.filter((_, j) => j !== i) } }))} className="text-red-400/30 hover:text-red-400"><Trash2 size={12} /></button></div>))}</Section><Section title="Team & Vision"><Textarea label="Team" value={s.about.team} onChange={v => updS(p => ({ ...p, about: { ...p.about, team: v } }))} rows={3} /><Textarea label="Vision" value={s.about.vision} onChange={v => updS(p => ({ ...p, about: { ...p.about, vision: v } }))} rows={3} /></Section><Section title="Capabilities"><TagsInput label="Tags" value={s.about.capabilities} onChange={v => updS(p => ({ ...p, about: { ...p.about, capabilities: v } }))} /></Section></div>);
+
+  const renderArtists = () => (<div className="space-y-3">{data.artists.map((a, i) => (<Section key={i} title={a.name + ' — ' + a.genre} onDelete={canDelete ? () => upd('artists', data.artists.filter((_, j) => j !== i)) : undefined} extra={<div className="flex items-center gap-1 px-2">{a.visible !== false ? <Eye size={12} className="text-green-400/50" /> : <EyeOff size={12} className="text-red-400/50" />}{a.featured ? <Star size={12} className="text-yellow-400/50" /> : null}</div>}><div className="flex gap-4 mb-2"><Toggle label="Visible" value={a.visible !== false} onChange={v => { const arr = [...data.artists]; arr[i] = { ...arr[i], visible: v }; upd('artists', arr); }} icon={<Eye size={12} />} /><Toggle label="Featured" value={!!a.featured} onChange={v => { const arr = [...data.artists]; arr[i] = { ...arr[i], featured: v }; upd('artists', arr); }} icon={<Star size={12} />} /></div><div className="grid grid-cols-2 gap-3"><Input label="Name" value={a.name} onChange={v => { const arr = [...data.artists]; arr[i] = { ...arr[i], name: v }; upd('artists', arr); }} /><Input label="Slug" value={a.slug} onChange={v => { const arr = [...data.artists]; arr[i] = { ...arr[i], slug: v }; upd('artists', arr); }} /></div><div className="grid grid-cols-2 gap-3"><Input label="Genre" value={a.genre} onChange={v => { const arr = [...data.artists]; arr[i] = { ...arr[i], genre: v }; upd('artists', arr); }} /><Select label="Status" value={a.status} onChange={v => { const arr = [...data.artists]; arr[i] = { ...arr[i], status: v as Artist['status'] }; upd('artists', arr); }} options={['ACTIVE', 'ARCHIVED', 'EMERGING']} /></div><div className="grid grid-cols-2 gap-3"><Input label="Coordinates" value={a.coordinates} onChange={v => { const arr = [...data.artists]; arr[i] = { ...arr[i], coordinates: v }; upd('artists', arr); }} /><Input label="Listeners" value={a.listeners} onChange={v => { const arr = [...data.artists]; arr[i] = { ...arr[i], listeners: v }; upd('artists', arr); }} /></div><Input label="Image URL" value={a.image} onChange={v => { const arr = [...data.artists]; arr[i] = { ...arr[i], image: v }; upd('artists', arr); }} /><Textarea label="Bio" value={a.bio} onChange={v => { const arr = [...data.artists]; arr[i] = { ...arr[i], bio: v }; upd('artists', arr); }} rows={2} /></Section>))}<AddButton label="ADD ARTIST" onClick={() => upd('artists', [...data.artists, { slug: 'new-artist', name: 'NEW ARTIST', genre: 'GENRE', image: '', coordinates: '0°N, 0°E', status: 'EMERGING' as const, bio: '', releases: 0, listeners: '0', visible: true, featured: false, socialLinks: { instagram: '#', soundcloud: '#', bandcamp: '#' } }])} /></div>);
+
+  const renderReleases = () => (<div className="space-y-3">{data.releases.map((r, i) => (<Section key={i} title={`${r.catalogNumber} — ${r.title}`} onDelete={canDelete ? () => upd('releases', data.releases.filter((_, j) => j !== i)) : undefined} extra={<div className="px-2">{r.visible !== false ? <Eye size={12} className="text-green-400/50" /> : <EyeOff size={12} className="text-red-400/50" />}</div>}><div className="flex gap-4 mb-2"><Toggle label="Visible" value={r.visible !== false} onChange={v => { const arr = [...data.releases]; arr[i] = { ...arr[i], visible: v }; upd('releases', arr); }} icon={<Eye size={12} />} /><Toggle label="Featured" value={!!r.featured} onChange={v => { const arr = [...data.releases]; arr[i] = { ...arr[i], featured: v }; upd('releases', arr); }} icon={<Star size={12} />} /></div><div className="grid grid-cols-3 gap-3"><Input label="Catalog #" value={r.catalogNumber} onChange={v => { const arr = [...data.releases]; arr[i] = { ...arr[i], catalogNumber: v }; upd('releases', arr); }} /><Input label="Title" value={r.title} onChange={v => { const arr = [...data.releases]; arr[i] = { ...arr[i], title: v }; upd('releases', arr); }} /><Input label="Artist" value={r.artist} onChange={v => { const arr = [...data.releases]; arr[i] = { ...arr[i], artist: v }; upd('releases', arr); }} /></div><div className="grid grid-cols-3 gap-3"><Input label="Slug" value={r.artistSlug} onChange={v => { const arr = [...data.releases]; arr[i] = { ...arr[i], artistSlug: v }; upd('releases', arr); }} /><Input label="Genre" value={r.genre} onChange={v => { const arr = [...data.releases]; arr[i] = { ...arr[i], genre: v }; upd('releases', arr); }} /><Select label="Format" value={r.format} onChange={v => { const arr = [...data.releases]; arr[i] = { ...arr[i], format: v as Release['format'] }; upd('releases', arr); }} options={['PHYSICAL', 'DIGITAL', 'SPATIAL']} /></div><div className="grid grid-cols-2 gap-3"><Input label="Image" value={r.image} onChange={v => { const arr = [...data.releases]; arr[i] = { ...arr[i], image: v }; upd('releases', arr); }} /><Input label="Year" value={r.year} onChange={v => { const arr = [...data.releases]; arr[i] = { ...arr[i], year: parseInt(v) || 2024 }; upd('releases', arr); }} type="number" /></div><Textarea label="Credits" value={r.credits || ''} onChange={v => { const arr = [...data.releases]; arr[i] = { ...arr[i], credits: v }; upd('releases', arr); }} rows={2} /><div className="space-y-1.5"><label className="text-[10px] font-mono tracking-[0.2em] text-white/40 uppercase">Tracks</label>{r.tracks.map((t, ti) => (<div key={ti} className="flex gap-2 items-end"><input value={t.number} onChange={e => { const arr = [...data.releases]; const tracks = [...arr[i].tracks]; tracks[ti] = { ...tracks[ti], number: e.target.value }; arr[i] = { ...arr[i], tracks }; upd('releases', arr); }} className="w-20 bg-white/5 border border-white/10 px-2 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white/40" /><input value={t.title} onChange={e => { const arr = [...data.releases]; const tracks = [...arr[i].tracks]; tracks[ti] = { ...tracks[ti], title: e.target.value }; arr[i] = { ...arr[i], tracks }; upd('releases', arr); }} className="flex-1 bg-white/5 border border-white/10 px-2 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white/40" /><input value={t.duration} onChange={e => { const arr = [...data.releases]; const tracks = [...arr[i].tracks]; tracks[ti] = { ...tracks[ti], duration: e.target.value }; arr[i] = { ...arr[i], tracks }; upd('releases', arr); }} className="w-16 bg-white/5 border border-white/10 px-2 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white/40" /><button onClick={() => { const arr = [...data.releases]; arr[i] = { ...arr[i], tracks: arr[i].tracks.filter((_, j) => j !== ti) }; upd('releases', arr); }} className="text-red-400/30 hover:text-red-400"><Trash2 size={11} /></button></div>))}<button onClick={() => { const arr = [...data.releases]; arr[i] = { ...arr[i], tracks: [...arr[i].tracks, { number: '', title: '', duration: '' }] }; upd('releases', arr); }} className="text-[10px] font-mono tracking-widest text-white/20 hover:text-white/50 flex items-center gap-1"><Plus size={10} /> ADD TRACK</button></div></Section>))}<AddButton label="ADD RELEASE" onClick={() => upd('releases', [...data.releases, { catalogNumber: `NVX${String(data.releases.length + 1).padStart(3, '0')}`, title: 'NEW RELEASE', artist: 'ARTIST', artistSlug: 'artist', genre: 'GENRE', format: 'DIGITAL' as const, image: '', year: 2024, tracks: [], credits: '', streamingLinks: [], visible: true, featured: false }])} /></div>);
+
+  const renderPortfolio = () => (<div className="space-y-3">{data.portfolioWorks.map((w, i) => (<Section key={i} title={`${w.id.toUpperCase()} — ${w.title}`} onDelete={canDelete ? () => upd('portfolioWorks', data.portfolioWorks.filter((_, j) => j !== i)) : undefined} extra={<div className="px-2">{w.visible !== false ? <Eye size={12} className="text-green-400/50" /> : <EyeOff size={12} className="text-red-400/50" />}</div>}><Toggle label="Visible" value={w.visible !== false} onChange={v => { const arr = [...data.portfolioWorks]; arr[i] = { ...arr[i], visible: v }; upd('portfolioWorks', arr); }} icon={<Eye size={12} />} /><div className="grid grid-cols-3 gap-3"><Input label="ID" value={w.id} onChange={v => { const arr = [...data.portfolioWorks]; arr[i] = { ...arr[i], id: v }; upd('portfolioWorks', arr); }} /><Input label="Title" value={w.title} onChange={v => { const arr = [...data.portfolioWorks]; arr[i] = { ...arr[i], title: v }; upd('portfolioWorks', arr); }} /><Select label="Category" value={w.category} onChange={v => { const arr = [...data.portfolioWorks]; arr[i] = { ...arr[i], category: v as PortfolioWork['category'] }; upd('portfolioWorks', arr); }} options={['MUSIC', 'ADS', 'FILMS']} /></div><div className="grid grid-cols-2 gap-3"><Input label="Image" value={w.image} onChange={v => { const arr = [...data.portfolioWorks]; arr[i] = { ...arr[i], image: v }; upd('portfolioWorks', arr); }} /><Input label="Year" value={w.year} onChange={v => { const arr = [...data.portfolioWorks]; arr[i] = { ...arr[i], year: parseInt(v) || 2024 }; upd('portfolioWorks', arr); }} type="number" /></div><Textarea label="Description" value={w.description} onChange={v => { const arr = [...data.portfolioWorks]; arr[i] = { ...arr[i], description: v }; upd('portfolioWorks', arr); }} rows={2} /></Section>))}<AddButton label="ADD WORK" onClick={() => upd('portfolioWorks', [...data.portfolioWorks, { id: `m-${String(data.portfolioWorks.length + 1).padStart(3, '0')}`, title: 'NEW WORK', category: 'MUSIC' as const, image: '', description: '', year: 2024, visible: true }])} /></div>);
+
+  const renderTours = () => (<div className="space-y-3">{data.tourEvents.map((t, i) => (<Section key={i} title={`${t.date} — ${t.city}, ${t.country}`} onDelete={canDelete ? () => upd('tourEvents', data.tourEvents.filter((_, j) => j !== i)) : undefined} extra={<div className="px-2">{t.visible !== false ? <Eye size={12} className="text-green-400/50" /> : <EyeOff size={12} className="text-red-400/50" />}</div>}><Toggle label="Visible" value={t.visible !== false} onChange={v => { const arr = [...data.tourEvents]; arr[i] = { ...arr[i], visible: v }; upd('tourEvents', arr); }} icon={<Eye size={12} />} /><div className="grid grid-cols-3 gap-3"><Input label="Date" value={t.date} onChange={v => { const arr = [...data.tourEvents]; arr[i] = { ...arr[i], date: v }; upd('tourEvents', arr); }} /><Input label="City" value={t.city} onChange={v => { const arr = [...data.tourEvents]; arr[i] = { ...arr[i], city: v }; upd('tourEvents', arr); }} /><Input label="Country" value={t.country} onChange={v => { const arr = [...data.tourEvents]; arr[i] = { ...arr[i], country: v }; upd('tourEvents', arr); }} /></div><div className="grid grid-cols-2 gap-3"><Input label="Venue" value={t.venue} onChange={v => { const arr = [...data.tourEvents]; arr[i] = { ...arr[i], venue: v }; upd('tourEvents', arr); }} /><Select label="Status" value={t.status} onChange={v => { const arr = [...data.tourEvents]; arr[i] = { ...arr[i], status: v as TourEvent['status'] }; upd('tourEvents', arr); }} options={['RESERVE', 'SOLD OUT']} /></div><TagsInput label="Features" value={t.features} onChange={v => { const arr = [...data.tourEvents]; arr[i] = { ...arr[i], features: v }; upd('tourEvents', arr); }} /></Section>))}<AddButton label="ADD EVENT" onClick={() => upd('tourEvents', [...data.tourEvents, { date: 'JAN 01', city: 'CITY', country: 'XX', venue: 'Venue', features: [], status: 'RESERVE' as const, visible: true }])} /></div>);
+
+  const renderJournal = () => (<div className="space-y-3">{data.journalEntries.map((j, i) => (<Section key={i} title={`#${j.issue} — ${j.title}`} onDelete={canDelete ? () => upd('journalEntries', data.journalEntries.filter((_, ji) => ji !== i)) : undefined} extra={<div className="px-2">{j.visible !== false ? <Eye size={12} className="text-green-400/50" /> : <EyeOff size={12} className="text-red-400/50" />}</div>}><Toggle label="Visible" value={j.visible !== false} onChange={v => { const arr = [...data.journalEntries]; arr[i] = { ...arr[i], visible: v }; upd('journalEntries', arr); }} icon={<Eye size={12} />} /><div className="grid grid-cols-3 gap-3"><Input label="Issue" value={j.issue} onChange={v => { const arr = [...data.journalEntries]; arr[i] = { ...arr[i], issue: v }; upd('journalEntries', arr); }} /><Input label="Slug" value={j.slug} onChange={v => { const arr = [...data.journalEntries]; arr[i] = { ...arr[i], slug: v }; upd('journalEntries', arr); }} /><Select label="Type" value={j.type} onChange={v => { const arr = [...data.journalEntries]; arr[i] = { ...arr[i], type: v as JournalEntry['type'] }; upd('journalEntries', arr); }} options={['ESSAY', 'NOTE', 'INTERVIEW']} /></div><Input label="Title" value={j.title} onChange={v => { const arr = [...data.journalEntries]; arr[i] = { ...arr[i], title: v }; upd('journalEntries', arr); }} /><Textarea label="Description" value={j.description} onChange={v => { const arr = [...data.journalEntries]; arr[i] = { ...arr[i], description: v }; upd('journalEntries', arr); }} rows={2} /><div className="grid grid-cols-2 gap-3"><Input label="Author" value={j.author} onChange={v => { const arr = [...data.journalEntries]; arr[i] = { ...arr[i], author: v }; upd('journalEntries', arr); }} /><Input label="Read Time" value={j.readTime} onChange={v => { const arr = [...data.journalEntries]; arr[i] = { ...arr[i], readTime: v, duration: v }; upd('journalEntries', arr); }} /></div><Input label="Image" value={j.image} onChange={v => { const arr = [...data.journalEntries]; arr[i] = { ...arr[i], image: v }; upd('journalEntries', arr); }} /></Section>))}<AddButton label="ADD ENTRY" onClick={() => upd('journalEntries', [...data.journalEntries, { slug: 'new', issue: '000', title: 'New Entry', description: '', author: 'Author', duration: '10 MIN READ', readTime: '10 MIN READ', image: '', type: 'ESSAY' as const, visible: true }])} /></div>);
+
+  const renderShop = () => (<div className="space-y-3">{data.products.map((p, i) => (<Section key={i} title={`${p.sku} — ${p.name} — €${p.price.toFixed(2)}`} onDelete={canDelete ? () => upd('products', data.products.filter((_, j) => j !== i)) : undefined} extra={<div className="px-2">{p.visible !== false ? <Eye size={12} className="text-green-400/50" /> : <EyeOff size={12} className="text-red-400/50" />}</div>}><Toggle label="Visible" value={p.visible !== false} onChange={v => { const arr = [...data.products]; arr[i] = { ...arr[i], visible: v }; upd('products', arr); }} icon={<Eye size={12} />} /><div className="grid grid-cols-3 gap-3"><Input label="SKU" value={p.sku} onChange={v => { const arr = [...data.products]; arr[i] = { ...arr[i], sku: v }; upd('products', arr); }} /><Input label="Name" value={p.name} onChange={v => { const arr = [...data.products]; arr[i] = { ...arr[i], name: v }; upd('products', arr); }} /><Input label="Price" value={p.price} onChange={v => { const arr = [...data.products]; arr[i] = { ...arr[i], price: parseFloat(v) || 0 }; upd('products', arr); }} type="number" /></div><div className="grid grid-cols-3 gap-3"><Input label="Currency" value={p.currency} onChange={v => { const arr = [...data.products]; arr[i] = { ...arr[i], currency: v }; upd('products', arr); }} /><Input label="Material" value={p.material} onChange={v => { const arr = [...data.products]; arr[i] = { ...arr[i], material: v }; upd('products', arr); }} /><Input label="Badge" value={p.badge || ''} onChange={v => { const arr = [...data.products]; arr[i] = { ...arr[i], badge: v || undefined }; upd('products', arr); }} /></div><Input label="Image" value={p.image} onChange={v => { const arr = [...data.products]; arr[i] = { ...arr[i], image: v }; upd('products', arr); }} /></Section>))}<AddButton label="ADD PRODUCT" onClick={() => upd('products', [...data.products, { sku: `NVX-${String(data.products.length + 1).padStart(3, '0')}`, name: 'NEW', price: 0, currency: 'EUR', series: 'NVX', material: '', image: '', visible: true }])} /></div>);
+
+  const renderPages = () => (<div className="space-y-3">{Object.entries(s.pages).map(([key, page]) => (<Section key={key} title={key.toUpperCase()} extra={<div className="px-2">{page.visible ? <Eye size={12} className="text-green-400/50" /> : <EyeOff size={12} className="text-red-400/50" />}</div>}><Toggle label="Visible" value={page.visible} onChange={v => updS(p => ({ ...p, pages: { ...p.pages, [key]: { ...p.pages[key], visible: v } } }))} icon={page.visible ? <Eye size={12} /> : <EyeOff size={12} />} /><Input label="Title" value={page.title} onChange={v => updS(p => ({ ...p, pages: { ...p.pages, [key]: { ...p.pages[key], title: v } } }))} /><Input label="Description" value={page.description} onChange={v => updS(p => ({ ...p, pages: { ...p.pages, [key]: { ...p.pages[key], description: v } } }))} /></Section>))}</div>);
+
+  const renderNavigation = () => (<div className="space-y-4"><Section title="Navigation Items" defaultOpen={true}>{s.navigation.map((nav, i) => (<div key={i} className="flex gap-2 items-center border border-white/5 p-2"><button onClick={() => updS(p => { const navigation = [...p.navigation]; navigation[i] = { ...navigation[i], visible: !navigation[i].visible }; return { ...p, navigation }; })}>{nav.visible ? <Eye size={14} className="text-green-400/60" /> : <EyeOff size={14} className="text-red-400/60" />}</button><input value={nav.label} onChange={e => updS(p => { const navigation = [...p.navigation]; navigation[i] = { ...navigation[i], label: e.target.value }; return { ...p, navigation }; })} className="w-28 bg-white/5 border border-white/10 px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-white/40" /><input value={nav.href} onChange={e => updS(p => { const navigation = [...p.navigation]; navigation[i] = { ...navigation[i], href: e.target.value }; return { ...p, navigation }; })} className="flex-1 bg-white/5 border border-white/10 px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-white/40" /><button onClick={() => updS(p => ({ ...p, navigation: p.navigation.filter((_, j) => j !== i) }))} className="text-red-400/30 hover:text-red-400"><Trash2 size={12} /></button></div>))}<button onClick={() => updS(p => ({ ...p, navigation: [...p.navigation, { label: 'NEW', href: '/', visible: true }] }))} className="text-[10px] font-mono tracking-widest text-white/20 hover:text-white/50 flex items-center gap-1"><Plus size={10} /> ADD</button></Section><Section title="Footer"><Textarea label="Tagline" value={s.footer.tagline} onChange={v => updS(p => ({ ...p, footer: { ...p.footer, tagline: v } }))} rows={2} /><Input label="Copyright" value={s.footer.copyright} onChange={v => updS(p => ({ ...p, footer: { ...p.footer, copyright: v } }))} /><div className="grid grid-cols-2 gap-3"><Input label="Credit" value={s.footer.credit} onChange={v => updS(p => ({ ...p, footer: { ...p.footer, credit: v } }))} /><Input label="Credit Link" value={s.footer.creditLink} onChange={v => updS(p => ({ ...p, footer: { ...p.footer, creditLink: v } }))} /></div></Section></div>);
+
+  const renderContact = () => (<div className="space-y-4"><Section title="Contact Info" defaultOpen={true}><Input label="Headline" value={s.contact.headline} onChange={v => updS(p => ({ ...p, contact: { ...p.contact, headline: v } }))} /><Textarea label="Description" value={s.contact.description} onChange={v => updS(p => ({ ...p, contact: { ...p.contact, description: v } }))} rows={2} /><div className="grid grid-cols-3 gap-3"><Input label="Phone" value={s.contact.phone} onChange={v => updS(p => ({ ...p, contact: { ...p.contact, phone: v } }))} /><Input label="Email" value={s.contact.email} onChange={v => updS(p => ({ ...p, contact: { ...p.contact, email: v } }))} /><Input label="WhatsApp" value={s.contact.whatsapp} onChange={v => updS(p => ({ ...p, contact: { ...p.contact, whatsapp: v } }))} /></div></Section><Section title="Buttons">{s.contact.buttons.map((btn, i) => (<div key={i} className="flex gap-2 items-center border border-white/5 p-2"><button onClick={() => updS(p => { const buttons = [...p.contact.buttons]; buttons[i] = { ...buttons[i], visible: !buttons[i].visible }; return { ...p, contact: { ...p.contact, buttons } }; })}>{btn.visible ? <Eye size={14} className="text-green-400/60" /> : <EyeOff size={14} className="text-red-400/60" />}</button><input value={btn.label} onChange={e => updS(p => { const buttons = [...p.contact.buttons]; buttons[i] = { ...buttons[i], label: e.target.value }; return { ...p, contact: { ...p.contact, buttons } }; })} className="w-36 bg-white/5 border border-white/10 px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-white/40" /><input value={btn.href} onChange={e => updS(p => { const buttons = [...p.contact.buttons]; buttons[i] = { ...buttons[i], href: e.target.value }; return { ...p, contact: { ...p.contact, buttons } }; })} className="flex-1 bg-white/5 border border-white/10 px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-white/40" /></div>))}</Section></div>);
+
+  const renderUsers = () => { if (activeTab === 'users' && users.length === 0) fetchUsers(); return (<div className="space-y-4"><Section title="Current Users" defaultOpen={true}>{users.map(u => (<div key={u.username} className="flex items-center justify-between p-3 border border-white/5"><div><div className="text-sm font-mono text-white/70">{u.username}</div><div className="text-[10px] font-mono text-white/30 tracking-widest mt-0.5">{u.role.toUpperCase()}{u.role === 'client' && u.allowedTabs ? ` — ${u.allowedTabs.join(', ')}` : ''}</div></div>{u.role !== 'owner' && <button onClick={() => handleRemoveUser(u.username)} className="text-red-400/30 hover:text-red-400"><Trash2 size={14} /></button>}</div>))}</Section><Section title="Add User" defaultOpen={true}><div className="grid grid-cols-2 gap-3"><Input label="Username" value={newUser.username} onChange={v => setNewUser(p => ({ ...p, username: v }))} /><Input label="Password" value={newUser.password} onChange={v => setNewUser(p => ({ ...p, password: v }))} /></div><Select label="Role" value={newUser.role} onChange={v => setNewUser(p => ({ ...p, role: v as UserRole }))} options={['owner', 'admin', 'client']} />{newUser.role === 'client' && (<div className="space-y-1.5"><label className="text-[10px] font-mono tracking-[0.2em] text-white/40 uppercase">Allowed Tabs</label><div className="flex flex-wrap gap-2">{['artists', 'releases', 'portfolio', 'tours', 'journal', 'shop'].map(tab => (<button key={tab} onClick={() => setNewUser(p => ({ ...p, allowedTabs: p.allowedTabs?.includes(tab) ? p.allowedTabs.filter(t => t !== tab) : [...(p.allowedTabs || []), tab] }))} className={`text-[10px] font-mono tracking-widest px-3 py-1 border transition-colors ${newUser.allowedTabs?.includes(tab) ? 'border-white/40 text-white bg-white/10' : 'border-white/10 text-white/30'}`}>{tab.toUpperCase()}</button>))}</div></div>)}<button onClick={handleAddUser} disabled={!newUser.username || !newUser.password} className={`flex items-center gap-2 px-4 py-2 text-[10px] font-mono tracking-widest font-bold transition-all ${!newUser.username || !newUser.password ? 'bg-white/10 text-white/30 cursor-not-allowed' : 'bg-white text-black hover:bg-white/90'}`}><Plus size={12} /> ADD USER</button></Section></div>); };
+
+  const renderSettingsTab = () => (<div className="space-y-4"><Section title="Account" defaultOpen={true}><div className="flex items-center justify-between py-2"><div><div className="text-[10px] font-mono tracking-[0.2em] text-white/40">LOGGED IN AS</div><div className="text-sm font-mono text-white/70 mt-1">{adminUser} <span className="text-white/30">({userRole})</span></div></div><button onClick={() => { setShowPwModal(true); setPwError(''); setPwSuccess(false); setCurrentPw(''); setNewPw(''); setConfirmPw(''); }} className="flex items-center gap-2 px-4 py-2 border border-white/10 text-[10px] font-mono tracking-widest text-white/50 hover:text-white hover:bg-white/5 transition-colors"><Key size={12} /> CHANGE PASSWORD</button></div></Section><Section title="Data Summary" defaultOpen={true}><div className="grid grid-cols-3 gap-3">{[{ l: 'Artists', c: data.artists.length, v: data.artists.filter(a => a.visible !== false).length }, { l: 'Releases', c: data.releases.length, v: data.releases.filter(r => r.visible !== false).length }, { l: 'Portfolio', c: data.portfolioWorks.length, v: data.portfolioWorks.filter(w => w.visible !== false).length }, { l: 'Tours', c: data.tourEvents.length, v: data.tourEvents.filter(t => t.visible !== false).length }, { l: 'Journal', c: data.journalEntries.length, v: data.journalEntries.filter(j => j.visible !== false).length }, { l: 'Products', c: data.products.length, v: data.products.filter(p => p.visible !== false).length }].map(st => (<div key={st.l} className="bg-white/5 border border-white/10 p-3"><div className="text-xl font-bold">{st.v}<span className="text-white/20 text-sm">/{st.c}</span></div><div className="text-[10px] font-mono tracking-widest text-white/40 mt-1">{st.l.toUpperCase()}</div></div>))}</div></Section><Section title="Danger Zone"><button onClick={logout} className="flex items-center gap-2 px-4 py-2.5 border border-red-500/20 text-[10px] font-mono tracking-widest text-red-400/60 hover:text-red-400 hover:bg-red-500/5 transition-colors"><LogOut size={12} /> LOGOUT</button></Section></div>);
+
+  const renderRevisions = () => {
+    if (revisionsLoading) return <div className="flex items-center gap-3 text-white/30 text-xs font-mono py-8"><Loader2 size={14} className="animate-spin" /> LOADING REVISIONS...</div>;
+    return (<div className="space-y-4"><div className="text-[10px] font-mono tracking-[0.2em] text-white/30 uppercase mb-2">SAVED SNAPSHOTS — UP TO 20</div>{revisionsError && <div className="p-3 border border-red-500/30 bg-red-500/10 flex items-center gap-3 text-red-400 text-xs font-mono"><AlertCircle size={14} /> {revisionsError}</div>}{revisions.length === 0 ? <div className="text-white/20 text-xs font-mono py-8 text-center border border-white/5">NO REVISIONS YET — SAVE CHANGES TO CREATE A SNAPSHOT</div> : revisions.map(rev => (<div key={rev.id} className="flex items-center justify-between p-3 border border-white/10 hover:border-white/20 transition-colors"><div><div className="text-xs font-mono text-white/70">{new Date(rev.timestamp).toLocaleString()}</div><div className="text-[10px] font-mono text-white/30 tracking-widest mt-0.5">{rev.username}</div></div><button onClick={() => handleRestore(rev.id)} disabled={!!restoringId} className={`flex items-center gap-2 px-4 py-2 text-[10px] font-mono tracking-widest border transition-all ${restoringId === rev.id ? 'border-white/20 text-white/30 cursor-not-allowed' : 'border-white/20 text-white/50 hover:bg-white hover:text-black hover:border-white'}`}>{restoringId === rev.id ? <Loader2 size={11} className="animate-spin" /> : <Clock size={11} />}{restoringId === rev.id ? 'RESTORING...' : 'RESTORE'}</button></div>))}</div>);
   };
 
-  const reset = () => {
-    setConfig(defaultConfig);
-    setHasChanges(true);
-  };
-
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'general':
-        return (
-          <div className="space-y-6">
-            <Section title="Site Identity">
-              <Input label="Site Name" value={config.siteName} onChange={(v) => updateConfig(c => ({ ...c, siteName: v }))} />
-              <Input label="Tagline" value={config.siteTagline} onChange={(v) => updateConfig(c => ({ ...c, siteTagline: v }))} />
-              <Input label="System Version" value={config.systemVersion} onChange={(v) => updateConfig(c => ({ ...c, systemVersion: v }))} />
-              <Input label="System Status" value={config.systemStatus} onChange={(v) => updateConfig(c => ({ ...c, systemStatus: v }))} />
-            </Section>
-          </div>
-        );
-
-      case 'hero':
-        return (
-          <div className="space-y-6">
-            <Section title="Hero Content">
-              <Input label="System Label" value={config.hero.label} onChange={(v) => updateConfig(c => ({ ...c, hero: { ...c.hero, label: v } }))} />
-              <Input label="Headline (Bold)" value={config.hero.headline} onChange={(v) => updateConfig(c => ({ ...c, hero: { ...c.hero, headline: v } }))} />
-              <Input label="Headline (Faded)" value={config.hero.headlineFaded} onChange={(v) => updateConfig(c => ({ ...c, hero: { ...c.hero, headlineFaded: v } }))} />
-              <Textarea label="Description" value={config.hero.description} onChange={(v) => updateConfig(c => ({ ...c, hero: { ...c.hero, description: v } }))} />
-            </Section>
-            <Section title="Call-to-Action Buttons">
-              <Input label="Primary Button Text" value={config.hero.ctaPrimary} onChange={(v) => updateConfig(c => ({ ...c, hero: { ...c.hero, ctaPrimary: v } }))} />
-              <Input label="Primary Button Link" value={config.hero.ctaPrimaryLink} onChange={(v) => updateConfig(c => ({ ...c, hero: { ...c.hero, ctaPrimaryLink: v } }))} />
-              <Input label="Secondary Button Text" value={config.hero.ctaSecondary} onChange={(v) => updateConfig(c => ({ ...c, hero: { ...c.hero, ctaSecondary: v } }))} />
-              <Toggle label="Show Decorative Elements" value={config.hero.showDecorativeElements} onChange={(v) => updateConfig(c => ({ ...c, hero: { ...c.hero, showDecorativeElements: v } }))} />
-            </Section>
-          </div>
-        );
-
-      case 'features':
-        return (
-          <div className="space-y-6">
-            {config.features.items.map((item, i) => (
-              <Section key={i} title={`Feature ${i + 1}: ${item.title}`}>
-                <Input label="Title" value={item.title} onChange={(v) => updateConfig(c => {
-                  const items = [...c.features.items];
-                  items[i] = { ...items[i], title: v };
-                  return { ...c, features: { items } };
-                })} />
-                <Textarea label="Description" value={item.desc} onChange={(v) => updateConfig(c => {
-                  const items = [...c.features.items];
-                  items[i] = { ...items[i], desc: v };
-                  return { ...c, features: { items } };
-                })} />
-                <Input label="Icon (lucide name)" value={item.icon} onChange={(v) => updateConfig(c => {
-                  const items = [...c.features.items];
-                  items[i] = { ...items[i], icon: v };
-                  return { ...c, features: { items } };
-                })} />
-                <Input label="Link" value={item.link} onChange={(v) => updateConfig(c => {
-                  const items = [...c.features.items];
-                  items[i] = { ...items[i], link: v };
-                  return { ...c, features: { items } };
-                })} />
-                <button
-                  onClick={() => updateConfig(c => ({ ...c, features: { items: c.features.items.filter((_, j) => j !== i) } }))}
-                  className="flex items-center gap-2 text-red-400/60 hover:text-red-400 text-[10px] font-mono tracking-widest transition-colors"
-                >
-                  <Trash2 size={12} /> REMOVE FEATURE
-                </button>
-              </Section>
-            ))}
-            <button
-              onClick={() => updateConfig(c => ({
-                ...c, features: { items: [...c.features.items, { title: 'NEW FEATURE', desc: 'Description here', icon: 'Box', link: '/' }] }
-              }))}
-              className="w-full py-4 border border-dashed border-white/20 text-white/40 hover:text-white hover:border-white/40 transition-colors flex items-center justify-center gap-2 text-xs font-mono tracking-widest"
-            >
-              <Plus size={14} /> ADD FEATURE
-            </button>
-          </div>
-        );
-
-      case 'manifesto':
-        return (
-          <div className="space-y-6">
-            <Section title="Manifesto Section">
-              <Input label="Label" value={config.manifesto.label} onChange={(v) => updateConfig(c => ({ ...c, manifesto: { ...c.manifesto, label: v } }))} />
-              <Textarea label="Quote" value={config.manifesto.quote} onChange={(v) => updateConfig(c => ({ ...c, manifesto: { ...c.manifesto, quote: v } }))} rows={4} />
-              <Input label="Attribution" value={config.manifesto.attribution} onChange={(v) => updateConfig(c => ({ ...c, manifesto: { ...c.manifesto, attribution: v } }))} />
-            </Section>
-          </div>
-        );
-
-      case 'products':
-        return (
-          <div className="space-y-6">
-            {config.products.map((product, i) => (
-              <Section key={product.id} title={`${product.name} — ${product.price}`}>
-                <div className="flex items-center justify-between mb-2">
-                  <Toggle label="Visible" value={product.visible} onChange={(v) => updateConfig(c => {
-                    const products = [...c.products];
-                    products[i] = { ...products[i], visible: v };
-                    return { ...c, products };
-                  })} />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <Input label="ID" value={product.id} onChange={(v) => updateConfig(c => {
-                    const products = [...c.products];
-                    products[i] = { ...products[i], id: v };
-                    return { ...c, products };
-                  })} />
-                  <Input label="Price" value={product.price} onChange={(v) => updateConfig(c => {
-                    const products = [...c.products];
-                    products[i] = { ...products[i], price: v };
-                    return { ...c, products };
-                  })} />
-                </div>
-                <Input label="Name" value={product.name} onChange={(v) => updateConfig(c => {
-                  const products = [...c.products];
-                  products[i] = { ...products[i], name: v };
-                  return { ...c, products };
-                })} />
-                <Input label="Category" value={product.category} onChange={(v) => updateConfig(c => {
-                  const products = [...c.products];
-                  products[i] = { ...products[i], category: v };
-                  return { ...c, products };
-                })} />
-                <Input label="Image URL" value={product.image} onChange={(v) => updateConfig(c => {
-                  const products = [...c.products];
-                  products[i] = { ...products[i], image: v };
-                  return { ...c, products };
-                })} />
-                <TagsInput label="Specs" value={product.specs} onChange={(v) => updateConfig(c => {
-                  const products = [...c.products];
-                  products[i] = { ...products[i], specs: v };
-                  return { ...c, products };
-                })} />
-                <button
-                  onClick={() => updateConfig(c => ({ ...c, products: c.products.filter((_, j) => j !== i) }))}
-                  className="flex items-center gap-2 text-red-400/60 hover:text-red-400 text-[10px] font-mono tracking-widest transition-colors"
-                >
-                  <Trash2 size={12} /> DELETE PRODUCT
-                </button>
-              </Section>
-            ))}
-            <button
-              onClick={() => updateConfig(c => ({
-                ...c, products: [...c.products, {
-                  id: String(c.products.length + 1).padStart(2, '0'),
-                  name: 'NEW_PRODUCT', category: 'CATEGORY', price: '$0',
-                  image: 'https://picsum.photos/seed/new/800/800', specs: [], visible: true
-                }]
-              }))}
-              className="w-full py-4 border border-dashed border-white/20 text-white/40 hover:text-white hover:border-white/40 transition-colors flex items-center justify-center gap-2 text-xs font-mono tracking-widest"
-            >
-              <Plus size={14} /> ADD PRODUCT
-            </button>
-          </div>
-        );
-
-      case 'journeys':
-        return (
-          <div className="space-y-6">
-            {config.journeys.map((journey, i) => (
-              <Section key={i} title={`${journey.title} — ${journey.duration}`}>
-                <Toggle label="Visible" value={journey.visible} onChange={(v) => updateConfig(c => {
-                  const journeys = [...c.journeys];
-                  journeys[i] = { ...journeys[i], visible: v };
-                  return { ...c, journeys };
-                })} />
-                <Input label="Title" value={journey.title} onChange={(v) => updateConfig(c => {
-                  const journeys = [...c.journeys];
-                  journeys[i] = { ...journeys[i], title: v };
-                  return { ...c, journeys };
-                })} />
-                <div className="grid grid-cols-2 gap-4">
-                  <Input label="Duration" value={journey.duration} onChange={(v) => updateConfig(c => {
-                    const journeys = [...c.journeys];
-                    journeys[i] = { ...journeys[i], duration: v };
-                    return { ...c, journeys };
-                  })} />
-                  <Input label="Category" value={journey.category} onChange={(v) => updateConfig(c => {
-                    const journeys = [...c.journeys];
-                    journeys[i] = { ...journeys[i], category: v };
-                    return { ...c, journeys };
-                  })} />
-                </div>
-                <Input label="Image URL" value={journey.image} onChange={(v) => updateConfig(c => {
-                  const journeys = [...c.journeys];
-                  journeys[i] = { ...journeys[i], image: v };
-                  return { ...c, journeys };
-                })} />
-                <Textarea label="Description" value={journey.desc} onChange={(v) => updateConfig(c => {
-                  const journeys = [...c.journeys];
-                  journeys[i] = { ...journeys[i], desc: v };
-                  return { ...c, journeys };
-                })} />
-                <button
-                  onClick={() => updateConfig(c => ({ ...c, journeys: c.journeys.filter((_, j) => j !== i) }))}
-                  className="flex items-center gap-2 text-red-400/60 hover:text-red-400 text-[10px] font-mono tracking-widest transition-colors"
-                >
-                  <Trash2 size={12} /> DELETE JOURNEY
-                </button>
-              </Section>
-            ))}
-            <button
-              onClick={() => updateConfig(c => ({
-                ...c, journeys: [...c.journeys, {
-                  title: 'NEW JOURNEY', duration: '00:00', category: 'CATEGORY',
-                  image: 'https://picsum.photos/seed/newj/1200/600', desc: 'Description here', visible: true
-                }]
-              }))}
-              className="w-full py-4 border border-dashed border-white/20 text-white/40 hover:text-white hover:border-white/40 transition-colors flex items-center justify-center gap-2 text-xs font-mono tracking-widest"
-            >
-              <Plus size={14} /> ADD JOURNEY
-            </button>
-          </div>
-        );
-
-      case 'gallery':
-        return (
-          <div className="space-y-6">
-            {config.galleryItems.map((item, i) => (
-              <Section key={item.id} title={`${item.title} — ${item.category}`}>
-                <Toggle label="Visible" value={item.visible} onChange={(v) => updateConfig(c => {
-                  const galleryItems = [...c.galleryItems];
-                  galleryItems[i] = { ...galleryItems[i], visible: v };
-                  return { ...c, galleryItems };
-                })} />
-                <div className="grid grid-cols-2 gap-4">
-                  <Input label="Title" value={item.title} onChange={(v) => updateConfig(c => {
-                    const galleryItems = [...c.galleryItems];
-                    galleryItems[i] = { ...galleryItems[i], title: v };
-                    return { ...c, galleryItems };
-                  })} />
-                  <Input label="Category" value={item.category} onChange={(v) => updateConfig(c => {
-                    const galleryItems = [...c.galleryItems];
-                    galleryItems[i] = { ...galleryItems[i], category: v };
-                    return { ...c, galleryItems };
-                  })} />
-                </div>
-                <Input label="Image URL" value={item.image} onChange={(v) => updateConfig(c => {
-                  const galleryItems = [...c.galleryItems];
-                  galleryItems[i] = { ...galleryItems[i], image: v };
-                  return { ...c, galleryItems };
-                })} />
-                <Input label="Grid Span (e.g. col-span-2 row-span-2)" value={item.span} onChange={(v) => updateConfig(c => {
-                  const galleryItems = [...c.galleryItems];
-                  galleryItems[i] = { ...galleryItems[i], span: v };
-                  return { ...c, galleryItems };
-                })} />
-                <button
-                  onClick={() => updateConfig(c => ({ ...c, galleryItems: c.galleryItems.filter((_, j) => j !== i) }))}
-                  className="flex items-center gap-2 text-red-400/60 hover:text-red-400 text-[10px] font-mono tracking-widest transition-colors"
-                >
-                  <Trash2 size={12} /> DELETE ITEM
-                </button>
-              </Section>
-            ))}
-            <button
-              onClick={() => updateConfig(c => ({
-                ...c, galleryItems: [...c.galleryItems, {
-                  id: c.galleryItems.length + 1, title: 'NEW_ITEM', category: 'CATEGORY',
-                  image: 'https://picsum.photos/seed/newg/800/800', span: 'col-span-1 row-span-1', visible: true
-                }]
-              }))}
-              className="w-full py-4 border border-dashed border-white/20 text-white/40 hover:text-white hover:border-white/40 transition-colors flex items-center justify-center gap-2 text-xs font-mono tracking-widest"
-            >
-              <Plus size={14} /> ADD GALLERY ITEM
-            </button>
-          </div>
-        );
-
-      case 'artist':
-        return (
-          <div className="space-y-6">
-            <Section title="Artist Identity">
-              <div className="grid grid-cols-2 gap-4">
-                <Input label="Name (Bold)" value={config.artist.name} onChange={(v) => updateConfig(c => ({ ...c, artist: { ...c.artist, name: v } }))} />
-                <Input label="Name (Faded)" value={config.artist.nameFaded} onChange={(v) => updateConfig(c => ({ ...c, artist: { ...c.artist, nameFaded: v } }))} />
-              </div>
-              <Input label="Verified Label" value={config.artist.label} onChange={(v) => updateConfig(c => ({ ...c, artist: { ...c.artist, label: v } }))} />
-              <Input label="Monthly Listeners" value={config.artist.monthlyListeners} onChange={(v) => updateConfig(c => ({ ...c, artist: { ...c.artist, monthlyListeners: v } }))} />
-              <Input label="Hero Image URL" value={config.artist.heroImage} onChange={(v) => updateConfig(c => ({ ...c, artist: { ...c.artist, heroImage: v } }))} />
-            </Section>
-            <Section title="Biography">
-              <Textarea label="Biography Text" value={config.artist.biography} onChange={(v) => updateConfig(c => ({ ...c, artist: { ...c.artist, biography: v } }))} rows={5} />
-              <TagsInput label="Genre Tags" value={config.artist.tags} onChange={(v) => updateConfig(c => ({ ...c, artist: { ...c.artist, tags: v } }))} />
-              <TagsInput label="Equipment" value={config.artist.equipment} onChange={(v) => updateConfig(c => ({ ...c, artist: { ...c.artist, equipment: v } }))} />
-            </Section>
-          </div>
-        );
-
-      case 'tracks':
-        return (
-          <div className="space-y-6">
-            {config.tracks.map((track, i) => (
-              <Section key={track.id} title={`${track.id}. ${track.title}`}>
-                <Toggle label="Visible" value={track.visible} onChange={(v) => updateConfig(c => {
-                  const tracks = [...c.tracks];
-                  tracks[i] = { ...tracks[i], visible: v };
-                  return { ...c, tracks };
-                })} />
-                <div className="grid grid-cols-2 gap-4">
-                  <Input label="ID" value={track.id} onChange={(v) => updateConfig(c => {
-                    const tracks = [...c.tracks];
-                    tracks[i] = { ...tracks[i], id: v };
-                    return { ...c, tracks };
-                  })} />
-                  <Input label="Title" value={track.title} onChange={(v) => updateConfig(c => {
-                    const tracks = [...c.tracks];
-                    tracks[i] = { ...tracks[i], title: v };
-                    return { ...c, tracks };
-                  })} />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <Input label="Duration" value={track.duration} onChange={(v) => updateConfig(c => {
-                    const tracks = [...c.tracks];
-                    tracks[i] = { ...tracks[i], duration: v };
-                    return { ...c, tracks };
-                  })} />
-                  <Input label="Play Count" value={track.plays} onChange={(v) => updateConfig(c => {
-                    const tracks = [...c.tracks];
-                    tracks[i] = { ...tracks[i], plays: v };
-                    return { ...c, tracks };
-                  })} />
-                </div>
-                <button
-                  onClick={() => updateConfig(c => ({ ...c, tracks: c.tracks.filter((_, j) => j !== i) }))}
-                  className="flex items-center gap-2 text-red-400/60 hover:text-red-400 text-[10px] font-mono tracking-widest transition-colors"
-                >
-                  <Trash2 size={12} /> DELETE TRACK
-                </button>
-              </Section>
-            ))}
-            <button
-              onClick={() => updateConfig(c => ({
-                ...c, tracks: [...c.tracks, {
-                  id: String(c.tracks.length + 1).padStart(2, '0'),
-                  title: 'NEW_TRACK', duration: '00:00', plays: '0', visible: true
-                }]
-              }))}
-              className="w-full py-4 border border-dashed border-white/20 text-white/40 hover:text-white hover:border-white/40 transition-colors flex items-center justify-center gap-2 text-xs font-mono tracking-widest"
-            >
-              <Plus size={14} /> ADD TRACK
-            </button>
-          </div>
-        );
-
-      case 'releases':
-        return (
-          <div className="space-y-6">
-            {config.releases.map((release, i) => (
-              <Section key={release.id} title={`${release.title} — ${release.date}`}>
-                <Toggle label="Visible" value={release.visible} onChange={(v) => updateConfig(c => {
-                  const releases = [...c.releases];
-                  releases[i] = { ...releases[i], visible: v };
-                  return { ...c, releases };
-                })} />
-                <div className="grid grid-cols-2 gap-4">
-                  <Input label="Title" value={release.title} onChange={(v) => updateConfig(c => {
-                    const releases = [...c.releases];
-                    releases[i] = { ...releases[i], title: v };
-                    return { ...c, releases };
-                  })} />
-                  <Input label="Artist" value={release.artist} onChange={(v) => updateConfig(c => {
-                    const releases = [...c.releases];
-                    releases[i] = { ...releases[i], artist: v };
-                    return { ...c, releases };
-                  })} />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <Input label="Date" value={release.date} onChange={(v) => updateConfig(c => {
-                    const releases = [...c.releases];
-                    releases[i] = { ...releases[i], date: v };
-                    return { ...c, releases };
-                  })} />
-                  <Input label="Image URL" value={release.image} onChange={(v) => updateConfig(c => {
-                    const releases = [...c.releases];
-                    releases[i] = { ...releases[i], image: v };
-                    return { ...c, releases };
-                  })} />
-                </div>
-                <button
-                  onClick={() => updateConfig(c => ({ ...c, releases: c.releases.filter((_, j) => j !== i) }))}
-                  className="flex items-center gap-2 text-red-400/60 hover:text-red-400 text-[10px] font-mono tracking-widest transition-colors"
-                >
-                  <Trash2 size={12} /> DELETE RELEASE
-                </button>
-              </Section>
-            ))}
-            <button
-              onClick={() => updateConfig(c => ({
-                ...c, releases: [...c.releases, {
-                  id: String(c.releases.length + 1).padStart(2, '0'),
-                  title: 'NEW_RELEASE', artist: 'ARTIST', date: '2024.01.01',
-                  image: 'https://picsum.photos/seed/newrel/800/800', visible: true
-                }]
-              }))}
-              className="w-full py-4 border border-dashed border-white/20 text-white/40 hover:text-white hover:border-white/40 transition-colors flex items-center justify-center gap-2 text-xs font-mono tracking-widest"
-            >
-              <Plus size={14} /> ADD RELEASE
-            </button>
-          </div>
-        );
-
-      case 'integration':
-        return (
-          <div className="space-y-6">
-            <Section title="Page Header">
-              <Input label="Label" value={config.integration.label} onChange={(v) => updateConfig(c => ({ ...c, integration: { ...c.integration, label: v } }))} />
-              <Input label="Headline" value={config.integration.headline} onChange={(v) => updateConfig(c => ({ ...c, integration: { ...c.integration, headline: v } }))} />
-              <Textarea label="Description" value={config.integration.description} onChange={(v) => updateConfig(c => ({ ...c, integration: { ...c.integration, description: v } }))} />
-            </Section>
-            <Section title="Features">
-              {config.integration.features.map((f, i) => (
-                <div key={i} className="space-y-3 pb-4 mb-4 border-b border-white/5">
-                  <Input label={`Feature ${i + 1} Title`} value={f.title} onChange={(v) => updateConfig(c => {
-                    const features = [...c.integration.features];
-                    features[i] = { ...features[i], title: v };
-                    return { ...c, integration: { ...c.integration, features } };
-                  })} />
-                  <Textarea label="Description" value={f.desc} onChange={(v) => updateConfig(c => {
-                    const features = [...c.integration.features];
-                    features[i] = { ...features[i], desc: v };
-                    return { ...c, integration: { ...c.integration, features } };
-                  })} />
-                </div>
-              ))}
-            </Section>
-            <Section title="Stats">
-              {config.integration.stats.map((s, i) => (
-                <div key={i} className="grid grid-cols-2 gap-4">
-                  <Input label="Label" value={s.label} onChange={(v) => updateConfig(c => {
-                    const stats = [...c.integration.stats];
-                    stats[i] = { ...stats[i], label: v };
-                    return { ...c, integration: { ...c.integration, stats } };
-                  })} />
-                  <Input label="Value" value={s.value} onChange={(v) => updateConfig(c => {
-                    const stats = [...c.integration.stats];
-                    stats[i] = { ...stats[i], value: v };
-                    return { ...c, integration: { ...c.integration, stats } };
-                  })} />
-                </div>
-              ))}
-            </Section>
-          </div>
-        );
-
-      case 'distribution':
-        return (
-          <div className="space-y-6">
-            <Section title="Page Header">
-              <Input label="Label" value={config.distribution.label} onChange={(v) => updateConfig(c => ({ ...c, distribution: { ...c.distribution, label: v } }))} />
-              <Input label="Headline" value={config.distribution.headline} onChange={(v) => updateConfig(c => ({ ...c, distribution: { ...c.distribution, headline: v } }))} />
-              <Input label="Headline (Faded)" value={config.distribution.headlineFaded} onChange={(v) => updateConfig(c => ({ ...c, distribution: { ...c.distribution, headlineFaded: v } }))} />
-              <Textarea label="Description" value={config.distribution.description} onChange={(v) => updateConfig(c => ({ ...c, distribution: { ...c.distribution, description: v } }))} />
-              <Input label="Network Nodes Count" value={config.distribution.networkNodes} onChange={(v) => updateConfig(c => ({ ...c, distribution: { ...c.distribution, networkNodes: v } }))} />
-            </Section>
-            <Section title="Features">
-              {config.distribution.features.map((f, i) => (
-                <div key={i} className="space-y-3 pb-4 mb-4 border-b border-white/5">
-                  <Input label={`Feature ${i + 1} Title`} value={f.title} onChange={(v) => updateConfig(c => {
-                    const features = [...c.distribution.features];
-                    features[i] = { ...features[i], title: v };
-                    return { ...c, distribution: { ...c.distribution, features } };
-                  })} />
-                  <Textarea label="Description" value={f.desc} onChange={(v) => updateConfig(c => {
-                    const features = [...c.distribution.features];
-                    features[i] = { ...features[i], desc: v };
-                    return { ...c, distribution: { ...c.distribution, features } };
-                  })} />
-                </div>
-              ))}
-            </Section>
-          </div>
-        );
-
-      case 'navigation':
-        return (
-          <div className="space-y-6">
-            {config.navItems.map((item, i) => (
-              <Section key={i} title={item.name}>
-                <Toggle label="Visible" value={item.visible} onChange={(v) => updateConfig(c => {
-                  const navItems = [...c.navItems];
-                  navItems[i] = { ...navItems[i], visible: v };
-                  return { ...c, navItems };
-                })} />
-                <div className="grid grid-cols-3 gap-4">
-                  <Input label="Name" value={item.name} onChange={(v) => updateConfig(c => {
-                    const navItems = [...c.navItems];
-                    navItems[i] = { ...navItems[i], name: v };
-                    return { ...c, navItems };
-                  })} />
-                  <Input label="Path" value={item.path} onChange={(v) => updateConfig(c => {
-                    const navItems = [...c.navItems];
-                    navItems[i] = { ...navItems[i], path: v };
-                    return { ...c, navItems };
-                  })} />
-                  <Input label="Icon" value={item.icon} onChange={(v) => updateConfig(c => {
-                    const navItems = [...c.navItems];
-                    navItems[i] = { ...navItems[i], icon: v };
-                    return { ...c, navItems };
-                  })} />
-                </div>
-              </Section>
-            ))}
-            <button
-              onClick={() => updateConfig(c => ({
-                ...c, navItems: [...c.navItems, { name: 'NEW PAGE', path: '/new', icon: 'Box', visible: true }]
-              }))}
-              className="w-full py-4 border border-dashed border-white/20 text-white/40 hover:text-white hover:border-white/40 transition-colors flex items-center justify-center gap-2 text-xs font-mono tracking-widest"
-            >
-              <Plus size={14} /> ADD NAV ITEM
-            </button>
-          </div>
-        );
-
-      case 'footer':
-        return (
-          <div className="space-y-6">
-            <Section title="Footer Content">
-              <Textarea label="Brand Description" value={config.footer.brandDescription} onChange={(v) => updateConfig(c => ({ ...c, footer: { ...c.footer, brandDescription: v } }))} />
-              <Input label="Copyright" value={config.footer.copyright} onChange={(v) => updateConfig(c => ({ ...c, footer: { ...c.footer, copyright: v } }))} />
-              <Toggle label="Newsletter Enabled" value={config.footer.newsletterEnabled} onChange={(v) => updateConfig(c => ({ ...c, footer: { ...c.footer, newsletterEnabled: v } }))} />
-            </Section>
-            <Section title="Social Links">
-              <Input label="Twitter URL" value={config.footer.socialLinks.twitter} onChange={(v) => updateConfig(c => ({ ...c, footer: { ...c.footer, socialLinks: { ...c.footer.socialLinks, twitter: v } } }))} />
-              <Input label="Instagram URL" value={config.footer.socialLinks.instagram} onChange={(v) => updateConfig(c => ({ ...c, footer: { ...c.footer, socialLinks: { ...c.footer.socialLinks, instagram: v } } }))} />
-              <Input label="GitHub URL" value={config.footer.socialLinks.github} onChange={(v) => updateConfig(c => ({ ...c, footer: { ...c.footer, socialLinks: { ...c.footer.socialLinks, github: v } } }))} />
-            </Section>
-          </div>
-        );
-
-      case 'player':
-        return (
-          <div className="space-y-6">
-            <Section title="Player Settings">
-              <Toggle label="Player Visible" value={config.player.visible} onChange={(v) => updateConfig(c => ({ ...c, player: { ...c.player, visible: v } }))} />
-              <Input label="Current Track Name" value={config.player.currentTrack} onChange={(v) => updateConfig(c => ({ ...c, player: { ...c.player, currentTrack: v } }))} />
-              <Input label="Current Artist" value={config.player.currentArtist} onChange={(v) => updateConfig(c => ({ ...c, player: { ...c.player, currentArtist: v } }))} />
-            </Section>
-          </div>
-        );
-    }
-  };
+  const content: Record<Tab, () => React.ReactNode> = { site: renderSite, services: renderServices, about: renderAbout, artists: renderArtists, releases: renderReleases, portfolio: renderPortfolio, tours: renderTours, journal: renderJournal, shop: renderShop, pages: renderPages, navigation: renderNavigation, contact: renderContact, users: renderUsers, settings: renderSettingsTab, revisions: renderRevisions };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white flex">
-      {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-black/80 backdrop-blur-xl border-r border-white/10 transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
-        <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="p-6 border-b border-white/10">
-            <div className="text-xl font-bold tracking-tighter">NOVAVOX</div>
-            <div className="text-[10px] font-mono tracking-[0.2em] text-white/40 mt-1">ADMIN DASHBOARD</div>
-          </div>
-
-          {/* Nav */}
-          <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => { setActiveTab(tab.id); setSidebarOpen(false); }}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-[10px] font-mono tracking-[0.15em] transition-all ${
-                  activeTab === tab.id
-                    ? 'bg-white text-black'
-                    : 'text-white/50 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                {tab.icon}
-                {tab.label}
-              </button>
-            ))}
-          </nav>
-
-          {/* Bottom actions */}
-          <div className="p-4 border-t border-white/10 space-y-2">
-            <a
-              href="/"
-              target="_blank"
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-white/10 text-[10px] font-mono tracking-widest text-white/50 hover:text-white hover:bg-white/5 transition-colors"
-            >
-              <ExternalLink size={12} /> VIEW SITE
-            </a>
-          </div>
-        </div>
+    <div className="fixed inset-0 z-50 bg-[#0a0a0a] text-white flex overflow-hidden">
+      <aside className="hidden lg:flex flex-col w-56 bg-black/80 border-r border-white/10">
+        <div className="p-5 border-b border-white/10"><div className="text-lg font-bold tracking-tighter">NOVAVOX</div><div className="text-[9px] font-mono tracking-[0.2em] text-white/25 mt-1">ADMIN DASHBOARD</div></div>
+        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">{visibleTabs.map(tab => (<button key={tab.id} onClick={() => { setActiveTab(tab.id); if (tab.id === 'users') fetchUsers(); if (tab.id === 'revisions') fetchRevisions(); }} className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-[10px] font-mono tracking-[0.12em] transition-all ${activeTab === tab.id ? 'bg-white text-black' : 'text-white/40 hover:text-white hover:bg-white/5'}`}>{tab.icon} {tab.label}</button>))}</nav>
+        <div className="p-3 border-t border-white/10 space-y-1.5"><div className="px-3 py-1.5"><div className="text-[8px] font-mono tracking-[0.2em] text-white/15">LOGGED IN AS</div><div className="text-[10px] font-mono tracking-widest text-white/40">{adminUser} <span className="text-white/20">({userRole})</span></div></div><a href="/" target="_blank" className="w-full flex items-center justify-center gap-2 px-3 py-2 border border-white/10 text-[10px] font-mono tracking-widest text-white/40 hover:text-white hover:bg-white/5 transition-colors"><ExternalLink size={11} /> VIEW SITE</a><button onClick={logout} className="w-full flex items-center justify-center gap-2 px-3 py-2 border border-red-500/15 text-[10px] font-mono tracking-widest text-red-400/35 hover:text-red-400 hover:bg-red-500/5 transition-colors"><LogOut size={11} /> LOGOUT</button></div>
       </aside>
-
-      {/* Main content */}
-      <main className="flex-1 lg:ml-64">
-        {/* Top bar */}
-        <header className="sticky top-0 z-30 bg-black/80 backdrop-blur-xl border-b border-white/10 px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden p-2 text-white/50 hover:text-white">
-              <Layout size={18} />
-            </button>
-            <div>
-              <h1 className="text-sm font-bold tracking-widest uppercase">{tabs.find(t => t.id === activeTab)?.label}</h1>
-              <div className="text-[10px] font-mono text-white/30 tracking-widest mt-0.5">
-                {hasChanges ? 'UNSAVED CHANGES' : 'ALL CHANGES SAVED'}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={reset}
-              className="flex items-center gap-2 px-4 py-2 border border-white/10 text-[10px] font-mono tracking-widest text-white/50 hover:text-white hover:bg-white/5 transition-colors"
-            >
-              <RotateCcw size={12} /> RESET
-            </button>
-            <button
-              onClick={save}
-              disabled={saving || !hasChanges}
-              className={`flex items-center gap-2 px-6 py-2 text-[10px] font-mono tracking-widest font-bold transition-all ${
-                saved
-                  ? 'bg-green-500 text-black'
-                  : hasChanges
-                    ? 'bg-white text-black hover:bg-white/90'
-                    : 'bg-white/10 text-white/30 cursor-not-allowed'
-              }`}
-            >
-              {saving ? <Loader2 size={12} className="animate-spin" /> : saved ? <Check size={12} /> : <Save size={12} />}
-              {saving ? 'SAVING...' : saved ? 'SAVED' : 'SAVE'}
-            </button>
-          </div>
-        </header>
-
-        {/* Content */}
-        <div className="p-8 max-w-4xl">
-          {error && (
-            <div className="mb-6 p-4 border border-red-500/30 bg-red-500/10 flex items-center gap-3 text-red-400 text-xs font-mono">
-              <AlertCircle size={14} /> {error}
-            </div>
-          )}
-          {renderContent()}
-        </div>
+      {showPwModal && (<div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-center justify-center"><div className="w-full max-w-sm bg-[#111] border border-white/10 p-8"><div className="flex items-center justify-between mb-6"><span className="text-xs font-mono tracking-[0.2em] text-white/70 flex items-center gap-2"><Key size={14} /> CHANGE PASSWORD</span><button onClick={() => setShowPwModal(false)} className="text-white/30 hover:text-white"><X size={16} /></button></div><div className="space-y-3"><Input label="Current Password" value={currentPw} onChange={setCurrentPw} /><Input label="New Password" value={newPw} onChange={setNewPw} /><Input label="Confirm" value={confirmPw} onChange={setConfirmPw} />{pwError && <div className="flex items-center gap-2 text-red-400 text-[10px] font-mono"><AlertCircle size={12} /> {pwError}</div>}{pwSuccess && <div className="flex items-center gap-2 text-green-400 text-[10px] font-mono"><Check size={12} /> UPDATED</div>}<button onClick={changePw} disabled={pwLoading || !currentPw || !newPw || !confirmPw} className={`w-full flex items-center justify-center gap-2 py-2.5 text-[10px] font-mono tracking-widest font-bold transition-all ${pwLoading || !currentPw || !newPw || !confirmPw ? 'bg-white/10 text-white/30 cursor-not-allowed' : 'bg-white text-black hover:bg-white/90'}`}>{pwLoading ? <Loader2 size={12} className="animate-spin" /> : <Lock size={12} />} {pwLoading ? 'UPDATING...' : 'UPDATE'}</button></div></div></div>)}
+      <main className="flex-1 overflow-y-auto">
+        <header className="sticky top-0 z-30 bg-[#0a0a0a]/90 backdrop-blur-xl border-b border-white/10 px-6 py-3 flex items-center justify-between"><div><h1 className="text-sm font-bold tracking-widest uppercase">{allTabs.find(t => t.id === activeTab)?.label}</h1><div className="text-[10px] font-mono text-white/20 tracking-widest mt-0.5">{hasChanges ? 'UNSAVED CHANGES' : 'ALL CHANGES SAVED'}</div></div><button onClick={save} disabled={saving || !hasChanges} className={`flex items-center gap-2 px-5 py-2 text-[10px] font-mono tracking-widest font-bold transition-all ${saved ? 'bg-green-500 text-black' : hasChanges ? 'bg-white text-black hover:bg-white/90' : 'bg-white/10 text-white/30 cursor-not-allowed'}`}>{saving ? <Loader2 size={12} className="animate-spin" /> : saved ? <Check size={12} /> : <Save size={12} />}{saving ? 'SAVING...' : saved ? 'SAVED' : 'SAVE'}</button></header>
+        <div className="p-6 max-w-4xl">{error && <div className="mb-4 p-3 border border-red-500/30 bg-red-500/10 flex items-center gap-3 text-red-400 text-xs font-mono"><AlertCircle size={14} /> {error}</div>}{content[activeTab]?.()}</div>
       </main>
-
-      {/* Mobile overlay */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/60 z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />
-      )}
     </div>
   );
 }

@@ -1,201 +1,282 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion } from 'motion/react';
-import { CreditCard, Truck, ShieldCheck, ArrowRight, ShoppingBag, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useCart } from '@/context/CartContext';
-import Link from 'next/link';
+import TopNav from "@/components/layout/TopNav";
+import { GlassPanel } from "@/components/ui/GlassPanel";
+import ScrollToTop from "@/components/ui/ScrollToTop";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
-export default function Checkout() {
-  const [step, setStep] = React.useState(1);
-  const { cart, totalPrice, removeFromCart } = useCart();
+const steps = [
+  { number: 1, label: "CART" },
+  { number: 2, label: "SHIPPING" },
+  { number: 3, label: "PAYMENT" },
+  { number: 4, label: "REVIEW" },
+];
 
+const activeStep = 3;
+
+const orderItems = [
+  { name: "KINETIC MONOLITH", sku: "NVX-001", price: 48.0, image: "https://images.unsplash.com/photo-1539375665275-f9de415ef9ac?w=200&q=80" },
+  { name: "VOID RESONANCE", sku: "NVX-002", price: 112.0, image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=200&q=80" },
+];
+
+const subtotal = orderItems.reduce((sum, item) => sum + item.price, 0);
+const shipping = 12.0;
+const total = subtotal + shipping;
+
+export default function CheckoutPage() {
   return (
-    <div className="space-y-16">
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/10 pb-12">
-        <div>
-          <div className="mono-label mb-4">CHECKOUT_V1.0</div>
-          <h1 className="text-6xl font-bold uppercase">SECURE CHECKOUT</h1>
-        </div>
-        <div className="flex items-center gap-8">
-          {[1, 2, 3].map((s) => (
-            <div key={s} className="flex items-center gap-2">
-              <div className={cn(
-                "w-6 h-6 flex items-center justify-center text-[10px] font-bold border transition-all duration-500",
-                step >= s ? "bg-white text-black border-white" : "text-white/20 border-white/10"
-              )}>
-                0{s}
-              </div>
-              <div className={cn(
-                "mono-label transition-colors duration-500",
-                step >= s ? "text-white" : "text-white/20"
-              )}>
-                {s === 1 ? 'SHIPPING' : s === 2 ? 'PAYMENT' : 'REVIEW'}
-              </div>
-              {s < 3 && <div className="w-8 h-[1px] bg-white/10 ml-2" />}
-            </div>
-          ))}
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#131313] text-[#E2E2E2]">
+      <TopNav />
 
-      {cart.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-32 space-y-8">
-          <div className="w-24 h-24 border border-white/10 flex items-center justify-center">
-            <ShoppingBag size={48} className="text-white/10" />
-          </div>
-          <div className="text-center">
-            <h2 className="text-2xl font-bold uppercase mb-2">YOUR SYSTEM IS EMPTY</h2>
-            <p className="text-white/40 text-sm">Add sonic objects to begin your architectural journey.</p>
-          </div>
-          <Link href="/catalog" className="px-12 py-5 bg-white text-black font-bold tracking-widest hover:bg-white/90 transition-all flex items-center gap-4">
-            GO TO CATALOG <ArrowRight size={20} />
-          </Link>
+      <main className="pt-24 min-h-screen">
+        <div className="px-4 sm:px-8 md:px-12 py-4">
+          <Breadcrumbs items={[{ label: "Shop", href: "/shop" }, { label: "Checkout" }]} />
         </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-24">
-          {/* Form Section */}
-          <div className="lg:col-span-2 space-y-12">
-            <div className="space-y-8">
-              <div className="flex items-center gap-4 border-b border-white/10 pb-4">
-                <Truck size={20} className="text-white/40" />
-                <h2 className="text-2xl font-bold uppercase">SHIPPING DATA</h2>
-              </div>
-              
-              <form className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <label className="mono-label text-white/40">FULL NAME</label>
-                  <input 
-                    type="text" 
-                    placeholder="LYRA VOID"
-                    className="w-full bg-white/5 border border-white/10 p-4 text-sm focus:outline-none focus:border-white transition-colors"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="mono-label text-white/40">EMAIL ADDRESS</label>
-                  <input 
-                    type="email" 
-                    placeholder="LYRA@NOVAVOX.COM"
-                    className="w-full bg-white/5 border border-white/10 p-4 text-sm focus:outline-none focus:border-white transition-colors"
-                  />
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <label className="mono-label text-white/40">STREET ADDRESS</label>
-                  <input 
-                    type="text" 
-                    placeholder="123 SONIC ARCHITECTURE WAY"
-                    className="w-full bg-white/5 border border-white/10 p-4 text-sm focus:outline-none focus:border-white transition-colors"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="mono-label text-white/40">CITY</label>
-                  <input 
-                    type="text" 
-                    placeholder="NEO-BERLIN"
-                    className="w-full bg-white/5 border border-white/10 p-4 text-sm focus:outline-none focus:border-white transition-colors"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="mono-label text-white/40">POSTAL CODE</label>
-                  <input 
-                    type="text" 
-                    placeholder="10115"
-                    className="w-full bg-white/5 border border-white/10 p-4 text-sm focus:outline-none focus:border-white transition-colors"
-                  />
-                </div>
-              </form>
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr_400px] min-h-[calc(100vh-96px)]">
+          {/* LEFT SIDEBAR — Checkout Stepper (horizontal on mobile, vertical sidebar on lg) */}
+          <aside className="bg-[#0E0E0E] p-4 sm:p-6 lg:p-8">
+            <h2 className="text-[10px] tracking-[0.2em] uppercase text-[#919191] mb-4 lg:mb-8">
+              PAYMENT PROTOCOL
+            </h2>
 
-            <div className="space-y-8">
-              <div className="flex items-center gap-4 border-b border-white/10 pb-4">
-                <CreditCard size={20} className="text-white/40" />
-                <h2 className="text-2xl font-bold uppercase">PAYMENT METHOD</h2>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {['CREDIT CARD', 'CRYPTO', 'BANK TRANSFER'].map((method) => (
-                  <button 
-                    key={method}
-                    className="p-6 glass border border-white/10 hover:bg-white/10 transition-all text-center space-y-2 group"
+            <div className="flex flex-row lg:flex-col overflow-x-auto gap-2 lg:gap-0">
+              {steps.map((step) => {
+                const isActive = step.number === activeStep;
+                return (
+                  <div
+                    key={step.number}
+                    className={`flex items-center gap-3 py-3 lg:py-4 px-3 lg:px-0 border-b-0 lg:border-b border-white/5 flex-shrink-0 ${
+                      isActive ? "text-white" : "text-[#474747]"
+                    }`}
                   >
-                    <div className="mono-label group-hover:text-white transition-colors">{method}</div>
-                    <div className="text-[10px] text-white/20">SECURE_ENCRYPTED</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="pt-8 flex justify-between items-center">
-              <Link href="/catalog" className="text-white/40 hover:text-white transition-colors mono-label flex items-center gap-2">
-                <ArrowRight size={14} className="rotate-180" /> BACK TO CATALOG
-              </Link>
-              <button 
-                onClick={() => setStep(2)}
-                className="px-12 py-5 bg-white text-black font-bold tracking-widest hover:bg-white/90 transition-all flex items-center gap-4"
-              >
-                CONTINUE TO PAYMENT <ArrowRight size={20} />
-              </button>
-            </div>
-          </div>
-
-          {/* Order Summary */}
-          <div className="space-y-12">
-            <div className="glass border border-white/10 p-8 space-y-8">
-              <div className="flex items-center gap-4 border-b border-white/10 pb-4">
-                <ShoppingBag size={18} className="text-white/40" />
-                <h2 className="text-xl font-bold uppercase">ORDER SUMMARY</h2>
-              </div>
-
-              <div className="space-y-6">
-                {cart.map((item) => (
-                  <div key={item.id} className="flex justify-between items-start group">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <div className="text-sm font-bold tracking-widest uppercase">{item.name}</div>
-                        <button 
-                          onClick={() => removeFromCart(item.id)}
-                          className="opacity-0 group-hover:opacity-100 text-white/20 hover:text-white transition-all"
-                        >
-                          <X size={12} />
-                        </button>
-                      </div>
-                      <div className="mono-label text-white/30 mt-1">QTY: {item.quantity}</div>
+                    <div
+                      className={`w-8 h-8 flex items-center justify-center text-[10px] border ${
+                        isActive
+                          ? "border-white text-white"
+                          : "border-[#474747] text-[#474747]"
+                      }`}
+                    >
+                      {step.number}
                     </div>
-                    <div className="text-sm font-bold">{item.price}</div>
+                    <span
+                      className={`text-[10px] tracking-[0.15em] uppercase ${
+                        isActive ? "text-white" : "text-[#474747]"
+                      }`}
+                    >
+                      {step.label}
+                    </span>
                   </div>
-                ))}
+                );
+              })}
+            </div>
+          </aside>
+
+          {/* CENTER — Payment Form */}
+          <section className="p-4 sm:p-8 md:p-12">
+            <h2 className="font-headline text-2xl tracking-wide text-[#E2E2E2] mb-8">
+              PAYMENT DETAILS
+            </h2>
+
+            <form className="max-w-xl space-y-6">
+              {/* Card Number */}
+              <div>
+                <label className="block text-[10px] tracking-[0.15em] uppercase text-[#919191] mb-2">
+                  Card Number
+                </label>
+                <input
+                  type="text"
+                  placeholder="0000 0000 0000 0000"
+                  className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors placeholder-[#474747]"
+                />
               </div>
 
-              <div className="space-y-4 pt-8 border-t border-white/10">
-                <div className="flex justify-between text-white/50 text-xs">
-                  <span>SUBTOTAL</span>
-                  <span>${totalPrice.toLocaleString()}</span>
+              {/* Expiry + CVV */}
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                <div className="flex-1">
+                  <label className="block text-[10px] tracking-[0.15em] uppercase text-[#919191] mb-2">
+                    Expiry Date
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="MM / YY"
+                    className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors placeholder-[#474747]"
+                  />
                 </div>
-                <div className="flex justify-between text-white/50 text-xs">
-                  <span>SHIPPING</span>
-                  <span>$45</span>
+                <div className="w-full sm:w-32">
+                  <label className="block text-[10px] tracking-[0.15em] uppercase text-[#919191] mb-2">
+                    CVV
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="000"
+                    className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors placeholder-[#474747]"
+                  />
                 </div>
-                <div className="flex justify-between text-white/50 text-xs">
-                  <span>TAX</span>
-                  <span>${(totalPrice * 0.08).toLocaleString()}</span>
+              </div>
+
+              {/* Cardholder Name */}
+              <div>
+                <label className="block text-[10px] tracking-[0.15em] uppercase text-[#919191] mb-2">
+                  Cardholder Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Full name on card"
+                  className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors placeholder-[#474747]"
+                />
+              </div>
+
+              {/* Shipping Address */}
+              <div>
+                <label className="block text-[10px] tracking-[0.15em] uppercase text-[#919191] mb-2">
+                  Shipping Address
+                </label>
+                <input
+                  type="text"
+                  placeholder="Street address"
+                  className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors placeholder-[#474747]"
+                />
+              </div>
+
+              {/* City + ZIP */}
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                <div className="flex-1">
+                  <label className="block text-[10px] tracking-[0.15em] uppercase text-[#919191] mb-2">
+                    City
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="City"
+                    className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors placeholder-[#474747]"
+                  />
                 </div>
-                <div className="flex justify-between text-xl font-bold pt-4">
-                  <span>TOTAL</span>
-                  <span>${(totalPrice + 45 + totalPrice * 0.08).toLocaleString()}</span>
+                <div className="w-full sm:w-40">
+                  <label className="block text-[10px] tracking-[0.15em] uppercase text-[#919191] mb-2">
+                    ZIP
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="00000"
+                    className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors placeholder-[#474747]"
+                  />
                 </div>
+              </div>
+
+              {/* Country */}
+              <div>
+                <label className="block text-[10px] tracking-[0.15em] uppercase text-[#919191] mb-2">
+                  Country
+                </label>
+                <select className="w-full bg-transparent border-b border-[#474747] focus:border-white text-sm text-[#E2E2E2] py-3 min-h-[44px] outline-none transition-colors appearance-none">
+                  <option value="" disabled>
+                    Select country
+                  </option>
+                  <option value="DE">Germany</option>
+                  <option value="JP">Japan</option>
+                  <option value="GB">United Kingdom</option>
+                  <option value="US">United States</option>
+                  <option value="FR">France</option>
+                  <option value="IS">Iceland</option>
+                </select>
+              </div>
+
+              {/* Submit */}
+              <button
+                type="submit"
+                className="bg-white text-[#1A1C1C] w-full py-4 min-h-[44px] mt-8 text-[10px] tracking-[0.2em] uppercase font-medium hover:opacity-90 transition-opacity"
+              >
+                CONFIRM PROTOCOL
+              </button>
+            </form>
+          </section>
+
+          {/* RIGHT SIDEBAR — Order Summary */}
+          <aside className="bg-[#1B1B1B] p-4 sm:p-6 lg:p-8">
+            <h2 className="text-[10px] tracking-[0.2em] uppercase text-[#919191] mb-8">
+              ORDER SUMMARY
+            </h2>
+
+            {/* Product Items */}
+            <div className="space-y-6">
+              {orderItems.map((item) => (
+                <div key={item.sku} className="flex gap-4">
+                  <div className="w-16 h-16 bg-[#1F1F1F] flex-shrink-0 overflow-hidden">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover grayscale"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-sm text-[#E2E2E2] font-medium">
+                      {item.name}
+                    </h3>
+                    <span className="text-[9px] tracking-[0.15em] uppercase text-[#474747] block mt-1">
+                      {item.sku}
+                    </span>
+                  </div>
+                  <span className="text-sm text-[#E2E2E2] flex-shrink-0">
+                    EUR {item.price.toFixed(2)}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-white/5 my-6" />
+
+            {/* Totals */}
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-[10px] tracking-[0.15em] uppercase text-[#919191]">
+                  Subtotal
+                </span>
+                <span className="text-sm text-[#E2E2E2]">
+                  EUR {subtotal.toFixed(2)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[10px] tracking-[0.15em] uppercase text-[#919191]">
+                  Shipping
+                </span>
+                <span className="text-sm text-[#E2E2E2]">
+                  EUR {shipping.toFixed(2)}
+                </span>
+              </div>
+              <div className="border-t border-white/5 pt-3 flex justify-between items-center">
+                <span className="text-[10px] tracking-[0.15em] uppercase text-[#919191]">
+                  Total
+                </span>
+                <span className="font-headline text-xl font-semibold text-[#E2E2E2]">
+                  EUR {total.toFixed(2)}
+                </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-4 p-6 border border-white/10 text-white/40">
-              <ShieldCheck size={24} />
-              <div className="text-[10px] font-mono leading-relaxed">
-                YOUR TRANSACTION IS PROTECTED BY 256-BIT SSL ENCRYPTION. 
-                NOVAVOX DOES NOT STORE YOUR PAYMENT DATA.
-              </div>
+            {/* Security Badges */}
+            <div className="mt-8 space-y-3">
+              <GlassPanel className="p-3 flex items-center gap-3">
+                <span className="material-symbols-outlined text-[16px] text-[#919191]">
+                  lock
+                </span>
+                <span className="text-[9px] tracking-[0.15em] uppercase text-[#919191]">
+                  AES-256 ENCRYPTED
+                </span>
+              </GlassPanel>
+              <GlassPanel className="p-3 flex items-center gap-3">
+                <span className="material-symbols-outlined text-[16px] text-[#919191]">
+                  verified_user
+                </span>
+                <span className="text-[9px] tracking-[0.15em] uppercase text-[#919191]">
+                  SECURE PROTOCOL
+                </span>
+              </GlassPanel>
             </div>
-          </div>
+          </aside>
         </div>
-      )}
+      </main>
+      <ScrollToTop />
     </div>
   );
 }

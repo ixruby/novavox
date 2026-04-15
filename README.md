@@ -1,20 +1,50 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# NOVAVOX
 
-# Run and deploy your AI Studio app
+> Music distribution and artist platform by [Nine Ruby Management](https://www.9ruby.com).
 
-This contains everything you need to run your app locally.
+## Overview
 
-View your app in AI Studio: https://ai.studio/apps/1f05c90a-37cf-4e21-95b7-edf8392f0143
+NOVAVOX is a full-featured music distribution platform for independent artists. Features include artist profiles, release management, tour scheduling, and an admin dashboard. Powered by Gemini AI for intelligent music metadata and recommendations.
 
-## Run Locally
+## Tech Stack
 
-**Prerequisites:**  Node.js
+- **Framework:** Next.js 16 (App Router)
+- **AI:** Google Gemini API
+- **3D/Motion:** Three.js, Vanta, Motion (Framer Motion)
+- **Audio:** Tone.js
+- **UI:** shadcn/ui, Tailwind CSS 4, tsParticles
+- **Storage:** Vercel Blob
+- **Language:** TypeScript 5
 
+## Getting Started
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+npm install
+cp .env.example .env.local   # Add API keys
+npm run dev                   # http://localhost:3000
+```
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `GEMINI_API_KEY` | Google Gemini API key |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob storage token |
+
+## Project Structure
+
+```
+app/              # Next.js App Router pages and API routes
+components/       # React components (player, admin, artists)
+lib/              # Utilities and API helpers
+types/            # TypeScript type definitions
+public/           # Static assets, audio, images
+```
+
+## Deployment
+
+Deployed to Vercel. Pushes to `main` trigger auto-deploy.
+
+## License
+
+Proprietary — Nine Ruby Management FZ-LLC
