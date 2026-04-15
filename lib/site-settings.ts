@@ -19,6 +19,7 @@ export type SiteSettings = {
     buttons: { label: string; href: string; visible: boolean }[];
   };
   navigation: { label: string; href: string; visible: boolean }[];
+  homeSections: Record<string, boolean>;
   pages: Record<string, { visible: boolean; title: string; description: string }>;
   footer: {
     tagline: string;
@@ -82,19 +83,28 @@ export const defaultSettings: SiteSettings = {
   },
   navigation: [
     { label: "SERVICES", href: "#services", visible: true },
-    { label: "PORTFOLIO", href: "#portfolio", visible: true },
-    { label: "ARTISTS", href: "/artists", visible: true },
+    { label: "PORTFOLIO", href: "#portfolio", visible: false },
+    { label: "ARTISTS", href: "/artists", visible: false },
     { label: "RELEASES", href: "/releases", visible: true },
     { label: "TOURS", href: "/tours", visible: true },
-    { label: "JOURNAL", href: "/journal", visible: true },
-    { label: "SHOP", href: "/shop", visible: true },
+    { label: "JOURNAL", href: "/journal", visible: false },
+    { label: "SHOP", href: "/shop", visible: false },
   ],
+  homeSections: {
+    portfolio: false,
+    artists: false,
+    releases: true,
+    tours: true,
+    journal: false,
+    shop: false,
+  },
   pages: {
-    artists: { visible: true, title: "Artists — NOVAVOX", description: "Discover the NOVAVOX artist roster." },
+    portfolio: { visible: false, title: "Portfolio — NOVAVOX", description: "Selected work by NOVAVOX." },
+    artists: { visible: false, title: "Artists — NOVAVOX", description: "Discover the NOVAVOX artist roster." },
     releases: { visible: true, title: "Releases — NOVAVOX", description: "Full catalog of NOVAVOX releases." },
     tours: { visible: true, title: "Global Circuit — NOVAVOX", description: "NOVAVOX world tour dates." },
-    journal: { visible: true, title: "Sonic Journal — NOVAVOX", description: "Essays, notes, and interviews." },
-    shop: { visible: true, title: "Archive — NOVAVOX", description: "NOVAVOX merchandise and objects." },
+    journal: { visible: false, title: "Sonic Journal — NOVAVOX", description: "Essays, notes, and interviews." },
+    shop: { visible: false, title: "Archive — NOVAVOX", description: "NOVAVOX merchandise and objects." },
     gallery: { visible: true, title: "Gallery — NOVAVOX", description: "Visual gallery." },
     distribution: { visible: true, title: "Distribution — NOVAVOX", description: "Submit your work." },
     player: { visible: true, title: "Player — NOVAVOX", description: "Spatial audio player." },

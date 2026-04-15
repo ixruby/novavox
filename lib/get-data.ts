@@ -49,7 +49,11 @@ function parseSiteData(saved: Record<string, unknown>): SiteData {
     tourEvents: (saved.tourEvents as SiteData['tourEvents']) || defaults.tourEvents,
     journalEntries: (saved.journalEntries as SiteData['journalEntries']) || defaults.journalEntries,
     portfolioWorks: (saved.portfolioWorks as SiteData['portfolioWorks']) || defaults.portfolioWorks,
-    settings: { ...defaultSettings, ...(saved.settings as SiteSettings) },
+    settings: {
+      ...defaultSettings,
+      ...(saved.settings as SiteSettings),
+      homeSections: { ...defaultSettings.homeSections, ...((saved.settings as SiteSettings)?.homeSections) },
+    },
   };
 }
 

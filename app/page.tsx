@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, useMotionValue, useMotionTemplate, useScroll, useTransform } from "motion/react";
 import { artists as defaultArtists, releases as defaultReleases, portfolioWorks as defaultPortfolioWorks, tourEvents as defaultTourEvents, journalEntries as defaultJournalEntries, products as defaultProducts } from "@/lib/data";
 import type { Artist, Release, PortfolioWork, TourEvent, JournalEntry, Product } from "@/lib/data";
+import { defaultSettings, type SiteSettings } from "@/lib/site-settings";
 
 /* ─── Cursor Glow ─── */
 function CursorGlow() {
@@ -68,6 +69,7 @@ export default function LandingPage() {
   const [tourEvents, setTourEvents] = useState<TourEvent[]>(defaultTourEvents);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>(defaultJournalEntries);
   const [products, setProducts] = useState<Product[]>(defaultProducts);
+  const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
 
   useEffect(() => {
     fetch("/api/data").then(r => r.json()).then(d => {
@@ -77,6 +79,7 @@ export default function LandingPage() {
       if (d.tourEvents) setTourEvents(d.tourEvents);
       if (d.journalEntries) setJournalEntries(d.journalEntries);
       if (d.products) setProducts(d.products);
+      if (d.settings) setSettings(prev => ({ ...prev, ...d.settings, homeSections: { ...prev.homeSections, ...d.settings?.homeSections } }));
     }).catch(() => {});
   }, []);
 
@@ -105,15 +108,7 @@ export default function LandingPage() {
             <span className="text-sm font-black tracking-[0.3em] text-white font-headline uppercase">NOVAVOX</span>
           </Link>
           <div className="hidden md:flex items-center gap-8">
-            {[
-              { label: "SERVICES", href: "#services" },
-              { label: "PORTFOLIO", href: "#portfolio" },
-              { label: "ARTISTS", href: "/artists" },
-              { label: "RELEASES", href: "/releases" },
-              { label: "TOURS", href: "/tours" },
-              { label: "JOURNAL", href: "/journal" },
-              { label: "SHOP", href: "/shop" },
-            ].map(link => (
+            {settings.navigation.filter(link => link.visible).map(link => (
               <Link key={link.label} href={link.href} className="nav-link font-mono text-[9px] tracking-[0.25em] text-white/40 hover:text-white transition-colors uppercase">
                 {link.label}
               </Link>
@@ -243,6 +238,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           PORTFOLIO — Our work
       ═══════════════════════════════════════════ */}
+      {settings.homeSections.portfolio && (
       <section id="portfolio" className="py-24 md:py-36 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
           <Reveal>
@@ -291,10 +287,12 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ═══════════════════════════════════════════
           ARTISTS — Featured roster
       ═══════════════════════════════════════════ */}
+      {settings.homeSections.artists && (
       <section className="py-24 md:py-36 border-t border-white/5 bg-[#080808]">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
           <Reveal>
@@ -334,10 +332,12 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ═══════════════════════════════════════════
           RELEASES — Latest catalog
       ═══════════════════════════════════════════ */}
+      {settings.homeSections.releases && (
       <section className="py-24 md:py-36 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
           <Reveal>
@@ -375,6 +375,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ═══════════════════════════════════════════
           ABOUT — Who we are
@@ -457,6 +458,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           TOURS — Upcoming events
       ═══════════════════════════════════════════ */}
+      {settings.homeSections.tours && (
       <section className="py-24 md:py-36 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
           <Reveal>
@@ -498,10 +500,12 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ═══════════════════════════════════════════
           JOURNAL — Latest editorial
       ═══════════════════════════════════════════ */}
+      {settings.homeSections.journal && (
       <section className="py-24 md:py-36 border-t border-white/5 bg-[#080808]">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
           <Reveal>
@@ -541,10 +545,12 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ═══════════════════════════════════════════
           SHOP — Featured products
       ═══════════════════════════════════════════ */}
+      {settings.homeSections.shop && (
       <section className="py-24 md:py-36 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
           <Reveal>
@@ -584,6 +590,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ═══════════════════════════════════════════
           CONTACT — Get in touch
@@ -652,12 +659,12 @@ export default function LandingPage() {
               <span className="font-mono text-[8px] tracking-[0.3em] text-white/30 uppercase block mb-4">Explore</span>
               <div className="space-y-2.5">
                 {[
-                  { label: "Artists", href: "/artists" },
-                  { label: "Releases", href: "/releases" },
-                  { label: "Shop", href: "/shop" },
-                  { label: "Tours", href: "/tours" },
-                  { label: "Journal", href: "/journal" },
-                ].map(link => (
+                  { label: "Artists", href: "/artists", key: "artists" },
+                  { label: "Releases", href: "/releases", key: "releases" },
+                  { label: "Shop", href: "/shop", key: "shop" },
+                  { label: "Tours", href: "/tours", key: "tours" },
+                  { label: "Journal", href: "/journal", key: "journal" },
+                ].filter(link => settings.pages[link.key]?.visible !== false).map(link => (
                   <Link key={link.label} href={link.href} className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest">{link.label.toUpperCase()}</Link>
                 ))}
               </div>
@@ -700,12 +707,12 @@ export default function LandingPage() {
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0a0a0a]/90 backdrop-blur-2xl border-t border-white/5">
         <div className="flex justify-around items-center py-3">
           {[
-            { icon: "home", label: "Home", href: "/" },
-            { icon: "album", label: "Releases", href: "/releases" },
-            { icon: "group", label: "Artists", href: "/artists" },
-            { icon: "shopping_bag", label: "Shop", href: "/shop" },
-            { icon: "menu", label: "More", href: "/tours" },
-          ].map(item => (
+            { icon: "home", label: "Home", href: "/", key: "" },
+            { icon: "album", label: "Releases", href: "/releases", key: "releases" },
+            { icon: "group", label: "Artists", href: "/artists", key: "artists" },
+            { icon: "shopping_bag", label: "Shop", href: "/shop", key: "shop" },
+            { icon: "menu", label: "More", href: "/tours", key: "tours" },
+          ].filter(item => !item.key || settings.pages[item.key]?.visible !== false).map(item => (
             <Link key={item.label} href={item.href} className="flex flex-col items-center gap-1 text-white/30 hover:text-white transition-colors">
               <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
               <span className="font-mono text-[7px] tracking-widest uppercase">{item.label}</span>
