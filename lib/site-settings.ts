@@ -19,7 +19,6 @@ export type SiteSettings = {
     buttons: { label: string; href: string; visible: boolean }[];
   };
   navigation: { label: string; href: string; visible: boolean }[];
-  homeSections: Record<string, boolean>;
   pages: Record<string, { visible: boolean; title: string; description: string }>;
   footer: {
     tagline: string;
@@ -90,14 +89,6 @@ export const defaultSettings: SiteSettings = {
     { label: "JOURNAL", href: "/journal", visible: false },
     { label: "SHOP", href: "/shop", visible: false },
   ],
-  homeSections: {
-    portfolio: false,
-    artists: false,
-    releases: true,
-    tours: true,
-    journal: false,
-    shop: false,
-  },
   pages: {
     portfolio: { visible: false, title: "Portfolio — NOVAVOX", description: "Selected work by NOVAVOX." },
     artists: { visible: false, title: "Artists — NOVAVOX", description: "Discover the NOVAVOX artist roster." },

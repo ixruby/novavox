@@ -79,7 +79,7 @@ export default function LandingPage() {
       if (d.tourEvents) setTourEvents(d.tourEvents);
       if (d.journalEntries) setJournalEntries(d.journalEntries);
       if (d.products) setProducts(d.products);
-      if (d.settings) setSettings(prev => ({ ...prev, ...d.settings, homeSections: { ...prev.homeSections, ...d.settings?.homeSections } }));
+      if (d.settings) setSettings(prev => ({ ...prev, ...d.settings, pages: { ...prev.pages, ...d.settings?.pages }, navigation: d.settings?.navigation || prev.navigation }));
     }).catch(() => {});
   }, []);
 
@@ -238,7 +238,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           PORTFOLIO — Our work
       ═══════════════════════════════════════════ */}
-      {settings.homeSections.portfolio && (
+      {settings.pages.portfolio?.visible !== false && (
       <section id="portfolio" className="py-24 md:py-36 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
           <Reveal>
@@ -292,7 +292,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           ARTISTS — Featured roster
       ═══════════════════════════════════════════ */}
-      {settings.homeSections.artists && (
+      {settings.pages.artists?.visible !== false && (
       <section className="py-24 md:py-36 border-t border-white/5 bg-[#080808]">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
           <Reveal>
@@ -337,7 +337,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           RELEASES — Latest catalog
       ═══════════════════════════════════════════ */}
-      {settings.homeSections.releases && (
+      {settings.pages.releases?.visible !== false && (
       <section className="py-24 md:py-36 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
           <Reveal>
@@ -458,7 +458,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           TOURS — Upcoming events
       ═══════════════════════════════════════════ */}
-      {settings.homeSections.tours && (
+      {settings.pages.tours?.visible !== false && (
       <section className="py-24 md:py-36 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
           <Reveal>
@@ -505,7 +505,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           JOURNAL — Latest editorial
       ═══════════════════════════════════════════ */}
-      {settings.homeSections.journal && (
+      {settings.pages.journal?.visible !== false && (
       <section className="py-24 md:py-36 border-t border-white/5 bg-[#080808]">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
           <Reveal>
@@ -550,7 +550,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════
           SHOP — Featured products
       ═══════════════════════════════════════════ */}
-      {settings.homeSections.shop && (
+      {settings.pages.shop?.visible !== false && (
       <section className="py-24 md:py-36 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
           <Reveal>

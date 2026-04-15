@@ -52,7 +52,7 @@ function parseSiteData(saved: Record<string, unknown>): SiteData {
     settings: {
       ...defaultSettings,
       ...(saved.settings as SiteSettings),
-      homeSections: { ...defaultSettings.homeSections, ...((saved.settings as SiteSettings)?.homeSections) },
+      pages: { ...defaultSettings.pages, ...((saved.settings as SiteSettings)?.pages) },
     },
   };
 }
