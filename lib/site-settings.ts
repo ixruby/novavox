@@ -59,7 +59,7 @@ export const defaultSettings: SiteSettings = {
     intro: "We're not just a team — we're a collective built on trust, freedom, and creativity focused on Quality.",
     story: "Novavox was founded by Kaushik Jayakumar, an accomplished audio engineer and music producer who has worked on over 100+ international and Indian projects across 15+ languages. Our crew includes IMDB-rated Writers, Directors, Editors and DOPs, with a shared vision of delivering cinematic excellence at standard prices.",
     stats: [
-      { value: "2022", label: "Founded" },
+      { value: "2025", label: "Founded" },
       { value: "12+", label: "Team Size" },
       { value: "15+", label: "Languages" },
       { value: "100+", label: "Projects" },
@@ -71,11 +71,11 @@ export const defaultSettings: SiteSettings = {
   contact: {
     headline: "Let's Create Something Cinematic.",
     description: "Whether it's a feature film, music video, commercial, or sonic installation — we bring cinematic excellence to every frame and frequency.",
-    phone: "+91 62827 25324",
-    email: "kaushik2002.22@gmail.com",
+    phone: "+91 6282 725 324",
+    email: "novavoxofficial@gmail.com",
     whatsapp: "916282725324",
     buttons: [
-      { label: "Start a Project", href: "mailto:kaushik2002.22@gmail.com?subject=Project%20Inquiry", visible: true },
+      { label: "Start a Project", href: "mailto:novavoxofficial@gmail.com?subject=Project%20Inquiry", visible: true },
       { label: "WhatsApp Us", href: "https://wa.me/916282725324", visible: true },
       { label: "Submit Your Work", href: "/distribution", visible: true },
     ],

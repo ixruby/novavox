@@ -49,7 +49,7 @@ export default function Footer() {
           <div>
             <span className="font-mono text-[8px] tracking-[0.3em] text-white/30 uppercase block mb-4">Contact</span>
             <div className="space-y-2.5">
-              <a href="mailto:kaushik2002.22@gmail.com" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest uppercase">Email</a>
+              <a href="mailto:novavoxofficial@gmail.com" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest uppercase">Email</a>
               <a href="https://wa.me/916282725324" target="_blank" rel="noopener noreferrer" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest uppercase">WhatsApp</a>
               <a href="tel:+916282725324" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest uppercase">Phone</a>
               <a href="https://instagram.com/novavox" target="_blank" rel="noopener noreferrer" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest uppercase">Instagram</a>

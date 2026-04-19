@@ -48,10 +48,10 @@ export function MobileMenu() {
           </nav>
           <div className="absolute bottom-10 flex flex-col items-center gap-2">
             <a href="tel:+916282725324" className="text-[10px] tracking-[0.15em] text-[#474747] hover:text-white transition-colors">
-              +91 62827 25324
+              +91 6282 725 324
             </a>
-            <a href="mailto:kaushik2002.22@gmail.com" className="text-[10px] tracking-[0.15em] text-[#474747] hover:text-white transition-colors">
-              kaushik2002.22@gmail.com
+            <a href="mailto:novavoxofficial@gmail.com" className="text-[10px] tracking-[0.15em] text-[#474747] hover:text-white transition-colors">
+              novavoxofficial@gmail.com
             </a>
           </div>
         </div>

@@ -413,7 +413,7 @@ export default function LandingPage() {
               <Reveal delay={0.2}>
                 <div className="grid grid-cols-2 gap-6">
                   {[
-                    { label: "Founded", value: "2022" },
+                    { label: "Founded", value: "2025" },
                     { label: "Team Size", value: "12+" },
                     { label: "Languages", value: "15+" },
                     { label: "Projects", value: "100+" },
@@ -616,15 +616,15 @@ export default function LandingPage() {
               </Reveal>
               <Reveal delay={0.15}>
                 <div className="space-y-3">
-                  <a href="tel:+916282725324" className="font-mono text-[11px] tracking-widest text-white/25 hover:text-white transition-colors block">+91 62827 25324</a>
-                  <a href="mailto:kaushik2002.22@gmail.com" className="font-mono text-[11px] tracking-widest text-white/25 hover:text-white transition-colors block">kaushik2002.22@gmail.com</a>
+                  <a href="tel:+916282725324" className="font-mono text-[11px] tracking-widest text-white/25 hover:text-white transition-colors block">+91 6282 725 324</a>
+                  <a href="mailto:novavoxofficial@gmail.com" className="font-mono text-[11px] tracking-widest text-white/25 hover:text-white transition-colors block">novavoxofficial@gmail.com</a>
                 </div>
               </Reveal>
             </div>
 
             <div className="flex flex-col gap-5 justify-center">
               <Reveal delay={0.1}>
-                <a href="mailto:kaushik2002.22@gmail.com?subject=Project%20Inquiry" className="group relative border border-white/15 px-8 py-6 overflow-hidden text-center block">
+                <a href="mailto:novavoxofficial@gmail.com?subject=Project%20Inquiry" className="group relative border border-white/15 px-8 py-6 overflow-hidden text-center block">
                   <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
                   <span className="relative z-10 font-mono text-[10px] uppercase tracking-[0.4em] group-hover:text-black transition-colors">Start a Project</span>
                 </a>
@@ -693,7 +693,7 @@ export default function LandingPage() {
             <div>
               <span className="font-mono text-[8px] tracking-[0.3em] text-white/30 uppercase block mb-4">Contact</span>
               <div className="space-y-2.5">
-                <a href="mailto:kaushik2002.22@gmail.com" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest">EMAIL</a>
+                <a href="mailto:novavoxofficial@gmail.com" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest">EMAIL</a>
                 <a href="https://wa.me/916282725324" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest">WHATSAPP</a>
                 <a href="tel:+916282725324" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest">PHONE</a>
               </div>
