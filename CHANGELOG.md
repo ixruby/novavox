@@ -38,10 +38,10 @@ Original spatial design preserved. Only content/copy changed per client request.
 | OUR TEAM description | 4 | IMDB-rated, award-winning team section | `app/page.tsx` |
 | Our Vision quote | 4 | Blockquote with italic serif styling | `app/page.tsx` |
 | "Let's Create Something Cinematic Together" | 3→Last | Contact CTA section with gold accent buttons | `app/page.tsx` |
-| [Start a Project] button | Last | mailto link to kaushik2002.22@gmail.com | `app/page.tsx` |
+| [Start a Project] button | Last | mailto link to novavoxofficial@gmail.com | `app/page.tsx` |
 | [WhatsApp Us] button | Last | Direct wa.me/916282725324 link | `app/page.tsx` |
-| Phone: +91 62827 25324 | Last | Clickable tel: link | `app/page.tsx` |
-| Email: kaushik2002.22@gmail.com | Last | Clickable mailto: link | `app/page.tsx` |
+| Phone: +91 6282 725 324 | Last | Clickable tel: link | `app/page.tsx` |
+| Email: novavoxofficial@gmail.com | Last | Clickable mailto: link | `app/page.tsx` |
 | Supporting Emerging Artists | 6 | Dedicated section with artist roster list | `app/page.tsx` |
 | Portfolio — Music, Ads, Films | 7 | Grid with category filter tabs + search bar | `app/page.tsx` |
 | Search bar | 7 | Input with search icon, focus state accent | `app/page.tsx` |

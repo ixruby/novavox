@@ -22,6 +22,11 @@ export const metadata: Metadata = {
   title: "NOVAVOX — Where Ideas Become Cinematic Realities",
   description: "Film & video production, advertising, post production, and music — cinematic excellence by Kaushik Jayakumar and team.",
   metadataBase: new URL("https://novavox.vercel.app"),
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }, { url: "/favicon.ico" }],
+    apple: [{ url: "/apple-touch-icon.png" }],
+    shortcut: ["/favicon.ico"]
+  },
   openGraph: {
     title: "NOVAVOX — Where Ideas Become Cinematic Realities",
     description: "Film & video production, advertising, post production, and music.",

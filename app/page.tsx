@@ -61,6 +61,146 @@ function Stat({ value, label }: { value: string; label: string }) {
   );
 }
 
+function extractScriptSrcs(embedCode: string): string[] {
+  const urls: string[] = [];
+  const re = /<script[^>]*\ssrc=["']([^"']+)["'][^>]*>\s*<\/script>/gi;
+  let match: RegExpExecArray | null = null;
+  while ((match = re.exec(embedCode))) {
+    const url = match[1]?.trim();
+    if (url && !urls.includes(url)) urls.push(url);
+  }
+  return urls;
+}
+
+function stripScriptTags(embedCode: string): string {
+  return embedCode.replace(/<script[\s\S]*?<\/script>/gi, "").trim();
+}
+
+function InstagramWidgetEmbed({ embedCode }: { embedCode: string }) {
+  const [key, setKey] = useState(0);
+
+  useEffect(() => {
+    // Force re-render on changes.
+    setKey((k) => k + 1);
+  }, [embedCode]);
+
+  useEffect(() => {
+    const srcs = extractScriptSrcs(embedCode);
+    srcs.forEach((src) => {
+      if (document.querySelector(`script[data-novavox-ig-widget="1"][src="${src}"]`)) return;
+      const s = document.createElement("script");
+      s.src = src;
+      s.async = true;
+      s.defer = true;
+      s.setAttribute("data-novavox-ig-widget", "1");
+      document.body.appendChild(s);
+    });
+  }, [embedCode]);
+
+  const html = stripScriptTags(embedCode);
+  if (!html) return null;
+
+  return (
+    <div key={key} dangerouslySetInnerHTML={{ __html: html }} />
+  );
+}
+
+type InstagramPost = {
+  id: string;
+  shortcode: string;
+  displayUrl: string;
+  thumbnailUrl: string;
+  isVideo: boolean;
+  caption: string;
+  timestamp: number;
+};
+
+function InstagramPostsGrid({ username, limit }: { username: string; limit: number }) {
+  const [posts, setPosts] = useState<InstagramPost[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setPosts(null);
+    setError(null);
+
+    const u = (username || "").trim();
+    if (!u) {
+      setPosts([]);
+      return;
+    }
+
+    fetch(`/api/instagram/posts?username=${encodeURIComponent(u)}&limit=${encodeURIComponent(String(limit || 12))}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (cancelled) return;
+        if (d?.error) {
+          setError(String(d.error));
+          setPosts([]);
+          return;
+        }
+        setPosts(Array.isArray(d?.posts) ? d.posts : []);
+      })
+      .catch((e) => {
+        if (cancelled) return;
+        setError(String(e));
+        setPosts([]);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [username, limit]);
+
+  if (!posts) {
+    return (
+      <div className="grid grid-cols-3 md:grid-cols-6 gap-[1px] bg-white/5">
+        {Array.from({ length: Math.min(limit || 12, 12) }).map((_, i) => (
+          <div key={i} className="aspect-square bg-white/[0.03] animate-pulse" />
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 md:p-10">
+        <div className="font-mono text-[10px] tracking-widest text-white/30 uppercase">Instagram feed unavailable</div>
+        <div className="mt-2 text-[11px] text-white/20 font-mono break-words">{error}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-3 md:grid-cols-6 gap-[1px] bg-white/5">
+      {posts.slice(0, limit || 12).map((p) => (
+        <a
+          key={p.id}
+          href={`https://www.instagram.com/p/${p.shortcode}/`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group relative block bg-black/40 hover:bg-white/[0.03] transition-colors duration-500"
+          aria-label="Open Instagram post"
+        >
+          <div className="relative aspect-square overflow-hidden">
+            <img
+              src={p.thumbnailUrl || p.displayUrl}
+              alt={p.caption || "Instagram post"}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+            />
+            {p.isVideo && (
+              <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm px-1.5 py-0.5">
+                <span className="font-mono text-[7px] tracking-widest text-white/40">VIDEO</span>
+              </div>
+            )}
+          </div>
+        </a>
+      ))}
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════════════════ */
 export default function LandingPage() {
   const [artists, setArtists] = useState<Artist[]>(defaultArtists);
@@ -79,7 +219,20 @@ export default function LandingPage() {
       if (d.tourEvents) setTourEvents(d.tourEvents);
       if (d.journalEntries) setJournalEntries(d.journalEntries);
       if (d.products) setProducts(d.products);
-      if (d.settings) setSettings(prev => ({ ...prev, ...d.settings, pages: { ...prev.pages, ...d.settings?.pages }, navigation: d.settings?.navigation || prev.navigation }));
+      if (d.settings) setSettings(prev => ({
+        ...prev,
+        ...d.settings,
+        pages: { ...prev.pages, ...d.settings?.pages },
+        navigation: d.settings?.navigation || prev.navigation,
+        social: {
+          ...prev.social,
+          ...d.settings?.social,
+          instagram: { ...prev.social.instagram, ...d.settings?.social?.instagram },
+        },
+        contact: { ...prev.contact, ...d.settings?.contact, buttons: d.settings?.contact?.buttons || prev.contact.buttons },
+        footer: { ...prev.footer, ...d.settings?.footer },
+        seo: { ...prev.seo, ...d.settings?.seo },
+      }));
     }).catch(() => {});
   }, []);
 
@@ -92,6 +245,9 @@ export default function LandingPage() {
   const featuredReleases = releases.slice(0, 6);
   const featuredWorks = portfolioWorks.slice(0, 8);
   const upcomingTours = tourEvents.filter(t => t.status === "RESERVE");
+
+  const phoneDigits = (settings.contact.phone || "").replace(/[^\d]/g, "");
+  const whatsappDigits = (settings.contact.whatsapp || "").replace(/[^\d]/g, "");
 
   return (
     <div className="bg-[#0a0a0a] text-white min-h-screen">
@@ -190,12 +346,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
           <Reveal>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-0 md:divide-x md:divide-white/5">
-              {[
-                { value: "100+", label: "Projects Delivered" },
-                { value: "15+", label: "Languages" },
-                { value: "12", label: "Active Artists" },
-                { value: "6", label: "World Tour Cities" },
-              ].map((s, i) => (
+              {settings.stats.map((s, i) => (
                 <div key={i} className="md:px-10 first:md:pl-0 last:md:pr-0">
                   <Stat value={s.value} label={s.label} />
                 </div>
@@ -376,6 +527,55 @@ export default function LandingPage() {
                 </Link>
               </Reveal>
             ))}
+          </div>
+        </div>
+      </section>
+      )}
+
+      {/* ═══════════════════════════════════════════
+          INSTAGRAM — Social feed embed
+      ═══════════════════════════════════════════ */}
+      {settings.social?.instagram?.enabled !== false && (
+      <section className="py-24 md:py-36 border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+          <Reveal>
+            <SectionLabel number="004" label="Instagram" />
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+              <h2 className="font-headline text-4xl md:text-6xl lg:text-7xl font-extrabold uppercase tracking-tighter text-white leading-[0.9]">
+                Instagram
+              </h2>
+              <a
+                href={`https://www.instagram.com/${settings.social.instagram.username}/`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-[10px] tracking-[0.25em] text-white/30 hover:text-white transition-colors uppercase group"
+              >
+                OPEN PROFILE <span className="inline-block group-hover:translate-x-1 transition-transform">&rarr;</span>
+              </a>
+            </div>
+          </Reveal>
+
+          <div className="border border-white/10 bg-black/40 overflow-hidden">
+            {settings.social.instagram.embedMode === "posts" ? (
+              <InstagramPostsGrid username={settings.social.instagram.username} limit={settings.social.instagram.postsLimit || 12} />
+            ) : (
+              <div className="aspect-[16/9] md:aspect-[21/9]">
+                {settings.social.instagram.embedMode === "widget" && settings.social.instagram.widgetEmbedCode ? (
+                  <div className="w-full h-full p-6 md:p-10">
+                    <InstagramWidgetEmbed embedCode={settings.social.instagram.widgetEmbedCode} />
+                  </div>
+                ) : (
+                  <iframe
+                    title="NOVAVOX Instagram"
+                    src={`https://www.instagram.com/${settings.social.instagram.username}/embed`}
+                    className="w-full h-full"
+                    loading="lazy"
+                    allow="encrypted-media; picture-in-picture; fullscreen"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                )}
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -606,41 +806,43 @@ export default function LandingPage() {
               <Reveal>
                 <SectionLabel number="009" label="Get In Touch" />
                 <h2 className="font-headline text-4xl md:text-6xl lg:text-7xl font-black uppercase tracking-tighter leading-[0.9] text-white mb-8">
-                  Let&apos;s Create<br />Something<br />Cinematic.
+                  {settings.contact.headline}
                 </h2>
               </Reveal>
               <Reveal delay={0.1}>
                 <p className="text-xs text-white/30 leading-relaxed max-w-md mb-10">
-                  Whether it&apos;s a feature film, music video, commercial, or sonic installation — we bring cinematic excellence to every frame and frequency.
+                  {settings.contact.description}
                 </p>
               </Reveal>
               <Reveal delay={0.15}>
                 <div className="space-y-3">
-                  <a href="tel:+916282725324" className="font-mono text-[11px] tracking-widest text-white/25 hover:text-white transition-colors block">+91 6282 725 324</a>
-                  <a href="mailto:novavoxofficial@gmail.com" className="font-mono text-[11px] tracking-widest text-white/25 hover:text-white transition-colors block">novavoxofficial@gmail.com</a>
+                  <a href={phoneDigits ? `tel:+${phoneDigits}` : "#"} className="font-mono text-[11px] tracking-widest text-white/25 hover:text-white transition-colors block">{settings.contact.phone}</a>
+                  <a href={`mailto:${settings.contact.email}`} className="font-mono text-[11px] tracking-widest text-white/25 hover:text-white transition-colors block">{settings.contact.email}</a>
                 </div>
               </Reveal>
             </div>
 
             <div className="flex flex-col gap-5 justify-center">
-              <Reveal delay={0.1}>
-                <a href="mailto:novavoxofficial@gmail.com?subject=Project%20Inquiry" className="group relative border border-white/15 px-8 py-6 overflow-hidden text-center block">
-                  <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-                  <span className="relative z-10 font-mono text-[10px] uppercase tracking-[0.4em] group-hover:text-black transition-colors">Start a Project</span>
-                </a>
-              </Reveal>
-              <Reveal delay={0.15}>
-                <a href="https://wa.me/916282725324" target="_blank" rel="noopener noreferrer" className="group relative border border-white/15 px-8 py-6 overflow-hidden text-center block">
-                  <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-                  <span className="relative z-10 font-mono text-[10px] uppercase tracking-[0.4em] group-hover:text-black transition-colors">WhatsApp Us</span>
-                </a>
-              </Reveal>
-              <Reveal delay={0.2}>
-                <Link href="/distribution" className="group relative border border-white/15 px-8 py-6 overflow-hidden text-center block">
-                  <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-                  <span className="relative z-10 font-mono text-[10px] uppercase tracking-[0.4em] group-hover:text-black transition-colors">Submit Your Work</span>
-                </Link>
-              </Reveal>
+              {settings.contact.buttons.filter(b => b.visible !== false).map((btn, i) => {
+                const resolvedHref = btn.href
+                  .replaceAll("{email}", settings.contact.email)
+                  .replaceAll("{phone}", settings.contact.phone)
+                  .replaceAll("{whatsapp}", whatsappDigits)
+                  .replaceAll("{tel}", phoneDigits ? `+${phoneDigits}` : "");
+                const isExternal = resolvedHref.startsWith("http");
+                return (
+                  <Reveal key={`${btn.label}-${btn.href}`} delay={0.1 + i * 0.05}>
+                    <a
+                      href={resolvedHref}
+                      {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" as const } : {})}
+                      className="group relative border border-white/15 px-8 py-6 overflow-hidden text-center block"
+                    >
+                      <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+                      <span className="relative z-10 font-mono text-[10px] uppercase tracking-[0.4em] group-hover:text-black transition-colors">{btn.label}</span>
+                    </a>
+                  </Reveal>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -693,9 +895,9 @@ export default function LandingPage() {
             <div>
               <span className="font-mono text-[8px] tracking-[0.3em] text-white/30 uppercase block mb-4">Contact</span>
               <div className="space-y-2.5">
-                <a href="mailto:novavoxofficial@gmail.com" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest">EMAIL</a>
-                <a href="https://wa.me/916282725324" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest">WHATSAPP</a>
-                <a href="tel:+916282725324" className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest">PHONE</a>
+                <a href={`mailto:${settings.contact.email}`} className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest">EMAIL</a>
+                <a href={whatsappDigits ? `https://wa.me/${whatsappDigits}` : "#"} className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest">WHATSAPP</a>
+                <a href={phoneDigits ? `tel:+${phoneDigits}` : "#"} className="block font-mono text-[10px] text-white/20 hover:text-white transition-colors tracking-widest">PHONE</a>
               </div>
             </div>
           </div>

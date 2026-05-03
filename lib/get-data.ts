@@ -9,6 +9,69 @@ const GIST_ID = process.env.GIST_ID;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const USE_GIST = !!(GIST_ID && GITHUB_TOKEN);
 
+const CURRENT_SETTINGS_SCHEMA_VERSION = defaultSettings.schemaVersion;
+
+function migrateSettings(settings: SiteSettings): SiteSettings {
+  const schemaVersion = typeof settings.schemaVersion === 'number' ? settings.schemaVersion : 0;
+  if (schemaVersion >= CURRENT_SETTINGS_SCHEMA_VERSION) return settings;
+
+  const migrated: SiteSettings = {
+    ...settings,
+    schemaVersion: CURRENT_SETTINGS_SCHEMA_VERSION,
+  };
+
+  // ✅ Requested updates (April 2026)
+  // Keep Releases hidden by default (still editable in admin panel).
+  migrated.pages = {
+    ...migrated.pages,
+    releases: { ...migrated.pages.releases, visible: false },
+  };
+
+  migrated.navigation = (migrated.navigation || []).map((n) => {
+    const href = (n.href || '').toLowerCase();
+    const label = (n.label || '').toLowerCase();
+    if (href === '/releases' || href.includes('releases') || label.trim() === 'releases') return { ...n, visible: false };
+    return n;
+  });
+
+  migrated.stats = (migrated.stats || []).map((st) => {
+    const label = (st.label || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    if (label.includes('active') && label.includes('artist')) return { ...st, label: 'Active Technicians' };
+    if (label.includes('world') && label.includes('tour') && label.includes('citie')) {
+      return { ...st, label: 'Awards', value: st.value?.includes('+') ? st.value : `${st.value}+` };
+    }
+    return st;
+  });
+
+  migrated.contact = {
+    ...migrated.contact,
+    phone: '+91 6282 725 324',
+    email: 'novavoxofficial@gmail.com',
+    buttons: (migrated.contact.buttons || []).map((b) => {
+      if ((b.label || '').toLowerCase() === 'submit your work') return { ...b, visible: false };
+      return b;
+    }),
+  };
+
+  migrated.social = {
+    ...migrated.social,
+    instagram: {
+      enabled: migrated.social?.instagram?.enabled ?? true,
+      username: (() => {
+        const current = (migrated.social?.instagram?.username || '').trim();
+        if (!current) return 'novavox.official';
+        if (schemaVersion < 3 && current.replaceAll('/', '') === 'novavoxofficial') return 'novavox.official';
+        return current;
+      })(),
+      embedMode: migrated.social?.instagram?.embedMode || 'posts',
+      postsLimit: migrated.social?.instagram?.postsLimit || 12,
+      widgetEmbedCode: migrated.social?.instagram?.widgetEmbedCode || '',
+    },
+  };
+
+  return migrated;
+}
+
 export type SiteData = {
   artists: (Artist & { visible?: boolean; featured?: boolean })[];
   releases: (Release & { visible?: boolean; featured?: boolean })[];
@@ -42,6 +105,27 @@ const defaults: SiteData = {
 };
 
 function parseSiteData(saved: Record<string, unknown>): SiteData {
+  const incomingSettings = (saved.settings as Partial<SiteSettings> | undefined) || {};
+  const incomingSchemaVersion = typeof incomingSettings.schemaVersion === 'number' ? incomingSettings.schemaVersion : 0;
+
+  const mergedSettings: SiteSettings = migrateSettings({
+    ...defaultSettings,
+    ...incomingSettings,
+    // IMPORTANT: migration decision is based on incoming schemaVersion,
+    // not the default settings version.
+    schemaVersion: incomingSchemaVersion,
+    pages: { ...defaultSettings.pages, ...(incomingSettings.pages as SiteSettings['pages'] | undefined) },
+    social: {
+      ...defaultSettings.social,
+      ...(incomingSettings.social as SiteSettings['social'] | undefined),
+      instagram: {
+        ...defaultSettings.social.instagram,
+        ...(incomingSettings.social?.instagram as SiteSettings['social']['instagram'] | undefined),
+      },
+    },
+    navigation: incomingSettings.navigation || defaultSettings.navigation,
+  });
+
   return {
     artists: (saved.artists as SiteData['artists']) || defaults.artists,
     releases: (saved.releases as SiteData['releases']) || defaults.releases,
@@ -49,11 +133,7 @@ function parseSiteData(saved: Record<string, unknown>): SiteData {
     tourEvents: (saved.tourEvents as SiteData['tourEvents']) || defaults.tourEvents,
     journalEntries: (saved.journalEntries as SiteData['journalEntries']) || defaults.journalEntries,
     portfolioWorks: (saved.portfolioWorks as SiteData['portfolioWorks']) || defaults.portfolioWorks,
-    settings: {
-      ...defaultSettings,
-      ...(saved.settings as SiteSettings),
-      pages: { ...defaultSettings.pages, ...((saved.settings as SiteSettings)?.pages) },
-    },
+    settings: mergedSettings,
   };
 }
 

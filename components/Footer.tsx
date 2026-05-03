@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useSiteConfig } from '@/context/SiteConfigContext';
 
 export function Footer() {
+  const HIDE_RELEASES_UI = true;
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
   const { config } = useSiteConfig();
@@ -63,7 +64,9 @@ export function Footer() {
             <Link href="/artist" className="text-xs font-medium text-white/50 hover:text-white transition-colors">ARTIST PROFILE</Link>
             <Link href="/checkout" className="text-xs font-medium text-white/50 hover:text-white transition-colors">CHECKOUT</Link>
             <Link href="/distribution" className="text-xs font-medium text-white/50 hover:text-white transition-colors">DISTRIBUTION</Link>
-            <Link href="/releases" className="text-xs font-medium text-white/50 hover:text-white transition-colors">RELEASES</Link>
+            {!HIDE_RELEASES_UI && (
+              <Link href="/releases" className="text-xs font-medium text-white/50 hover:text-white transition-colors">RELEASES</Link>
+            )}
           </nav>
         </div>
 

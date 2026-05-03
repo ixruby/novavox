@@ -93,6 +93,31 @@ export default function AdminDashboard() {
   const [restoringId, setRestoringId] = useState('');
   const router = useRouter();
 
+  const mergeSettings = useCallback((incoming?: Partial<SiteSettings>) => {
+    const i = incoming || {};
+    return ({
+      ...defaultSettings,
+      ...i,
+      pages: { ...defaultSettings.pages, ...(i.pages as SiteSettings['pages'] | undefined) },
+      social: {
+        ...defaultSettings.social,
+        ...(i.social as SiteSettings['social'] | undefined),
+        instagram: {
+          ...defaultSettings.social.instagram,
+          ...(i.social?.instagram as SiteSettings['social']['instagram'] | undefined),
+        },
+      },
+      contact: {
+        ...defaultSettings.contact,
+        ...(i.contact as SiteSettings['contact'] | undefined),
+        buttons: i.contact?.buttons || defaultSettings.contact.buttons,
+      },
+      footer: { ...defaultSettings.footer, ...(i.footer as SiteSettings['footer'] | undefined) },
+      seo: { ...defaultSettings.seo, ...(i.seo as SiteSettings['seo'] | undefined) },
+      navigation: i.navigation || defaultSettings.navigation,
+    });
+  }, []);
+
   useEffect(() => {
     fetch('/api/auth').then(r => r.json()).then(d => {
       if (d.authenticated) { setAuthenticated(true); setAdminUser(d.username || ''); setUserRole(d.role || 'client'); }
@@ -101,8 +126,8 @@ export default function AdminDashboard() {
   }, [router]);
 
   useEffect(() => {
-    if (authenticated) fetch('/api/data').then(r => r.json()).then(d => setData({ ...d, settings: { ...defaultSettings, ...d.settings } })).catch(() => {});
-  }, [authenticated]);
+    if (authenticated) fetch('/api/data').then(r => r.json()).then(d => setData({ ...d, settings: mergeSettings(d.settings) })).catch(() => {});
+  }, [authenticated, mergeSettings]);
 
   const allowedTabs = rolePermissions[userRole]?.tabs || [];
   const canDelete = rolePermissions[userRole]?.canDelete ?? false;
@@ -120,13 +145,13 @@ export default function AdminDashboard() {
   const handleAddUser = async () => { if (!newUser.username || !newUser.password) return; await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'add-user', ...newUser }) }); setNewUser({ username: '', password: '', role: 'client', allowedTabs: [] }); fetchUsers(); };
   const handleRemoveUser = async (username: string) => { await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'remove-user', username }) }); fetchUsers(); };
   const fetchRevisions = useCallback(async () => { setRevisionsLoading(true); setRevisionsError(''); try { const res = await fetch('/api/revisions'); if (!res.ok) throw new Error('Failed'); const json = await res.json(); setRevisions(json.revisions || []); } catch { setRevisionsError('Failed to load revisions'); } finally { setRevisionsLoading(false); } }, []);
-  const handleRestore = async (id: string) => { setRestoringId(id); setRevisionsError(''); try { const res = await fetch('/api/revisions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }); if (!res.ok) throw new Error('Restore failed'); const dataRes = await fetch('/api/data'); const newData = await dataRes.json(); setData({ ...newData, settings: { ...defaultSettings, ...newData.settings } }); setHasChanges(false); fetchRevisions(); } catch { setRevisionsError('Restore failed'); } finally { setRestoringId(''); } };
+  const handleRestore = async (id: string) => { setRestoringId(id); setRevisionsError(''); try { const res = await fetch('/api/revisions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }); if (!res.ok) throw new Error('Restore failed'); const dataRes = await fetch('/api/data'); const newData = await dataRes.json(); setData({ ...newData, settings: mergeSettings(newData.settings) }); setHasChanges(false); fetchRevisions(); } catch { setRevisionsError('Restore failed'); } finally { setRestoringId(''); } };
 
   if (authChecking || !authenticated || !data) return <div className="fixed inset-0 z-50 bg-[#0a0a0a] flex items-center justify-center"><Loader2 size={20} className="animate-spin text-white/30" /></div>;
 
   const s = data.settings;
 
-  const renderSite = () => (<div className="space-y-4"><Section title="Hero Section" defaultOpen={true}><Input label="Tagline" value={s.hero.tagline} onChange={v => updS(p => ({ ...p, hero: { ...p.hero, tagline: v } }))} /><TagsInput label="Categories" value={s.hero.categories} onChange={v => updS(p => ({ ...p, hero: { ...p.hero, categories: v } }))} /></Section><Section title="Stats" defaultOpen={true}>{s.stats.map((st, i) => (<div key={i} className="flex gap-2 items-end"><input value={st.value} onChange={e => updS(p => { const stats = [...p.stats]; stats[i] = { ...stats[i], value: e.target.value }; return { ...p, stats }; })} className="w-24 bg-white/5 border border-white/10 px-2 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white/40" /><input value={st.label} onChange={e => updS(p => { const stats = [...p.stats]; stats[i] = { ...stats[i], label: e.target.value }; return { ...p, stats }; })} className="flex-1 bg-white/5 border border-white/10 px-2 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white/40" /><button onClick={() => updS(p => ({ ...p, stats: p.stats.filter((_, j) => j !== i) }))} className="text-red-400/30 hover:text-red-400"><Trash2 size={12} /></button></div>))}<button onClick={() => updS(p => ({ ...p, stats: [...p.stats, { value: '0', label: 'Label' }] }))} className="text-[10px] font-mono tracking-widest text-white/20 hover:text-white/50 flex items-center gap-1"><Plus size={10} /> ADD STAT</button></Section><Section title="SEO"><Input label="Page Title" value={s.seo.title} onChange={v => updS(p => ({ ...p, seo: { ...p.seo, title: v } }))} /><Textarea label="Meta Description" value={s.seo.description} onChange={v => updS(p => ({ ...p, seo: { ...p.seo, description: v } }))} rows={2} /></Section></div>);
+  const renderSite = () => (<div className="space-y-4"><Section title="Hero Section" defaultOpen={true}><Input label="Tagline" value={s.hero.tagline} onChange={v => updS(p => ({ ...p, hero: { ...p.hero, tagline: v } }))} /><TagsInput label="Categories" value={s.hero.categories} onChange={v => updS(p => ({ ...p, hero: { ...p.hero, categories: v } }))} /></Section><Section title="Stats" defaultOpen={true}>{s.stats.map((st, i) => (<div key={i} className="flex gap-2 items-end"><input value={st.value} onChange={e => updS(p => { const stats = [...p.stats]; stats[i] = { ...stats[i], value: e.target.value }; return { ...p, stats }; })} className="w-24 bg-white/5 border border-white/10 px-2 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white/40" /><input value={st.label} onChange={e => updS(p => { const stats = [...p.stats]; stats[i] = { ...stats[i], label: e.target.value }; return { ...p, stats }; })} className="flex-1 bg-white/5 border border-white/10 px-2 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white/40" /><button onClick={() => updS(p => ({ ...p, stats: p.stats.filter((_, j) => j !== i) }))} className="text-red-400/30 hover:text-red-400"><Trash2 size={12} /></button></div>))}<button onClick={() => updS(p => ({ ...p, stats: [...p.stats, { value: '0', label: 'Label' }] }))} className="text-[10px] font-mono tracking-widest text-white/20 hover:text-white/50 flex items-center gap-1"><Plus size={10} /> ADD STAT</button></Section><Section title="Instagram" defaultOpen={true}><Toggle label="Enabled" value={s.social.instagram.enabled} onChange={v => updS(p => ({ ...p, social: { ...p.social, instagram: { ...p.social.instagram, enabled: v } } }))} icon={s.social.instagram.enabled ? <Eye size={12} className="text-green-400/60" /> : <EyeOff size={12} className="text-red-400/60" />} /><div className="grid grid-cols-3 gap-3"><Input label="Username" value={s.social.instagram.username} onChange={v => updS(p => ({ ...p, social: { ...p.social, instagram: { ...p.social.instagram, username: v } } }))} /><Select label="Embed Mode" value={s.social.instagram.embedMode} onChange={v => updS(p => ({ ...p, social: { ...p.social, instagram: { ...p.social.instagram, embedMode: v as any } } }))} options={['posts', 'profile', 'widget']} /><Input label="Posts Limit" type="number" value={s.social.instagram.postsLimit} onChange={v => updS(p => ({ ...p, social: { ...p.social, instagram: { ...p.social.instagram, postsLimit: Math.max(1, Math.min(24, parseInt(v) || 12)) } } }))} /></div><Textarea label="Widget Embed Code (optional)" value={s.social.instagram.widgetEmbedCode} onChange={v => updS(p => ({ ...p, social: { ...p.social, instagram: { ...p.social.instagram, widgetEmbedCode: v } } }))} rows={6} /></Section><Section title="SEO"><Input label="Page Title" value={s.seo.title} onChange={v => updS(p => ({ ...p, seo: { ...p.seo, title: v } }))} /><Textarea label="Meta Description" value={s.seo.description} onChange={v => updS(p => ({ ...p, seo: { ...p.seo, description: v } }))} rows={2} /></Section></div>);
 
   const renderServices = () => (<div className="space-y-4">{s.services.map((svc, i) => (<Section key={i} title={`${svc.tag} — ${svc.title}`} onDelete={canDelete ? () => updS(p => ({ ...p, services: p.services.filter((_, j) => j !== i) })) : undefined}><Toggle label="Visible" value={svc.visible} onChange={v => updS(p => { const services = [...p.services]; services[i] = { ...services[i], visible: v }; return { ...p, services }; })} icon={svc.visible ? <Eye size={12} className="text-green-400/60" /> : <EyeOff size={12} className="text-red-400/60" />} /><div className="grid grid-cols-2 gap-3"><Input label="Tag/Number" value={svc.tag} onChange={v => updS(p => { const services = [...p.services]; services[i] = { ...services[i], tag: v }; return { ...p, services }; })} /><Input label="Icon" value={svc.icon} onChange={v => updS(p => { const services = [...p.services]; services[i] = { ...services[i], icon: v }; return { ...p, services }; })} /></div><Input label="Title" value={svc.title} onChange={v => updS(p => { const services = [...p.services]; services[i] = { ...services[i], title: v }; return { ...p, services }; })} /><Textarea label="Description" value={svc.description} onChange={v => updS(p => { const services = [...p.services]; services[i] = { ...services[i], description: v }; return { ...p, services }; })} rows={2} /></Section>))}<AddButton label="ADD SERVICE" onClick={() => updS(p => ({ ...p, services: [...p.services, { icon: 'star', tag: String(p.services.length + 1).padStart(3, '0'), title: 'New Service', description: '', visible: true }] }))} /></div>);
 

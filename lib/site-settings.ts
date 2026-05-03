@@ -1,6 +1,16 @@
 export type SiteSettings = {
+  schemaVersion: number;
   hero: { tagline: string; categories: string[] };
   stats: { value: string; label: string }[];
+  social: {
+    instagram: {
+      enabled: boolean;
+      username: string;
+      embedMode: 'posts' | 'profile' | 'widget';
+      postsLimit: number;
+      widgetEmbedCode: string;
+    };
+  };
   services: { icon: string; tag: string; title: string; description: string; visible: boolean }[];
   about: {
     intro: string;
@@ -39,6 +49,7 @@ export type AdminUser = {
 };
 
 export const defaultSettings: SiteSettings = {
+  schemaVersion: 5,
   hero: {
     tagline: "Where Ideas Become Cinematic Realities",
     categories: ["FILM", "ADVERTISING", "POST PRODUCTION", "MUSIC"],
@@ -46,9 +57,18 @@ export const defaultSettings: SiteSettings = {
   stats: [
     { value: "100+", label: "Projects Delivered" },
     { value: "15+", label: "Languages" },
-    { value: "12", label: "Active Artists" },
-    { value: "6", label: "World Tour Cities" },
+    { value: "12", label: "Active Technicians" },
+    { value: "6+", label: "Awards" },
   ],
+  social: {
+    instagram: {
+      enabled: true,
+      username: "novavox.official",
+      embedMode: 'posts',
+      postsLimit: 12,
+      widgetEmbedCode: '',
+    },
+  },
   services: [
     { icon: "campaign", tag: "001", title: "Advertising & Commercials", description: "Visually captivating ads with strong brand connection — crafted for digital, television, and corporate campaigns. From storyboards to final output.", visible: true },
     { icon: "movie", tag: "002", title: "Film & Video Production", description: "Cinematic storytelling from concept to completion — including scripting, direction, cinematography, editing, and DI. Feature films, short films, branded content.", visible: true },
@@ -77,14 +97,14 @@ export const defaultSettings: SiteSettings = {
     buttons: [
       { label: "Start a Project", href: "mailto:novavoxofficial@gmail.com?subject=Project%20Inquiry", visible: true },
       { label: "WhatsApp Us", href: "https://wa.me/916282725324", visible: true },
-      { label: "Submit Your Work", href: "/distribution", visible: true },
+      { label: "Submit Your Work", href: "/distribution", visible: false },
     ],
   },
   navigation: [
     { label: "SERVICES", href: "#services", visible: true },
     { label: "PORTFOLIO", href: "#portfolio", visible: false },
     { label: "ARTISTS", href: "/artists", visible: false },
-    { label: "RELEASES", href: "/releases", visible: true },
+    { label: "RELEASES", href: "/releases", visible: false },
     { label: "TOURS", href: "/tours", visible: false },
     { label: "JOURNAL", href: "/journal", visible: false },
     { label: "SHOP", href: "/shop", visible: false },
@@ -92,7 +112,7 @@ export const defaultSettings: SiteSettings = {
   pages: {
     portfolio: { visible: false, title: "Portfolio — NOVAVOX", description: "Selected work by NOVAVOX." },
     artists: { visible: false, title: "Artists — NOVAVOX", description: "Discover the NOVAVOX artist roster." },
-    releases: { visible: true, title: "Releases — NOVAVOX", description: "Full catalog of NOVAVOX releases." },
+    releases: { visible: false, title: "Releases — NOVAVOX", description: "Full catalog of NOVAVOX releases." },
     tours: { visible: false, title: "Global Circuit — NOVAVOX", description: "NOVAVOX world tour dates." },
     journal: { visible: false, title: "Sonic Journal — NOVAVOX", description: "Essays, notes, and interviews." },
     shop: { visible: false, title: "Archive — NOVAVOX", description: "NOVAVOX merchandise and objects." },

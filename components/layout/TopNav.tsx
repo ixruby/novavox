@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { defaultSettings, type SiteSettings } from "@/lib/site-settings";
 
 const mainLinks = [
   { href: "/artists", label: "ARTISTS" },
@@ -16,6 +18,36 @@ const mainLinks = [
 
 export default function TopNav() {
   const pathname = usePathname();
+  const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
+
+  useEffect(() => {
+    fetch("/api/data").then(r => r.json()).then(d => {
+      if (d.settings) {
+        setSettings((prev) => ({
+          ...prev,
+          ...d.settings,
+          pages: { ...prev.pages, ...d.settings?.pages },
+          navigation: d.settings?.navigation || prev.navigation,
+          social: {
+            ...prev.social,
+            ...d.settings?.social,
+            instagram: { ...prev.social.instagram, ...d.settings?.social?.instagram },
+          },
+        }));
+      }
+    }).catch(() => {});
+  }, []);
+
+  const visibleLinks = mainLinks.filter((link) => {
+    const pageKey = link.href.replace(/^\//, "");
+    const page = settings.pages?.[pageKey];
+    if (page && page.visible === false) return false;
+
+    const navItem = settings.navigation?.find((n) => n.href === link.href);
+    if (navItem && navItem.visible === false) return false;
+
+    return true;
+  });
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-[#0a0a0a]/80 backdrop-blur-2xl border-b border-white/5">
@@ -28,7 +60,7 @@ export default function TopNav() {
 
         {/* Center Nav */}
         <nav aria-label="Main navigation" className="hidden md:flex items-center gap-7">
-          {mainLinks.map((link) => {
+          {visibleLinks.map((link) => {
             const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
             return (
               <Link
