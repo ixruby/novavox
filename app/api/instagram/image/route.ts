@@ -3,7 +3,12 @@ import { NextResponse } from 'next/server';
 function isSafeImageUrl(raw: string): boolean {
   try {
     const u = new URL(raw);
-    return u.protocol === 'https:' && u.hostname.endsWith('cdninstagram.com');
+    const hostname = u.hostname.toLowerCase();
+    return (
+      u.protocol === 'https:' &&
+      (hostname.endsWith('cdninstagram.com') ||
+        (hostname.startsWith('instagram.') && hostname.endsWith('fbcdn.net')))
+    );
   } catch {
     return false;
   }

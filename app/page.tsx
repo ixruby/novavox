@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, useMotionValue, useMotionTemplate, useScroll, useTransform } from "motion/react";
 import { artists as defaultArtists, releases as defaultReleases, portfolioWorks as defaultPortfolioWorks, tourEvents as defaultTourEvents, journalEntries as defaultJournalEntries, products as defaultProducts } from "@/lib/data";
 import type { Artist, Release, PortfolioWork, TourEvent, JournalEntry, Product } from "@/lib/data";
@@ -77,13 +77,6 @@ function stripScriptTags(embedCode: string): string {
 }
 
 function InstagramWidgetEmbed({ embedCode }: { embedCode: string }) {
-  const [key, setKey] = useState(0);
-
-  useEffect(() => {
-    // Force re-render on changes.
-    setKey((k) => k + 1);
-  }, [embedCode]);
-
   useEffect(() => {
     const srcs = extractScriptSrcs(embedCode);
     srcs.forEach((src) => {
@@ -97,11 +90,11 @@ function InstagramWidgetEmbed({ embedCode }: { embedCode: string }) {
     });
   }, [embedCode]);
 
-  const html = stripScriptTags(embedCode);
+  const html = useMemo(() => stripScriptTags(embedCode), [embedCode]);
   if (!html) return null;
 
   return (
-    <div key={key} dangerouslySetInnerHTML={{ __html: html }} />
+    <div key={embedCode} dangerouslySetInnerHTML={{ __html: html }} />
   );
 }
 
@@ -115,20 +108,56 @@ type InstagramPost = {
   timestamp: number;
 };
 
+function InstagramPostTile({ post }: { post: InstagramPost }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageUrl = post.thumbnailUrl || post.displayUrl;
+
+  return (
+    <a
+      href={`https://www.instagram.com/p/${post.shortcode}/`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group relative block bg-black/40 hover:bg-white/[0.03] transition-colors duration-500"
+      aria-label="Open Instagram post"
+    >
+      <div className="relative aspect-square overflow-hidden">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#101010] px-3 text-center">
+          <span className="material-symbols-outlined text-[22px] text-white/15" aria-hidden="true">
+            photo_camera
+          </span>
+          <span className="font-mono text-[8px] uppercase tracking-[0.25em] text-white/25">
+            Open Post
+          </span>
+        </div>
+        {imageUrl && !imageFailed ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={imageUrl}
+            alt=""
+            loading="lazy"
+            onError={() => setImageFailed(true)}
+            className="absolute inset-0 z-10 h-full w-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+          />
+        ) : null}
+        {post.isVideo && (
+          <div className="absolute top-2 right-2 z-20 bg-black/60 backdrop-blur-sm px-1.5 py-0.5">
+            <span className="font-mono text-[7px] tracking-widest text-white/40">VIDEO</span>
+          </div>
+        )}
+      </div>
+    </a>
+  );
+}
+
 function InstagramPostsGrid({ username, limit }: { username: string; limit: number }) {
   const [posts, setPosts] = useState<InstagramPost[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    setPosts(null);
-    setError(null);
 
     const u = (username || "").trim();
-    if (!u) {
-      setPosts([]);
-      return;
-    }
+    if (!u) return;
 
     fetch(`/api/instagram/posts?username=${encodeURIComponent(u)}&limit=${encodeURIComponent(String(limit || 12))}`)
       .then((r) => r.json())
@@ -174,28 +203,7 @@ function InstagramPostsGrid({ username, limit }: { username: string; limit: numb
   return (
     <div className="grid grid-cols-3 md:grid-cols-6 gap-[1px] bg-white/5">
       {posts.slice(0, limit || 12).map((p) => (
-        <a
-          key={p.id}
-          href={`https://www.instagram.com/p/${p.shortcode}/`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group relative block bg-black/40 hover:bg-white/[0.03] transition-colors duration-500"
-          aria-label="Open Instagram post"
-        >
-          <div className="relative aspect-square overflow-hidden">
-            <img
-              src={p.thumbnailUrl || p.displayUrl}
-              alt={p.caption || "Instagram post"}
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
-            />
-            {p.isVideo && (
-              <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm px-1.5 py-0.5">
-                <span className="font-mono text-[7px] tracking-widest text-white/40">VIDEO</span>
-              </div>
-            )}
-          </div>
-        </a>
+        <InstagramPostTile key={p.id} post={p} />
       ))}
     </div>
   );
