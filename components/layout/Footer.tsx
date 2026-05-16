@@ -93,7 +93,8 @@ export default function Footer() {
 
         <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <span className="font-mono text-[8px] text-white/15 tracking-widest">&copy; {new Date().getFullYear()} {settings.footer.copyright}</span>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center justify-center gap-6">
+            <Link href="/child-safety" className="font-mono text-[8px] text-white/30 hover:text-white/70 transition-colors tracking-widest uppercase">Child Safety</Link>
             <span className="font-mono text-[8px] text-white/15 tracking-widest">DESIGNED BY <a href={settings.footer.creditLink} target="_blank" rel="noopener noreferrer" className="hover:text-white/40 transition-colors">{settings.footer.credit}</a></span>
             <Link href="/admin/login" className="font-mono text-[8px] text-white/30 hover:text-white/70 transition-colors tracking-widest">ADMIN</Link>
           </div>
