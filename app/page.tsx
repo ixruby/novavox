@@ -151,28 +151,33 @@ function InstagramPostTile({ post }: { post: InstagramPost }) {
 
 function InstagramFeedFallback({ username }: { username: string }) {
   const profileUrl = `https://www.instagram.com/${username || "novavox.official"}/`;
+  const embedUrl = `${profileUrl}embed`;
 
   return (
-    <div className="min-h-[220px] md:min-h-[260px] flex flex-col items-center justify-center gap-5 px-6 py-12 text-center bg-[#0d0d0d]">
-      <span className="material-symbols-outlined text-[32px] text-white/15" aria-hidden="true">
-        photo_camera
-      </span>
-      <div>
-        <p className="font-headline text-xl md:text-2xl font-bold uppercase tracking-tight text-white">
-          View the Latest on Instagram
-        </p>
-        <p className="mt-3 max-w-md text-xs text-white/30 leading-relaxed">
-          Behind-the-scenes updates, production moments, and new releases are available directly on the Novavox profile.
-        </p>
+    <div className="bg-[#0d0d0d]">
+      <div className="aspect-[4/5] md:aspect-[16/9] min-h-[420px] md:min-h-[520px]">
+        <iframe
+          title="NOVAVOX Instagram profile"
+          src={embedUrl}
+          className="h-full w-full bg-[#0d0d0d]"
+          loading="lazy"
+          allow="encrypted-media; picture-in-picture; fullscreen"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
       </div>
-      <a
-        href={profileUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="font-mono text-[9px] tracking-[0.25em] text-white/35 border border-white/10 px-5 py-3 hover:bg-white hover:text-black transition-all uppercase"
-      >
-        Open Instagram
-      </a>
+      <div className="flex flex-col gap-4 border-t border-white/10 px-6 py-5 md:flex-row md:items-center md:justify-between">
+        <p className="text-xs text-white/30 leading-relaxed">
+          Latest Instagram posts are embedded directly from the official Novavox profile.
+        </p>
+        <a
+          href={profileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-mono text-[9px] tracking-[0.25em] text-white/35 hover:text-white transition-colors uppercase"
+        >
+          Open Instagram <span aria-hidden="true">-&gt;</span>
+        </a>
+      </div>
     </div>
   );
 }
@@ -279,7 +284,6 @@ export default function LandingPage() {
   const activeArtists = artists.filter(a => a.status === "ACTIVE");
   const featuredReleases = releases.slice(0, 6);
   const featuredWorks = portfolioWorks.slice(0, 8);
-  const upcomingTours = tourEvents.filter(t => t.status === "RESERVE");
 
   const phoneDigits = (settings.contact.phone || "").replace(/[^\d]/g, "");
   const whatsappDigits = (settings.contact.whatsapp || "").replace(/[^\d]/g, "");
