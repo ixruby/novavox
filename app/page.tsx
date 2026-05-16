@@ -149,6 +149,34 @@ function InstagramPostTile({ post }: { post: InstagramPost }) {
   );
 }
 
+function InstagramFeedFallback({ username }: { username: string }) {
+  const profileUrl = `https://www.instagram.com/${username || "novavox.official"}/`;
+
+  return (
+    <div className="min-h-[220px] md:min-h-[260px] flex flex-col items-center justify-center gap-5 px-6 py-12 text-center bg-[#0d0d0d]">
+      <span className="material-symbols-outlined text-[32px] text-white/15" aria-hidden="true">
+        photo_camera
+      </span>
+      <div>
+        <p className="font-headline text-xl md:text-2xl font-bold uppercase tracking-tight text-white">
+          View the Latest on Instagram
+        </p>
+        <p className="mt-3 max-w-md text-xs text-white/30 leading-relaxed">
+          Behind-the-scenes updates, production moments, and new releases are available directly on the Novavox profile.
+        </p>
+      </div>
+      <a
+        href={profileUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-mono text-[9px] tracking-[0.25em] text-white/35 border border-white/10 px-5 py-3 hover:bg-white hover:text-black transition-all uppercase"
+      >
+        Open Instagram
+      </a>
+    </div>
+  );
+}
+
 function InstagramPostsGrid({ username, limit }: { username: string; limit: number }) {
   const [posts, setPosts] = useState<InstagramPost[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -192,12 +220,11 @@ function InstagramPostsGrid({ username, limit }: { username: string; limit: numb
   }
 
   if (error) {
-    return (
-      <div className="p-6 md:p-10">
-        <div className="font-mono text-[10px] tracking-widest text-white/30 uppercase">Instagram feed unavailable</div>
-        <div className="mt-2 text-[11px] text-white/20 font-mono break-words">{error}</div>
-      </div>
-    );
+    return <InstagramFeedFallback username={username} />;
+  }
+
+  if (posts.length === 0) {
+    return <InstagramFeedFallback username={username} />;
   }
 
   return (
