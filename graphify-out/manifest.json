@@ -1,0 +1,506 @@
+{
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\eslint.config.mjs": {
+    "mtime": 1778953612.782549,
+    "hash": "dfa1f5f6a7037bf39dc510f30b180002"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\next-env.d.ts": {
+    "mtime": 1778954367.1369176,
+    "hash": "2a74d3909800ca5467fa83b0ab4a4890"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\next.config.ts": {
+    "mtime": 1778953612.7864985,
+    "hash": "231aa095c3755e015f3c74809055b62c"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\postcss.config.mjs": {
+    "mtime": 1778953612.7878356,
+    "hash": "239f3ebf717465dc636818a1a619398d"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\layout.tsx": {
+    "mtime": 1778953753.0643923,
+    "hash": "2b66ebef8c9ab8353bb54b3b78de9101"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\not-found.tsx": {
+    "mtime": 1778953612.7651813,
+    "hash": "d8c51ca13706fd4080b4149995319d68"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\page.tsx": {
+    "mtime": 1778955908.204826,
+    "hash": "451701b9660b577cbfc20e889e869a07"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\sitemap.ts": {
+    "mtime": 1778953753.0643923,
+    "hash": "51e50cf3a1d145304a32bba1594e4212"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\admin\\layout.tsx": {
+    "mtime": 1778953612.7554283,
+    "hash": "1a650dd9a3d0cb10a686c06a65fff227"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\admin\\page.tsx": {
+    "mtime": 1778953612.7563858,
+    "hash": "1dc02abc4df0ef2bb276116a5a809040"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\admin\\login\\page.tsx": {
+    "mtime": 1778953612.7563858,
+    "hash": "b98b1781ad63a50f6c45f89720a29c48"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\api\\ai\\route.ts": {
+    "mtime": 1778953612.7573647,
+    "hash": "06cd425cc91fc56341ced283f385307e"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\api\\auth\\route.ts": {
+    "mtime": 1778953612.7573647,
+    "hash": "2382636b58d6af2d9722c7613f677277"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\api\\config\\route.ts": {
+    "mtime": 1778953612.7573647,
+    "hash": "4b535ea2b095da3ba5aad48cd6544932"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\api\\data\\route.ts": {
+    "mtime": 1778953612.7573647,
+    "hash": "340db8be74b5faf4456bfdc0c9d19e9a"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\api\\instagram\\image\\route.ts": {
+    "mtime": 1778955200.737059,
+    "hash": "829bac335b423a8d9c5151bb5a8f9622"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\api\\instagram\\posts\\route.ts": {
+    "mtime": 1778953612.7573647,
+    "hash": "527fe0df51566e33774f1380cf59dae2"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\api\\revisions\\route.ts": {
+    "mtime": 1778953612.7573647,
+    "hash": "000674be44a22a4ead38c02f0b6c9094"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\artist\\page.tsx": {
+    "mtime": 1778953612.7573647,
+    "hash": "d5cb8c82b61882561ffd266f37322d42"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\artist\\[slug]\\page.tsx": {
+    "mtime": 1778953612.7573647,
+    "hash": "bf5ad14d1238b5386844c13ab4ea4c3c"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\artists\\page.tsx": {
+    "mtime": 1778953612.7573647,
+    "hash": "8b24f2853d04b02b34081ee73a89c441"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\artists\\[slug]\\page.tsx": {
+    "mtime": 1778953612.7573647,
+    "hash": "e77d0d4daeb16336e51b01ca67fa2e9e"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\brutalism\\page.tsx": {
+    "mtime": 1778953612.7573647,
+    "hash": "a7bcdf081f23457e15be1af2b41c9490"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\catalog\\page.tsx": {
+    "mtime": 1778953612.7573647,
+    "hash": "b6762fe585bc94f6640f55d8d3265544"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\checkout\\layout.tsx": {
+    "mtime": 1778953612.7573647,
+    "hash": "a88ab2eafbc075420ce7ea7e02f8abb7"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\checkout\\page.tsx": {
+    "mtime": 1778953612.7573647,
+    "hash": "ea4f43638a1288123fb49c33428537eb"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\child-safety\\page.tsx": {
+    "mtime": 1778953784.4186814,
+    "hash": "db69c4b55839fd92c59ffe0659699103"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\design\\page.tsx": {
+    "mtime": 1778953612.763143,
+    "hash": "d11dfdcfb425af363ce6b72148078d05"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\distribution\\page.tsx": {
+    "mtime": 1778953612.763143,
+    "hash": "7195d0e4b6a7555b30f44af1e58bb573"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\gallery\\page.tsx": {
+    "mtime": 1778953612.7641814,
+    "hash": "869d2037ebf6f9657cf7cd60ec7bead7"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\integration\\page.tsx": {
+    "mtime": 1778953612.7641814,
+    "hash": "b2ceb5ce64d93416ce913cbd0b14e96c"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\journal\\page.tsx": {
+    "mtime": 1778953612.7641814,
+    "hash": "29cf7cb66ad0955a6d4fe30782ba0473"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\narrative\\page.tsx": {
+    "mtime": 1778953612.7651813,
+    "hash": "64ce7c53132d2d264a92fe8718858156"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\player\\page.tsx": {
+    "mtime": 1778953612.7662454,
+    "hash": "f69e8a72f35e6e646a211da32d2a03a6"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\releases\\layout.tsx": {
+    "mtime": 1778953612.7662454,
+    "hash": "1cc6b9d9720fb387847d1d0eff539cf8"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\releases\\page.tsx": {
+    "mtime": 1778953612.7671814,
+    "hash": "7b5a2f17fd9774b176234c14ddf488e2"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\releases\\[catalogNumber]\\page.tsx": {
+    "mtime": 1778953612.7662454,
+    "hash": "739a1146741764618d4d458fb4ba9a7e"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\shop\\layout.tsx": {
+    "mtime": 1778953612.7671814,
+    "hash": "8d3e2d6ae858e88b99ab27c52879719e"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\shop\\page.tsx": {
+    "mtime": 1778953612.7671814,
+    "hash": "22b1025ab304e918dd62a1e0205fe4e0"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\tours\\page.tsx": {
+    "mtime": 1778953612.7671814,
+    "hash": "b1e17d1dc3ade72d5003a68bbbb3aacb"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\app\\work\\[id]\\page.tsx": {
+    "mtime": 1778953612.7681987,
+    "hash": "a148eac31d87b8d79961de6839ebe4a5"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\ClientOnlyBackground.tsx": {
+    "mtime": 1778953612.7681987,
+    "hash": "e41d7c1b32a7bb112579493a1cb51f80"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\Footer.tsx": {
+    "mtime": 1778953612.7691476,
+    "hash": "6351380f780e5aead4bf18a54cd03391"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\GlideWrapper.tsx": {
+    "mtime": 1778953612.7694554,
+    "hash": "e6259d38c17a52c54195ec90ef67b07c"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\interactive-canvas.tsx": {
+    "mtime": 1778953612.7752957,
+    "hash": "622c273c59ca9101ee845fc7c168001e"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\InteractiveHeroBackground.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "b7cf2cbaef2ccf14db077261e4dd73c5"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\MobileMenu.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "cf5c8fe3b6c25336c0113a1e415c1f42"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\Player.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "4db8298b76835c58cc1fabcfe2a799cd"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\ScrollReveal.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "bf08b4322fa28f82733de6e63f3d8695"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\SearchModal.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "1890830ef7857a1e421581e69ab35722"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\Sidebar.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "4a99780c0c985136f7f191e5a7ec5d9b"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\SpatialBackground.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "81429295dda06b2ba8d33444f590e6b0"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\SpatialNavigator.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "0e37a123a106ab193d53acab7e270d27"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\TopNav.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "d4a720adc3ab5c7c286c509b5688f01c"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\backgrounds\\FlowingWaveform.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "b2200a8d33e3522c827a18af7ec766bd"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\backgrounds\\ParticleNetwork.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "533a5097c03835efdd6055eb2f7ce2a1"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\backgrounds\\VantaHalo.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "b646314c94426775be153f9720af573f"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\backgrounds\\VantaNet.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "0a2af83c8422a4dcf9b2b268db802d62"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\backgrounds\\VantaWaves.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "b5e87e22d485cd8de8d31589b876f566"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\cards\\ArtistCard.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "2b058796a47ec47d3211497e1e33b91a"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\cards\\JournalCard.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "13e189834622518a303a35a4abfd548c"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\cards\\ProductCard.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "de9a1fb36d1364066340bace5698e44a"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\cards\\ReleaseCard.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "c7a727eceb6a0cb1431c114159346ff8"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\cards\\TourEventRow.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "4fe2a228c65dd1e74523b5de0dd03f3e"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\forms\\EmailCapture.tsx": {
+    "mtime": 1778953612.7698107,
+    "hash": "80a1f18f8405df7a1515f20bfd62fb4c"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\forms\\SubmissionForm.tsx": {
+    "mtime": 1778953612.7752957,
+    "hash": "809e804c9a173ee76fc1843f078a756b"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\layout\\Footer.tsx": {
+    "mtime": 1778953784.4195666,
+    "hash": "1f99c0d968164888050dcbfa369d14d0"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\layout\\MobileNav.tsx": {
+    "mtime": 1778953612.7752957,
+    "hash": "970ddb81c0dfd7cec305a81271525e87"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\layout\\NoiseOverlay.tsx": {
+    "mtime": 1778953612.7763765,
+    "hash": "0b0afce11aaa3e8ea010fb27c998ed5f"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\layout\\SideNav.tsx": {
+    "mtime": 1778953612.7763765,
+    "hash": "3309e033155a26a3f384292f130c6745"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\layout\\TopNav.tsx": {
+    "mtime": 1778953612.7763765,
+    "hash": "9289a72cc31ce769de07eee9ad86941f"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\player\\MusicPlayer.tsx": {
+    "mtime": 1778953612.777334,
+    "hash": "d7d3bf073f0ecb36d46d11d613476c47"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\ui\\background-beams-with-collision.tsx": {
+    "mtime": 1778953612.7793877,
+    "hash": "c302e81e78dbd6da305c1b7c7560d295"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\ui\\Breadcrumbs.tsx": {
+    "mtime": 1778953612.777334,
+    "hash": "623c369fbd14589ff8ac4b5903fb7e77"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\ui\\Button.tsx": {
+    "mtime": 1778953612.7783892,
+    "hash": "e4220aeac9e5adcf2b9e1c1b20b95469"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\ui\\deep-strings.tsx": {
+    "mtime": 1778953612.7803376,
+    "hash": "a9c3d991cfb2a65a1efe1c581c8b0fb0"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\ui\\DotGrid.tsx": {
+    "mtime": 1778953612.7783892,
+    "hash": "62a9c42b317ba231ba5f055cd96bc039"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\ui\\FilterTabs.tsx": {
+    "mtime": 1778953612.7783892,
+    "hash": "165570158fbfa1e916b47797626691e8"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\ui\\GlassPanel.tsx": {
+    "mtime": 1778953612.7783892,
+    "hash": "ae1807775c1f201203118c48663b53e3"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\ui\\lamp.tsx": {
+    "mtime": 1778953612.7803376,
+    "hash": "3cc0521a509cf4cf63ae377aef517b69"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\ui\\ScrollReveal.tsx": {
+    "mtime": 1778953612.7793877,
+    "hash": "35ab5bfa7f3ff031e54b1d5770e0ae13"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\ui\\ScrollToTop.tsx": {
+    "mtime": 1778953612.7793877,
+    "hash": "ddcbb97b57d4c65f49f6e63c5b3c1f28"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\ui\\sparkles.tsx": {
+    "mtime": 1778953612.7803376,
+    "hash": "aedf882e13218116fccc94f50052667c"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\ui\\SpatialHUD.tsx": {
+    "mtime": 1778953612.7793877,
+    "hash": "a8883f647a4633424a765d1bc96c26f0"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\ui\\StatusIndicator.tsx": {
+    "mtime": 1778953612.7793877,
+    "hash": "05f4f993f6adae3e8f1a3048b80f2331"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\components\\ui\\wavy-background.tsx": {
+    "mtime": 1778953612.7803376,
+    "hash": "d30eaca1aa04fc8bd25b34c74d95e38a"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\context\\CartContext.tsx": {
+    "mtime": 1778953612.781301,
+    "hash": "acd2fb11f6affa1b491b978842df2fdc"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\context\\SiteConfigContext.tsx": {
+    "mtime": 1778953612.782549,
+    "hash": "40acd5c187a602daae522a66b99c3250"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\hooks\\use-mobile.ts": {
+    "mtime": 1778953612.782549,
+    "hash": "209b5193af16624cdd89d3591480dd48"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\lib\\auth.ts": {
+    "mtime": 1778953612.7845142,
+    "hash": "6412fbb423d3b1d0b33ec26f71c28653"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\lib\\data.ts": {
+    "mtime": 1778953612.7845142,
+    "hash": "48b4bd99ab4f342622088b267bd18026"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\lib\\get-data.ts": {
+    "mtime": 1778953612.7845142,
+    "hash": "aa2c289b05a91315993bba6220d66b6f"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\lib\\site-config.ts": {
+    "mtime": 1778953612.785601,
+    "hash": "8d0d28ef21c17adef55457d5638add01"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\lib\\site-settings.ts": {
+    "mtime": 1778953612.7864985,
+    "hash": "ac59d08ab723ee1da2e24e370a59edf4"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\lib\\utils.ts": {
+    "mtime": 1778953612.7864985,
+    "hash": "5a6fd53fdcf2be529e9cc0b718fde352"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\lib\\animation\\easing.ts": {
+    "mtime": 1778953612.783546,
+    "hash": "198446e4be69ba025a8cdbafbc350bb0"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\lib\\audio\\scales.ts": {
+    "mtime": 1778953612.783546,
+    "hash": "22c3425b64e57f4fb7a24666274fcdf5"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\lib\\lines\\line-factory.ts": {
+    "mtime": 1778953612.785601,
+    "hash": "0610a4d70a50024c193a7ad5f5c105eb"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\lib\\lines\\line-renderer.ts": {
+    "mtime": 1778953612.785601,
+    "hash": "d28c01c0f1fbb918bd5ecb301ac52142"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\lib\\physics\\line-physics.ts": {
+    "mtime": 1778953612.785601,
+    "hash": "34f41ab4d5517aae62b5d57d596e251b"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\types\\index.ts": {
+    "mtime": 1778953612.7978394,
+    "hash": "760a1e0cd76168cacb5ea7adab9d688a"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\AGENTS.md": {
+    "mtime": 1778953612.7545142,
+    "hash": "9e09241799026ac05be315a2f0b50055"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\CHANGELOG.md": {
+    "mtime": 1778953612.7545142,
+    "hash": "bb425b2fe72fdd6fb3e4a0e3b46091b4"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\CLAUDE.md": {
+    "mtime": 1778953612.7554283,
+    "hash": "cb282e3caf3f5b2eb75b10f6790336fb"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\pdf_content.txt": {
+    "mtime": 1778953612.7878356,
+    "hash": "5fda01236edb158b1309fe65928b05fc"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\README.md": {
+    "mtime": 1778953612.7554283,
+    "hash": "8fd1cd605608e5ab983522b246f1f816"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\logo-preview.html": {
+    "mtime": 1778953612.7878356,
+    "hash": "8f1f6d53755e788ab5051f3b3ee27f97"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\visualizer-preview.html": {
+    "mtime": 1778953612.7948394,
+    "hash": "0f50c402a395f62c04dd90236db992a3"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\apple-touch-icon.png": {
+    "mtime": 1778953612.7878356,
+    "hash": "f4b56c03b137c06bacdefdcb3e38a9fb"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\favicon-16.png": {
+    "mtime": 1778953612.7878356,
+    "hash": "0d4bda2dac54b573f4a0b6f3403e7d99"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\favicon-32.png": {
+    "mtime": 1778953612.7878356,
+    "hash": "49c2b217b788b9d1bad35f903d202627"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\favicon.png": {
+    "mtime": 1778953612.7878356,
+    "hash": "c94a5bfba63f5ddacedfc27834681141"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\favicon.svg": {
+    "mtime": 1778953612.7878356,
+    "hash": "0eee25b3e63dd2609c4db362a3af7400"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\file.svg": {
+    "mtime": 1778953612.7878356,
+    "hash": "d09f95206c3fa0bb9bd9fefabfd0ea71"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\globe.svg": {
+    "mtime": 1778953612.7878356,
+    "hash": "2aaafa6a49b6563925fe440891e32717"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\next.svg": {
+    "mtime": 1778953612.7878356,
+    "hash": "8e061864f388b47f33a1c3780831193e"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\novavox-logo-cropped.png": {
+    "mtime": 1778953612.7878356,
+    "hash": "9d86be0436abe07f93a1fa910ffd6509"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\novavox-logo-full.svg": {
+    "mtime": 1778953612.7878356,
+    "hash": "14d38259d15617d0c32fe6fe61864928"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\novavox-logo-transparent.png": {
+    "mtime": 1778953612.7938013,
+    "hash": "f03cf015f1b7cd63dbaf442a53e8b338"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\novavox-logo.jpg": {
+    "mtime": 1778953612.7938013,
+    "hash": "12b83cdefa041c0c1fe769dd2ae13a2b"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\novavox-logo.svg": {
+    "mtime": 1778953612.7938013,
+    "hash": "dc932f1b9d4b382a831e58a47f71e937"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\novavox-mark-512.png": {
+    "mtime": 1778953612.7948394,
+    "hash": "3269c11edc8bc8e3c206ec59ae7fbfe2"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\novavox-nv-mark.svg": {
+    "mtime": 1778953612.7948394,
+    "hash": "6a2fea0194786aaba571539628e9a949"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\vercel.svg": {
+    "mtime": 1778953612.7948394,
+    "hash": "c0af2f507b369b085b35ef4bbe3bcf1e"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\window.svg": {
+    "mtime": 1778953612.796839,
+    "hash": "a2760511c65806022ad20adf74370ff3"
+  },
+  "C:\\Users\\mrvis\\OneDrive\\Documents\\New project\\novavox\\public\\voice-invite.mp3": {
+    "mtime": 1778953612.796839,
+    "hash": "432d9b02f6f544d944b2b6ae7b6a2621"
+  }
+}
